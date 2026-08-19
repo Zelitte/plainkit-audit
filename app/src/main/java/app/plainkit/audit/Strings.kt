@@ -26,7 +26,7 @@ object Prefs {
 }
 
 /**
- * RUNTIME  = používateľ musel kliknúť „Povoliť"
+ * RUNTIME  = kliknúť „Povoliť"
  * INSTALL  = appka to dostala automaticky pri inštalácii
  * SPECIAL  = povoľuje sa zvlášť v systémových nastaveniach, stav sa nedá spoľahlivo zistiť
  */

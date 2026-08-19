@@ -185,7 +185,7 @@ private fun scanApk(paths: List<String>): List<Tracker> {
                 }
             }
         } catch (e: Exception) {
-            // APK sa nedá prečítať — preskočíme
+            // APK sa nedá prečítať — preskočím
         }
     }
     return TRACKERS.filter { it.prefix in prefixes }
@@ -342,7 +342,7 @@ fun AppListScreen(
     val db = remember { AuditDb.get(context) }
     val dateFmt = remember { SimpleDateFormat("d.M. HH:mm", Locale.getDefault()) }
 
-    // krátke popisky dlaždíc — zámerne tu, aby sme kvôli dvom slovám neprepisovali Strings.kt
+    // krátke popisky dlaždíc — zámerne tu, aby sa kvôli dvom slovám neprepisovali Strings.kt
     val appsLabel = if (s.lang == Lang.SK) "aplikácií" else "apps"
     val sysLabel = if (s.lang == Lang.SK) "systémových" else "system"
 
