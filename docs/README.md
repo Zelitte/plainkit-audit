@@ -1,0 +1,1 @@
+   Snímky obrazovky pre README.
