@@ -149,6 +149,7 @@ private fun collectPrefixes(text: String, out: MutableSet<String>) {
                     slashes++
                     j++
                 }
+
                 c.isLetterOrDigit() || c == '_' || c == '$' -> j++
                 else -> break
             }
@@ -428,12 +429,16 @@ fun AppListScreen(
             }.thenBy { it.label.lowercase() }
         )
 
-    Column(modifier = modifier.fillMaxSize().padding(horizontal = 12.dp)) {
+    Column(modifier = modifier
+        .fillMaxSize()
+        .padding(horizontal = 12.dp)) {
 
         // ── hlavička ──
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 10.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 10.dp)
         ) {
             Text(
                 text = "plainkit.",
@@ -446,7 +451,9 @@ fun AppListScreen(
                 fontFamily = FontFamily.Monospace,
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 6.dp).weight(1f)
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .weight(1f)
             )
             TextButton(onClick = { showSettings = true }) {
                 Icon(
@@ -480,7 +487,13 @@ fun AppListScreen(
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
-            placeholder = { Text(s.searchLabel, fontFamily = FontFamily.Monospace, fontSize = 14.sp) },
+            placeholder = {
+                Text(
+                    s.searchLabel,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 14.sp
+                )
+            },
             singleLine = true,
             textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Monospace),
             shape = RoundedCornerShape(3.dp),
@@ -508,7 +521,9 @@ fun AppListScreen(
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)
         )
 
         // ── skenovanie ──
@@ -530,7 +545,9 @@ fun AppListScreen(
             },
             enabled = progress == null && apps.isNotEmpty(),
             shape = RoundedCornerShape(3.dp),
-            modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)
         ) {
             Text(
                 text = progress?.let { s.scanProgress(it, scanTarget.size) } ?: s.scanAll,
@@ -538,9 +555,11 @@ fun AppListScreen(
             )
         }
 
-        if (progress != null) {
+        val progressNow = progress
+        if (progressNow != null) {
+            val total = scanTarget.size.coerceAtLeast(1)
             LinearProgressIndicator(
-                progress = { progress!!.toFloat() / scanTarget.size.coerceAtLeast(1) },
+                progress = { (progressNow.toFloat() / total).coerceIn(0f, 1f) },
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier
@@ -549,7 +568,6 @@ fun AppListScreen(
                     .padding(top = 4.dp)
             )
         }
-
         Spacer(Modifier.height(10.dp))
 
         // ── zoznam ──
@@ -560,7 +578,11 @@ fun AppListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
-                            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(3.dp))
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.outline,
+                                RoundedCornerShape(3.dp)
+                            )
                             .background(MaterialTheme.colorScheme.surface)
                             .padding(12.dp)
                     ) {
@@ -621,7 +643,8 @@ fun AppListScreen(
                             if (expanded == app.packageName && !scanned.containsKey(app.packageName)) {
                                 scanning = app.packageName
                                 scope.launch {
-                                    val result = withContext(Dispatchers.IO) { scanApk(app.apkPaths) }
+                                    val result =
+                                        withContext(Dispatchers.IO) { scanApk(app.apkPaths) }
                                     persist(db, app, result, s)
                                     store(app.packageName, result)
                                     changes = db.dao().recentChanges()
@@ -681,7 +704,12 @@ fun AppListScreen(
                                     s.scanningOne,
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
-                                findings == null -> Text("—", modifier = Modifier.padding(top = 8.dp))
+
+                                findings == null -> Text(
+                                    "—",
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+
                                 else -> findings.forEach { f ->
                                     Text(
                                         text = f.text,
