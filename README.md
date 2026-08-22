@@ -33,6 +33,15 @@ Each release publishes the file's SHA-256. Check it before installing:
 If the hash does not match the one in the release notes, the file is not the
 one that was published. Do not install it.
 
+### Staying up to date
+
+Audit has no updater of its own and never contacts a server on its own — so it
+cannot tell you when a new version exists. If you want to be notified, use
+[Obtainium](https://github.com/ImranR98/Obtainium): add this repository's URL
+as an app source and it will let you know when a release is published, and
+install it with one tap. Updates keep the same signing key, so they install
+over the existing app.
+
 ## What it does
 
 * Lists installed apps with their permissions in plain language ("precise
@@ -108,6 +117,11 @@ Celá analýza prebieha v telefóne a nič sa neodosiela.
 a otvor ho v telefóne. Android sa spýta, či povoliť inštaláciu z tohto zdroja —
 appka nie je z Google Play. Odtlačok SHA-256 na overenie súboru je v poznámkach
 k vydaniu.
+
+**Upozornenie na novú verziu:** appka sama nikam nechodí, takže o novej verzii
+sa nedozvie. Ak chceš byť upozornený, použi
+[Obtainium](https://github.com/ImranR98/Obtainium) — vlož doň odkaz na tento
+repozitár a dá ti vedieť, keď vyjde nové vydanie.
 
 **Zoznam signatúr** je napísaný od nuly z verejne známych faktov o jednotlivých
 SDK, je súčasťou tohto repozitára pod GPLv3 a ktokoľvek ho môže voľne použiť.
