@@ -1,0 +1,3 @@
+First public release.
+
+Lists installed apps with their permissions in plain language, scans their installation files for around 115 known tracking libraries, and reports what changed after an app update. Everything runs on the device.
