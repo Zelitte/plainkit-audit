@@ -1,0 +1,26 @@
+Most people never find out that a flashlight app has been granted the microphone, or that a game they installed last year still has access to their contacts.
+
+Audit lists every app installed on your phone and tells you, in a normal sentence, what it can reach and what it carries inside.
+
+It also looks inside each app's installation file for known tracking libraries — advertising, marketing, analytics, fraud detection, crash reporting — and combines that with the permissions to say something useful, instead of showing a scary number.
+
+Everything runs on your phone. Nothing is uploaded. No ads, no account, no tracking.
+
+What it does:
+
+* Shows permissions in plain language ("precise location", not ACCESS_FINE_LOCATION)
+* Distinguishes granted / not granted / automatic at install — most apps get a pile of permissions without ever asking you
+* Scans for around 115 known tracking SDKs, grouped by purpose
+* Explains each finding in one sentence and sorts apps by severity
+* Remembers results and reports what changed after an app update
+* Slovak and English
+
+What it does not do:
+
+* It reports what is present in an app's code, not what is happening right now. A bundled analytics library does not mean data is being sent at this moment.
+* The signature list is not complete, so it under-reports rather than exaggerates.
+* It is information to help you decide — not an accusation.
+
+How it works: an installation file is a ZIP archive, and the class names inside it are readable text. Audit walks through them once and looks up known package prefixes. No decompiler, no network access.
+
+The app needs the QUERY_ALL_PACKAGES permission to see the list of installed apps, which is the entire point of it. That list never leaves the device.
