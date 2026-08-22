@@ -1,0 +1,26 @@
+Málokto zistí, že baterka má udelený prístup k mikrofónu, alebo že hra nainštalovaná pred rokom stále vidí kontakty.
+
+Audit vypíše každú aplikáciu nainštalovanú vo vašom telefóne a normálnou vetou povie, kam dočiahne a čo v sebe nesie.
+
+Zároveň sa pozrie do inštalačného súboru každej aplikácie a hľadá v ňom známe sledovacie knižnice — reklamné, marketingové, analytické, nástroje na detekciu podvodov a na hlásenie pádov. Výsledok spojí s povoleniami, aby vám povedal niečo užitočné namiesto jedného desivého čísla.
+
+Celá analýza prebieha vo vašom telefóne. Nič sa neodosiela. Bez reklám, bez účtu, bez sledovania.
+
+Čo aplikácia vie:
+
+* Vypíše povolenia zrozumiteľne — „presná poloha“ namiesto ACCESS_FINE_LOCATION
+* Rozlišuje udelené / neudelené / automaticky pri inštalácii — väčšina aplikácií dostane kopu povolení bez toho, aby sa vás niekto pýtal
+* Hľadá približne 115 známych sledovacích knižníc a rozlišuje ich účel
+* Nález vysvetlí jednou vetou a zoradí aplikácie podľa závažnosti
+* Pamätá si výsledky a po aktualizácii aplikácie ukáže, čo sa zmenilo
+* Slovensky aj anglicky
+
+Čo aplikácia nerobí:
+
+* Hovorí, čo je v kóde prítomné, nie čo sa práve deje. Analytická knižnica v aplikácii neznamená, že v tejto chvíli niečo odosiela.
+* Zoznam signatúr nie je úplný, takže skôr podhodnocuje, než preháňa.
+* Je to informácia, ktorá vám má pomôcť rozhodnúť sa — nie obvinenie.
+
+Ako to funguje: inštalačný súbor je archív ZIP a názvy tried v ňom sú čitateľný text. Audit ich raz prejde a vyhľadá známe prefixy balíkov. Žiadny dekompilátor, žiadny prístup na sieť.
+
+Aplikácia potrebuje oprávnenie QUERY_ALL_PACKAGES, aby videla zoznam nainštalovaných aplikácií — v tom je celý jej zmysel. Ten zoznam nikdy neopustí zariadenie.
