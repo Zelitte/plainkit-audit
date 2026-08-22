@@ -1,0 +1,3 @@
+Prvé verejné vydanie.
+
+Vypíše nainštalované aplikácie aj s povoleniami zrozumiteľnou rečou, prehľadá ich inštalačné súbory na približne 115 známych sledovacích knižníc a po aktualizácii ukáže, čo sa zmenilo. Všetko prebieha v zariadení.
