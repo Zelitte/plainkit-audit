@@ -58,6 +58,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -98,36 +99,49 @@ private fun codeOf(pkg: PackageInfo): Long =
     if (Build.VERSION.SDK_INT >= 28) pkg.longVersionCode
     else @Suppress("DEPRECATION") pkg.versionCode.toLong()
 
-private fun loadApps(pm: PackageManager): List<AppEntry> {
-    return pm.getInstalledPackages(PackageManager.GET_PERMISSIONS).map { pkg ->
-        val info = pkg.applicationInfo
-        val paths = buildList {
-            info?.sourceDir?.let { add(it) }
-            info?.splitSourceDirs?.forEach { add(it) }
-        }
-        val perms = pkg.requestedPermissions?.toList() ?: emptyList()
-        val flags = pkg.requestedPermissionsFlags
-        val granted = buildSet {
-            if (flags != null) {
-                for (idx in perms.indices) {
-                    if (idx < flags.size &&
-                        (flags[idx] and PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0
-                    ) {
-                        add(perms[idx])
-                    }
+private fun loadApps(pm: PackageManager): List<AppEntry> =
+    pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+        .map { toEntry(it, pm) }
+        .sortedBy { it.label.lowercase() }
+
+/**
+ * Čerstvé údaje o jednej appke priamo zo systému. Null = medzitým ju odinštalovali.
+ * Prečo: AppCache drží zoznam, kým Android nezabije proces — aj niekoľko dní.
+ * Keď sa medzitým iná appka aktualizuje, jej stará cesta k APK už neexistuje
+ * a aj zoznam povolení je starý.
+ */
+private fun loadApp(pm: PackageManager, packageName: String): AppEntry? = runCatching {
+    toEntry(pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS), pm)
+}.getOrNull()
+
+private fun toEntry(pkg: PackageInfo, pm: PackageManager): AppEntry {
+    val info = pkg.applicationInfo
+    val paths = buildList {
+        info?.sourceDir?.let { add(it) }
+        info?.splitSourceDirs?.forEach { add(it) }
+    }
+    val perms = pkg.requestedPermissions?.toList() ?: emptyList()
+    val flags = pkg.requestedPermissionsFlags
+    val granted = buildSet {
+        if (flags != null) {
+            for (idx in perms.indices) {
+                if (idx < flags.size &&
+                    (flags[idx] and PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0
+                ) {
+                    add(perms[idx])
                 }
             }
         }
-        AppEntry(
-            label = info?.loadLabel(pm)?.toString() ?: pkg.packageName,
-            packageName = pkg.packageName,
-            isSystem = ((info?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0,
-            permissions = perms,
-            granted = granted,
-            apkPaths = paths,
-            versionCode = codeOf(pkg)
-        )
-    }.sortedBy { it.label.lowercase() }
+    }
+    return AppEntry(
+        label = info?.loadLabel(pm)?.toString() ?: pkg.packageName,
+        packageName = pkg.packageName,
+        isSystem = ((info?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0,
+        permissions = perms,
+        granted = granted,
+        apkPaths = paths,
+        versionCode = codeOf(pkg)
+    )
 }
 
 private fun collectPrefixes(text: String, out: MutableSet<String>) {
@@ -170,7 +184,13 @@ private fun collectPrefixes(text: String, out: MutableSet<String>) {
     }
 }
 
-private fun scanApk(paths: List<String>): List<Tracker> {
+/**
+ * Vráti null, ak sa niektorý APK súbor nepodarilo prečítať.
+ * Predtým sa chyba potichu zhltla a výsledok bol prázdny zoznam — a ten sa
+ * uložil ako „appka nemá žiadne trackery" a do logu zapísal „ubudli trackery: …".
+ */
+private fun scanApk(paths: List<String>): List<Tracker>? {
+    if (paths.isEmpty()) return null
     val prefixes = HashSet<String>(8192)
     for (path in paths) {
         try {
@@ -186,17 +206,17 @@ private fun scanApk(paths: List<String>): List<Tracker> {
                 }
             }
         } catch (e: Exception) {
-            // APK sa nedá prečítať — preskočím
+            return null
         }
     }
     return TRACKERS.filter { it.prefix in prefixes }
 }
 
-private suspend fun persist(db: AuditDb, app: AppEntry, trackers: List<Tracker>, s: S) {
+private suspend fun persist(db: AuditDb, app: AppEntry, trackers: List<Tracker>) {
     val dao = db.dao()
     val old = dao.scan(app.packageName)
     val names = trackers.map { it.name }
-    val text = diffText(old, names, app.permissions, s)
+    val text = computeDiff(old, names, app.permissions)?.encode()
     val now = System.currentTimeMillis()
 
     dao.save(
@@ -219,7 +239,6 @@ private suspend fun persist(db: AuditDb, app: AppEntry, trackers: List<Tracker>,
 private suspend fun scanAllApps(
     apps: List<AppEntry>,
     db: AuditDb,
-    s: S,
     onResult: (String, List<Tracker>) -> Unit,
     onProgress: (Int) -> Unit
 ) = coroutineScope {
@@ -230,9 +249,9 @@ private suspend fun scanAllApps(
         async(Dispatchers.IO) {
             for (app in chunk) {
                 val result = scanApk(app.apkPaths)
-                persist(db, app, result, s)
+                if (result != null) persist(db, app, result)
                 withContext(Dispatchers.Main) {
-                    onResult(app.packageName, result)
+                    if (result != null) onResult(app.packageName, result)
                     onProgress(counter.incrementAndGet())
                 }
             }
@@ -253,19 +272,20 @@ class MainActivity : ComponentActivity() {
                 var lang by remember { mutableStateOf(Prefs.lang(ctx)) }
                 var splashDone by rememberSaveable { mutableStateOf(false) }
                 val current = lang
+                val s = remember(current) { current?.let { S(ctx, it) } }
 
                 when {
-                    current == null -> OnboardingScreen { chosen ->
+                    current == null || s == null -> OnboardingScreen { chosen ->
                         Prefs.setLang(ctx, chosen)
                         lang = chosen
                         splashDone = true
                     }
 
-                    !splashDone -> SplashScreen(S(current)) { splashDone = true }
+                    !splashDone -> SplashScreen(s) { splashDone = true }
 
                     else -> Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                         AppListScreen(
-                            s = S(current),
+                            s = s,
                             onLangChange = { chosen ->
                                 Prefs.setLang(ctx, chosen)
                                 lang = chosen
@@ -343,9 +363,8 @@ fun AppListScreen(
     val db = remember { AuditDb.get(context) }
     val dateFmt = remember { SimpleDateFormat("d.M. HH:mm", Locale.getDefault()) }
 
-    // krátke popisky dlaždíc — zámerne tu, aby sa kvôli dvom slovám neprepisovali Strings.kt
-    val appsLabel = if (s.lang == Lang.SK) "aplikácií" else "apps"
-    val sysLabel = if (s.lang == Lang.SK) "systémových" else "system"
+    val appsLabel = s.tileApps
+    val sysLabel = s.tileSystem
 
     var apps by remember { mutableStateOf(AppCache.apps ?: emptyList()) }
     var showSystem by rememberSaveable { mutableStateOf(false) }
@@ -356,6 +375,7 @@ fun AppListScreen(
     var changes by remember { mutableStateOf<List<ChangeRecord>>(emptyList()) }
     var showSettings by rememberSaveable { mutableStateOf(false) }
     var justCleared by remember { mutableStateOf(false) }
+    var failedPkg by remember { mutableStateOf<String?>(null) }
     val scanned = remember {
         mutableStateMapOf<String, List<Tracker>>().apply { putAll(AppCache.scanned) }
     }
@@ -440,29 +460,38 @@ fun AppListScreen(
                 .fillMaxWidth()
                 .padding(top = 8.dp, bottom = 10.dp)
         ) {
+            // Logo nerastie so systémovým písmom (fixedSp) a nikdy sa nezalamuje.
+            // V1.0 tu pri veľkom písme na Samsungu „audit" padalo po písmenách pod seba.
             Text(
                 text = "plainkit.",
                 fontFamily = FontFamily.Monospace,
-                fontSize = 19.sp,
-                color = MaterialTheme.colorScheme.primary
+                fontSize = fixedSp(19f),
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                softWrap = false
             )
             Text(
                 text = "audit",
                 fontFamily = FontFamily.Monospace,
-                fontSize = 15.sp,
+                fontSize = fixedSp(15f),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                softWrap = false,
                 modifier = Modifier
                     .padding(start = 6.dp)
                     .weight(1f)
             )
+            // pri veľkom písme len ikonka; popis ostáva pre čítačku obrazovky
             TextButton(onClick = { showSettings = true }) {
                 Icon(
                     imageVector = Icons.Default.Build,
-                    contentDescription = null,
+                    contentDescription = if (isLargeFont()) s.settings else null,
                     modifier = Modifier.size(16.dp)
                 )
-                Spacer(Modifier.width(6.dp))
-                Text(s.settings, fontSize = 13.sp)
+                if (!isLargeFont()) {
+                    Spacer(Modifier.width(6.dp))
+                    Text(s.settings, fontSize = 13.sp, maxLines = 1)
+                }
             }
         }
 
@@ -491,7 +520,9 @@ fun AppListScreen(
                 Text(
                     s.searchLabel,
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             singleLine = true,
@@ -529,13 +560,17 @@ fun AppListScreen(
         // ── skenovanie ──
         Button(
             onClick = {
-                val target = scanTarget
                 progress = 0
                 scope.launch {
+                    // čerstvý zoznam: aktuálne cesty k APK, aktuálne povolenia,
+                    // a aj appky nainštalované od spustenia Auditu
+                    val fresh = withContext(Dispatchers.IO) { loadApps(context.packageManager) }
+                    AppCache.apps = fresh
+                    apps = fresh
+                    val target = fresh.filter { showSystem || !it.isSystem }
                     scanAllApps(
                         apps = target,
                         db = db,
-                        s = s,
                         onResult = { pkg, result -> store(pkg, result) },
                         onProgress = { done -> progress = done }
                     )
@@ -594,7 +629,7 @@ fun AppListScreen(
                         )
                         changes.take(8).forEach { ch ->
                             Text(
-                                text = "${ch.label} — ${ch.text}",
+                                text = "${ch.label} — ${renderChange(ch.text, s)}",
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(top = 6.dp)
                             )
@@ -642,12 +677,23 @@ fun AppListScreen(
                             expanded = if (expanded == app.packageName) null else app.packageName
                             if (expanded == app.packageName && !scanned.containsKey(app.packageName)) {
                                 scanning = app.packageName
+                                failedPkg = null
                                 scope.launch {
-                                    val result =
-                                        withContext(Dispatchers.IO) { scanApk(app.apkPaths) }
-                                    persist(db, app, result, s)
-                                    store(app.packageName, result)
-                                    changes = db.dao().recentChanges()
+                                    val fresh = withContext(Dispatchers.IO) {
+                                        loadApp(context.packageManager, app.packageName)
+                                    }
+                                    val result = fresh?.let {
+                                        withContext(Dispatchers.IO) { scanApk(it.apkPaths) }
+                                    }
+                                    if (fresh != null && result != null) {
+                                        persist(db, fresh, result)
+                                        store(app.packageName, result)
+                                        apps = apps.map { if (it.packageName == fresh.packageName) fresh else it }
+                                        AppCache.apps = apps
+                                        changes = db.dao().recentChanges()
+                                    } else {
+                                        failedPkg = app.packageName
+                                    }
                                     scanning = null
                                 }
                             }
@@ -687,7 +733,9 @@ fun AppListScreen(
                                     app.packageName,
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 11.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
                                     text = s.summary(app.permissions.size, trackers?.size),
@@ -706,7 +754,7 @@ fun AppListScreen(
                                 )
 
                                 findings == null -> Text(
-                                    "—",
+                                    if (failedPkg == app.packageName) s.scanFailed else "—",
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
 

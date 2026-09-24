@@ -15,9 +15,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,8 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -47,6 +54,21 @@ private val BG = Color(0xFF0A0F14)
 private val ACCENT = Color(0xFF00D4E8)
 private val TRACE = Color(0xFF12313A)
 private val MUTED = Color(0xFF7FA6AE)
+
+/**
+ * Veľkosť písma, ktorá NErastie so systémovým nastavením „Veľkosť písma".
+ * Len pre logo — to je obrázok z písmen, nie text na čítanie. Bežný text
+ * nechávame rásť, to je dôležité pre ľudí, ktorí zle vidia.
+ */
+@Composable
+fun fixedSp(value: Float): TextUnit {
+    val scale = LocalDensity.current.fontScale
+    return (value / scale.coerceAtLeast(1f)).sp
+}
+
+/** Pri veľkom písme v systéme (Samsung ho má často zapnuté) prepneme rozloženie. */
+@Composable
+fun isLargeFont(): Boolean = LocalDensity.current.fontScale > 1.3f
 
 private class Trace(val pts: List<Offset>, val phase: Float, val speed: Float)
 
@@ -160,33 +182,69 @@ private fun Logo() {
     Text(
         text = "plainkit.app",
         color = ACCENT,
-        fontSize = 34.sp,
-        fontFamily = FontFamily.Monospace
+        fontSize = fixedSp(34f),
+        fontFamily = FontFamily.Monospace,
+        maxLines = 1,
+        softWrap = false
     )
     Text(
         text = "audit",
         color = Color(0xFFBFD9DF),
-        fontSize = 20.sp,
+        fontSize = fixedSp(20f),
         fontFamily = FontFamily.Monospace,
+        maxLines = 1,
         modifier = Modifier.padding(bottom = 36.dp)
     )
 }
 
+/** navigationBarsPadding = odsadenie od systémovej lišty (tri tlačidlá / gestá dole). */
 @Composable
-private fun Footer(modifier: Modifier = Modifier) {
+private fun Footer(text: String, modifier: Modifier = Modifier) {
     Text(
-        text = "súčasť projektu plainkit.app",
+        text = text,
         color = Color(0xFF4E6B72),
         fontSize = 11.sp,
-        modifier = modifier.padding(16.dp)
+        modifier = modifier
+            .navigationBarsPadding()
+            .padding(16.dp)
     )
+}
+
+/**
+ * Mriežka tlačidiel jazykov: 2 v rade, pri veľkom písme 1 v rade.
+ * Používa ju úvodná obrazovka aj Nastavenia.
+ */
+@Composable
+fun LangGrid(
+    selected: Lang?,
+    modifier: Modifier = Modifier,
+    button: @Composable (lang: Lang, selected: Boolean, modifier: Modifier) -> Unit
+) {
+    val perRow = if (isLargeFont()) 1 else 2
+    Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = modifier
+    ) {
+        Lang.entries.chunked(perRow).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                row.forEach { lang ->
+                    button(lang, lang == selected, Modifier.weight(1f))
+                }
+                // posledný riadok s jedným tlačidlom nech má rovnakú šírku ako ostatné
+                repeat(perRow - row.size) { Spacer(Modifier.weight(1f)) }
+            }
+        }
+    }
 }
 
 /** Prvé spustenie: výber jazyka + ohňostroj. */
 @Composable
 fun OnboardingScreen(onChosen: (Lang) -> Unit) {
+    val ctx = LocalContext.current
     var chosen by remember { mutableStateOf<Lang?>(null) }
     val burst = remember { Animatable(0f) }
+    val current = chosen
+    val s = remember(current) { current?.let { S(ctx, it) } }
 
     LaunchedEffect(chosen) {
         val c = chosen ?: return@LaunchedEffect
@@ -199,17 +257,20 @@ fun OnboardingScreen(onChosen: (Lang) -> Unit) {
         BoardBackground(burst = burst.value)
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(28.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding()
+                .padding(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Logo()
 
-            if (chosen == null) {
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    LangButton("Slovensky") { chosen = Lang.SK }
-                    LangButton("English") { chosen = Lang.EN }
+            if (s == null) {
+                LangGrid(selected = null, modifier = Modifier.fillMaxWidth()) { lang, _, mod ->
+                    LangButton(lang.nativeName, mod) { chosen = lang }
                 }
+                // pred výberom jazyka nevieme, komu píšeme — angličtina je najbezpečnejšia
                 Text(
                     text = "no ads · no signup · nothing is uploaded",
                     color = MUTED,
@@ -219,14 +280,14 @@ fun OnboardingScreen(onChosen: (Lang) -> Unit) {
                 )
             } else {
                 Text(
-                    text = S(chosen!!).claims,
+                    text = s.claims,
                     color = ACCENT,
                     fontSize = 15.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = S(chosen!!).disclosure,
+                    text = s.disclosure,
                     color = MUTED,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Center,
@@ -235,7 +296,7 @@ fun OnboardingScreen(onChosen: (Lang) -> Unit) {
             }
         }
 
-        Footer(Modifier.align(Alignment.BottomEnd))
+        Footer(s?.partOf ?: "plainkit.app", Modifier.align(Alignment.BottomEnd))
     }
 }
 
@@ -259,7 +320,10 @@ fun SplashScreen(s: S, onDone: () -> Unit) {
         BoardBackground()
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(28.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding()
+                .padding(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -287,20 +351,21 @@ fun SplashScreen(s: S, onDone: () -> Unit) {
             )
         }
 
-        Footer(Modifier.align(Alignment.BottomEnd))
+        Footer(s.partOf, Modifier.align(Alignment.BottomEnd))
     }
 }
 
 @Composable
-private fun LangButton(label: String, onClick: () -> Unit) {
+private fun LangButton(label: String, modifier: Modifier, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(24.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = ACCENT,
             contentColor = Color(0xFF07090F)
-        )
+        ),
+        modifier = modifier
     ) {
-        Text(label, fontSize = 16.sp)
+        Text(label, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }

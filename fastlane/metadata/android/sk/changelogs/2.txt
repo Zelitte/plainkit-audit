@@ -1,0 +1,5 @@
+• Nové jazyky: nemčina, francúzština, španielčina, taliančina
+• „Čo sa zmenilo" píše povolenia zrozumiteľne, nie technickými názvami
+• Oprava: po aktualizácii inej appky mohol log hlásiť falošne „ubudli trackery"
+• Oprava rozloženia pri zväčšenom písme (napr. Samsung)
+• Zrozumiteľné názvy pre ďalšie povolenia (miestna sieť, poloha vo fotkách…)

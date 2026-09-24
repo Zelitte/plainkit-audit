@@ -8,7 +8,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 
@@ -71,8 +71,13 @@ fun SettingsScreen(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         ) {
-            TextButton(onClick = onBack) { Text("← " + s.back) }
-            Text(s.settings, style = MaterialTheme.typography.titleLarge)
+            TextButton(onClick = onBack) { Text("← " + s.back, maxLines = 1) }
+            Text(
+                s.settings,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
 
         Text(
@@ -80,9 +85,9 @@ fun SettingsScreen(
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(top = 8.dp, bottom = 6.dp)
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            LangChip(s.slovak, s.lang == Lang.SK) { onLangChange(Lang.SK) }
-            LangChip(s.english, s.lang == Lang.EN) { onLangChange(Lang.EN) }
+        // tá istá mriežka ako na úvodnej obrazovke (Onboarding.kt)
+        LangGrid(selected = s.lang, modifier = Modifier.fillMaxWidth()) { lang, selected, mod ->
+            LangChip(lang.nativeName, selected, mod) { onLangChange(lang) }
         }
 
         Text(
@@ -148,10 +153,14 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun LangChip(label: String, selected: Boolean, onClick: () -> Unit) {
+private fun LangChip(label: String, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
     if (selected) {
-        Button(onClick = onClick) { Text(label) }
+        Button(onClick = onClick, modifier = modifier) {
+            Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
     } else {
-        OutlinedButton(onClick = onClick) { Text(label) }
+        OutlinedButton(onClick = onClick, modifier = modifier) {
+            Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
     }
 }

@@ -14,3 +14,9 @@
 .cxx
 local.properties
 /app/release/
+
+# záloha zdrojákov v1.0 pred úpravami na v1.1
+/_zaloha-v1.0/
+
+# hotové buildy na vydanie (nepatria do gitu)
+/vydania/

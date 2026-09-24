@@ -128,39 +128,40 @@ val TRACKERS = listOf(
     Tracker("Bugfender", "Lcom/bugfender/sdk/", TrackerKind.CRASH)
 )
 
-data class PermGroup(val sk: String, val en: String, val permissions: Set<String>) {
-    fun label(s: S) = if (s.lang == Lang.SK) sk else en
+/** `res` = id textu v strings.xml. SK je v 3. páde, pretože veta znie „prístup k …". */
+data class PermGroup(val res: Int, val permissions: Set<String>) {
+    fun label(s: S) = s.str(res)
 }
 
 val SENSITIVE = listOf(
-    PermGroup("polohe", "location", setOf(
+    PermGroup(R.string.group_location, setOf(
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_BACKGROUND_LOCATION")),
-    PermGroup("kontaktom", "contacts", setOf(
+    PermGroup(R.string.group_contacts, setOf(
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS",
         "android.permission.GET_ACCOUNTS")),
-    PermGroup("mikrofónu", "the microphone", setOf("android.permission.RECORD_AUDIO")),
-    PermGroup("kamere", "the camera", setOf("android.permission.CAMERA")),
-    PermGroup("SMS správam", "SMS messages", setOf(
+    PermGroup(R.string.group_microphone, setOf("android.permission.RECORD_AUDIO")),
+    PermGroup(R.string.group_camera, setOf("android.permission.CAMERA")),
+    PermGroup(R.string.group_sms, setOf(
         "android.permission.READ_SMS",
         "android.permission.RECEIVE_SMS",
         "android.permission.SEND_SMS")),
-    PermGroup("zoznamu hovorov", "the call log", setOf(
+    PermGroup(R.string.group_call_log, setOf(
         "android.permission.READ_CALL_LOG",
         "android.permission.WRITE_CALL_LOG")),
-    PermGroup("kalendáru", "the calendar", setOf(
+    PermGroup(R.string.group_calendar, setOf(
         "android.permission.READ_CALENDAR",
         "android.permission.WRITE_CALENDAR")),
-    PermGroup("údajom o telefóne", "phone identity", setOf(
+    PermGroup(R.string.group_phone, setOf(
         "android.permission.READ_PHONE_STATE",
         "android.permission.READ_PHONE_NUMBERS")),
-    PermGroup("fotkám a médiám", "photos and media", setOf(
+    PermGroup(R.string.group_media, setOf(
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.READ_MEDIA_IMAGES",
         "android.permission.READ_MEDIA_VIDEO")),
-    PermGroup("pohybovej aktivite", "physical activity", setOf(
+    PermGroup(R.string.group_activity, setOf(
         "android.permission.ACTIVITY_RECOGNITION",
         "android.permission.BODY_SENSORS"))
 )

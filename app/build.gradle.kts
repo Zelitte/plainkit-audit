@@ -14,13 +14,19 @@ android {
         applicationId = "app.plainkit.audit"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug {
+            // Testovacia verzia sa nainštaluje VEDĽA ostrej (iný názov balíka),
+            // takže neprepíše appku z obchodu ani jej dáta.
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
         release {
             optimization {
                 enable = false

@@ -1,0 +1,5 @@
+• New languages: German, French, Spanish, Italian
+• "What changed" now names permissions in plain language
+• Fix: after another app updated, the log could falsely report "trackers removed"
+• Fixed layout with enlarged system font (e.g. Samsung)
+• Plain-language names for more permissions (local network, photo location…)
