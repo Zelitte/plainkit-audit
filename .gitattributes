@@ -1,0 +1,14 @@
+# Git ukladá všetky textové súbory s LF. Zabraňuje falošným zmenám
+# medzi Windows (Android Studio) a GitHub web editorom.
+* text=auto eol=lf
+
+# Binárne súbory sa nikdy neprepisujú
+*.png binary
+*.jpg binary
+*.webp binary
+*.woff2 binary
+*.apk binary
+*.aab binary
+*.jar binary
+*.keystore binary
+*.jks binary
