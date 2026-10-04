@@ -25,16 +25,16 @@
     <string name="level_info">INFO</string>
     <string name="level_ok">OK</string>
     <string name="no_internet">Non richiede l\'accesso a Internet: non può inviare nulla da nessuna parte.</string>
-    <string name="marketing_with_granted">Ha accesso a: %1$s — e contiene anche SDK pubblicitari/di marketing (%2$s). È qui che i dati sensibili possono finire in una rete pubblicitaria.</string>
+    <string name="marketing_with_granted">Ha accesso a %1$s e contiene anche SDK pubblicitari/di marketing (%2$s). È qui che i dati sensibili possono finire in una rete pubblicitaria.</string>
     <string name="marketing_only">Contiene SDK pubblicitari/di marketing (%1$s). Il tuo comportamento nell\'app viene collegato a un profilo pubblicitario.</string>
-    <string name="analytics_with_granted">Contiene SDK di analisi (%1$s) e ha accesso a: %2$s. L\'analisi non invia questi dati da sola, ma l\'app li ha a disposizione — la combinazione merita attenzione.</string>
+    <string name="analytics_with_granted">Contiene SDK di analisi (%1$s) e ha accesso a %2$s. L\'analisi non invia questi dati da sola, ma l\'app li ha a disposizione — la combinazione merita attenzione.</string>
     <string name="analytics_only">Contiene SDK di analisi (%1$s). Riferiscono cosa fai nell\'app — non necessariamente i contenuti, ma il comportamento.</string>
     <string name="fraud">Contiene strumenti antifrode (%1$s). Raccolgono segnali sul dispositivo e sul comportamento, ma servono a proteggere l\'account, non alla pubblicità.</string>
     <string name="crash_only">Contiene solo la segnalazione dei crash (%1$s). Prassi comune degli sviluppatori, non tracciamento pubblicitario.</string>
     <string name="too_many">Contiene %1$d librerie pubblicitarie e di analisi di aziende diverse — più della media.</string>
     <string name="no_trackers">Nessun tracker noto.</string>
-    <string name="no_trackers_but_granted">Ha accesso a: %1$s, ma non contiene tracker noti.</string>
-    <string name="pending">Richiede anche l\'accesso a: %1$s, ma non l\'ha ancora ottenuto. Se lo consenti, la valutazione cambierà.</string>
+    <string name="no_trackers_but_granted">Ha accesso a %1$s, ma non contiene tracker noti.</string>
+    <string name="pending">Richiede anche l\'accesso a %1$s, ma non l\'ha ancora ottenuto. Se lo consenti, la valutazione cambierà.</string>
     <string name="change_trackers_added">tracker aggiunti: %1$s</string>
     <string name="change_trackers_removed">tracker rimossi: %1$s</string>
     <string name="change_perms_added">autorizzazioni aggiunte: %1$s</string>
@@ -54,7 +54,7 @@
     <string name="privacy_policy">Informativa sulla privacy</string>
     <string name="claims">senza pubblicità · senza account · non invia nulla</string>
     <string name="disclosure">Per controllare le altre app, questa app deve vedere l\'elenco delle applicazioni installate. Tutta l\'analisi avviene sul tuo telefono. Non viene inviato nulla.</string>
-    <string name="tap_to_continue">tocca per continuare</string>
+    <string name="tap_to_continue">Tocca per continuare</string>
     <string name="part_of">parte del progetto plainkit.app</string>
     <string name="perm_ACCESS_FINE_LOCATION">posizione precisa</string>
     <string name="perm_ACCESS_COARSE_LOCATION">posizione approssimativa</string>
@@ -68,7 +68,7 @@
     <string name="perm_RECEIVE_SMS">ricevere SMS</string>
     <string name="perm_SEND_SMS">inviare SMS</string>
     <string name="perm_READ_CALL_LOG">registro chiamate</string>
-    <string name="perm_WRITE_CALL_LOG">modificare registro chiamate</string>
+    <string name="perm_WRITE_CALL_LOG">modificare il registro chiamate</string>
     <string name="perm_CALL_PHONE">effettuare chiamate direttamente</string>
     <string name="perm_ANSWER_PHONE_CALLS">rispondere alle chiamate</string>
     <string name="perm_READ_PHONE_STATE">stato del telefono</string>
@@ -93,7 +93,7 @@
     <string name="perm_SYSTEM_ALERT_WINDOW">mostrare sopra altre app</string>
     <string name="perm_REQUEST_INSTALL_PACKAGES">installare app</string>
     <string name="perm_PACKAGE_USAGE_STATS">statistiche di utilizzo delle app</string>
-    <string name="perm_SCHEDULE_EXACT_ALARM">sveglie esatte</string>
+    <string name="perm_SCHEDULE_EXACT_ALARM">allarmi esatti</string>
     <string name="perm_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS">attività in background senza limiti</string>
     <string name="perm_QUERY_ALL_PACKAGES">elenco di tutte le app installate</string>
     <string name="perm_RECEIVE_BOOT_COMPLETED">avvio all\'accensione</string>

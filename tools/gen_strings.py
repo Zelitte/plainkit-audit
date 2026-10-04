@@ -55,7 +55,7 @@ s("level_ok", "OK", "OK", "OK", "OK", "OK", "OK")
 s("no_internet",
   "Nežiada prístup na internet — nemá kam nič odosielať.",
   "Does not request internet access — it has nowhere to send anything.",
-  "Fordert keinen Internetzugriff an — sie kann nichts irgendwohin senden.",
+  "Fordert keinen Internetzugriff an — sie kann nirgendwohin Daten senden.",
   "Ne demande pas l'accès à Internet — elle ne peut rien envoyer nulle part.",
   "No solicita acceso a Internet: no tiene adónde enviar nada.",
   "Non richiede l'accesso a Internet: non può inviare nulla da nessuna parte.")
@@ -63,10 +63,10 @@ s("no_internet",
 s("marketing_with_granted",
   "Má udelený prístup k %1$s a zároveň obsahuje reklamné/marketingové SDK (%2$s). Práve tu môžu citlivé údaje skončiť v reklamnej sieti.",
   "Has been granted access to %1$s and also contains advertising/marketing SDKs (%2$s). This is where sensitive data can end up in an ad network.",
-  "Hat Zugriff auf: %1$s — und enthält zugleich Werbe-/Marketing-SDKs (%2$s). Genau hier können sensible Daten in einem Werbenetzwerk landen.",
-  "A accès à : %1$s — et contient aussi des SDK publicitaires/marketing (%2$s). C'est ici que des données sensibles peuvent finir dans un réseau publicitaire.",
-  "Tiene acceso a: %1$s, y además contiene SDK de publicidad/marketing (%2$s). Aquí es donde los datos sensibles pueden acabar en una red publicitaria.",
-  "Ha accesso a: %1$s — e contiene anche SDK pubblicitari/di marketing (%2$s). È qui che i dati sensibili possono finire in una rete pubblicitaria.")
+  "Hat Zugriff auf %1$s und enthält zugleich Werbe-/Marketing-SDKs (%2$s). Genau hier können sensible Daten in einem Werbenetzwerk landen.",
+  "A accès à %1$s et contient aussi des SDK publicitaires/marketing (%2$s). C'est ici que des données sensibles peuvent finir dans un réseau publicitaire.",
+  "Tiene acceso a %1$s y además contiene SDK de publicidad/marketing (%2$s). Aquí es donde los datos sensibles pueden acabar en una red publicitaria.",
+  "Ha accesso a %1$s e contiene anche SDK pubblicitari/di marketing (%2$s). È qui che i dati sensibili possono finire in una rete pubblicitaria.")
 s("marketing_only",
   "Obsahuje reklamné/marketingové SDK (%1$s). Tvoje správanie v appke sa spája s reklamným profilom.",
   "Contains advertising/marketing SDKs (%1$s). Your behaviour in the app is tied to an advertising profile.",
@@ -78,10 +78,10 @@ s("marketing_only",
 s("analytics_with_granted",
   "Obsahuje analytické SDK (%1$s) a má udelený prístup k %2$s. Analytika tieto údaje sama neodosiela, ale appka ich má k dispozícii — kombinácia stojí za pozornosť.",
   "Contains analytics SDKs (%1$s) and has been granted access to %2$s. Analytics does not send this data by itself, but the app has it available — the combination is worth noticing.",
-  "Enthält Analyse-SDKs (%1$s) und hat Zugriff auf: %2$s. Die Analyse sendet diese Daten nicht von selbst, aber die App hat sie zur Verfügung — die Kombination verdient Aufmerksamkeit.",
-  "Contient des SDK d'analyse (%1$s) et a accès à : %2$s. L'analyse n'envoie pas ces données d'elle-même, mais l'app les a à disposition — la combinaison mérite attention.",
-  "Contiene SDK de analítica (%1$s) y tiene acceso a: %2$s. La analítica no envía estos datos por sí sola, pero la app los tiene a su alcance; la combinación merece atención.",
-  "Contiene SDK di analisi (%1$s) e ha accesso a: %2$s. L'analisi non invia questi dati da sola, ma l'app li ha a disposizione — la combinazione merita attenzione.")
+  "Enthält Analyse-SDKs (%1$s) und hat Zugriff auf %2$s. Die Analyse sendet diese Daten nicht von selbst, aber die App hat sie zur Verfügung — die Kombination verdient Aufmerksamkeit.",
+  "Contient des SDK d'analyse (%1$s) et a accès à %2$s. L'analyse n'envoie pas ces données d'elle-même, mais l'app les a à disposition — la combinaison mérite attention.",
+  "Contiene SDK de analítica (%1$s) y tiene acceso a %2$s. La analítica no envía estos datos por sí sola, pero la app los tiene a su alcance; la combinación merece atención.",
+  "Contiene SDK di analisi (%1$s) e ha accesso a %2$s. L'analisi non invia questi dati da sola, ma l'app li ha a disposizione — la combinazione merita attenzione.")
 s("analytics_only",
   "Obsahuje analytické SDK (%1$s). Odosiela, čo v appke robíš — nie nutne obsah, ale správanie.",
   "Contains analytics SDKs (%1$s). It reports what you do in the app — not necessarily the content, but the behaviour.",
@@ -114,17 +114,17 @@ s("no_trackers", "Žiadne známe trackery.", "No known trackers.", "Keine bekann
 s("no_trackers_but_granted",
   "Má udelený prístup k %1$s, ale neobsahuje žiadny známy tracker.",
   "Has been granted access to %1$s, but contains no known tracker.",
-  "Hat Zugriff auf: %1$s, enthält aber keinen bekannten Tracker.",
-  "A accès à : %1$s, mais ne contient aucun traceur connu.",
-  "Tiene acceso a: %1$s, pero no contiene ningún rastreador conocido.",
-  "Ha accesso a: %1$s, ma non contiene tracker noti.")
+  "Hat Zugriff auf %1$s, enthält aber keinen bekannten Tracker.",
+  "A accès à %1$s, mais ne contient aucun traceur connu.",
+  "Tiene acceso a %1$s, pero no contiene ningún rastreador conocido.",
+  "Ha accesso a %1$s, ma non contiene tracker noti.")
 s("pending",
   "Žiada aj prístup k %1$s, ten však zatiaľ udelený nemá. Ak mu ho povolíš, posúdenie sa zmení.",
   "It also requests access to %1$s, but has not been granted it. If you allow it, this assessment will change.",
-  "Fordert auch Zugriff auf: %1$s — hat ihn aber noch nicht erhalten. Wenn du ihn erlaubst, ändert sich die Bewertung.",
-  "Demande aussi l'accès à : %1$s, mais ne l'a pas encore obtenu. Si tu l'autorises, l'évaluation changera.",
-  "También solicita acceso a: %1$s, pero aún no lo tiene. Si lo permites, la valoración cambiará.",
-  "Richiede anche l'accesso a: %1$s, ma non l'ha ancora ottenuto. Se lo consenti, la valutazione cambierà.")
+  "Fordert auch Zugriff auf %1$s, hat ihn aber noch nicht erhalten. Wenn du ihn erlaubst, ändert sich die Bewertung.",
+  "Demande aussi l'accès à %1$s, mais ne l'a pas encore obtenu. Si tu l'autorises, l'évaluation changera.",
+  "También solicita acceso a %1$s, pero aún no lo tiene. Si lo permites, la valoración cambiará.",
+  "Richiede anche l'accesso a %1$s, ma non l'ha ancora ottenuto. Se lo consenti, la valutazione cambierà.")
 
 # ── log zmien ──
 s("change_trackers_added", "pribudli trackery: %1$s", "trackers added: %1$s", "neue Tracker: %1$s", "traceurs ajoutés : %1$s", "rastreadores añadidos: %1$s", "tracker aggiunti: %1$s")
@@ -174,7 +174,7 @@ s("disclosure",
   "Pour vérifier tes autres apps, cette app doit voir la liste des applications installées. Toute l'analyse se fait sur ton téléphone. Rien n'est envoyé.",
   "Para revisar tus otras apps, esta app necesita ver la lista de aplicaciones instaladas. Todo el análisis se hace en tu teléfono. No se envía nada.",
   "Per controllare le altre app, questa app deve vedere l'elenco delle applicazioni installate. Tutta l'analisi avviene sul tuo telefono. Non viene inviato nulla.")
-s("tap_to_continue", "ťukni pre pokračovanie", "tap to continue", "tippen zum Fortfahren", "touche pour continuer", "toca para continuar", "tocca per continuare")
+s("tap_to_continue", "ťukni pre pokračovanie", "tap to continue", "Zum Fortfahren tippen", "Appuie pour continuer", "toca para continuar", "Tocca per continuare")
 s("part_of", "súčasť projektu plainkit.app", "part of the plainkit.app project", "Teil des Projekts plainkit.app", "fait partie du projet plainkit.app", "parte del proyecto plainkit.app", "parte del progetto plainkit.app")
 
 # ── názvy povolení (kľúč = perm_ + posledná časť názvu) ──
@@ -191,7 +191,7 @@ P = [
  ("RECEIVE_SMS", "príjem SMS", "receive SMS", "SMS empfangen", "recevoir des SMS", "recibir SMS", "ricevere SMS"),
  ("SEND_SMS", "odosielanie SMS", "send SMS", "SMS senden", "envoyer des SMS", "enviar SMS", "inviare SMS"),
  ("READ_CALL_LOG", "zoznam hovorov", "call log", "Anrufliste", "journal d'appels", "registro de llamadas", "registro chiamate"),
- ("WRITE_CALL_LOG", "úprava zoznamu hovorov", "modify call log", "Anrufliste ändern", "modifier le journal d'appels", "modificar registro de llamadas", "modificare registro chiamate"),
+ ("WRITE_CALL_LOG", "úprava zoznamu hovorov", "modify call log", "Anrufliste ändern", "modifier le journal d'appels", "modificar registro de llamadas", "modificare il registro chiamate"),
  ("CALL_PHONE", "volanie bez opýtania", "place calls directly", "direkt anrufen", "passer des appels directement", "hacer llamadas directamente", "effettuare chiamate direttamente"),
  ("ANSWER_PHONE_CALLS", "dvíhanie hovorov", "answer phone calls", "Anrufe annehmen", "répondre aux appels", "responder llamadas", "rispondere alle chiamate"),
  ("READ_PHONE_STATE", "stav telefónu", "phone status", "Telefonstatus", "état du téléphone", "estado del teléfono", "stato del telefono"),
@@ -216,7 +216,7 @@ P = [
  ("SYSTEM_ALERT_WINDOW", "kreslenie cez iné aplikácie", "draw over other apps", "über anderen Apps einblenden", "afficher par-dessus d'autres apps", "mostrar sobre otras apps", "mostrare sopra altre app"),
  ("REQUEST_INSTALL_PACKAGES", "inštalovanie aplikácií", "install apps", "Apps installieren", "installer des apps", "instalar apps", "installare app"),
  ("PACKAGE_USAGE_STATS", "štatistiky používania aplikácií", "app usage statistics", "App-Nutzungsstatistiken", "statistiques d'utilisation des apps", "estadísticas de uso de apps", "statistiche di utilizzo delle app"),
- ("SCHEDULE_EXACT_ALARM", "presne načasované budíky", "exact alarms", "exakte Wecker", "alarmes exactes", "alarmas exactas", "sveglie esatte"),
+ ("SCHEDULE_EXACT_ALARM", "presne načasované budíky", "exact alarms", "exakte Alarme", "alarmes exactes", "alarmas exactas", "allarmi esatti"),
  ("REQUEST_IGNORE_BATTERY_OPTIMIZATIONS", "beh na pozadí bez obmedzení", "unrestricted background activity", "uneingeschränkte Hintergrundaktivität", "activité en arrière-plan sans restriction", "actividad en segundo plano sin restricciones", "attività in background senza limiti"),
  ("QUERY_ALL_PACKAGES", "zoznam všetkých aplikácií", "list of all installed apps", "Liste aller installierten Apps", "liste de toutes les apps installées", "lista de todas las apps instaladas", "elenco di tutte le app installate"),
  ("RECEIVE_BOOT_COMPLETED", "spustenie po zapnutí telefónu", "start on device boot", "Start beim Einschalten", "démarrage à l'allumage", "inicio al encender el teléfono", "avvio all'accensione"),

@@ -13,7 +13,7 @@ What it does:
 * Scans for around 115 known tracking SDKs, grouped by purpose
 * Explains each finding in one sentence and sorts apps by severity
 * Remembers results and reports what changed after an app update
-* Slovak and English
+* Six languages: Slovak, English, German, French, Spanish and Italian
 
 What it does not do:
 

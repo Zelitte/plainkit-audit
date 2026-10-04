@@ -13,7 +13,7 @@ Celá analýza prebieha vo vašom telefóne. Nič sa neodosiela. Bez reklám, be
 * Hľadá približne 115 známych sledovacích knižníc a rozlišuje ich účel
 * Nález vysvetlí jednou vetou a zoradí aplikácie podľa závažnosti
 * Pamätá si výsledky a po aktualizácii aplikácie ukáže, čo sa zmenilo
-* Slovensky aj anglicky
+* Šesť jazykov: slovenčina, angličtina, nemčina, francúzština, španielčina, taliančina
 
 Čo aplikácia nerobí:
 
