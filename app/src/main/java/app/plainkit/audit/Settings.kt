@@ -10,6 +10,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -146,9 +149,28 @@ fun SettingsScreen(
             color = LINK.copy(alpha = alpha),
             textDecoration = TextDecoration.Underline,
             modifier = Modifier
-                .padding(top = 12.dp, bottom = 28.dp)
+                .padding(top = 12.dp)
                 .clickable { open("https://plainkit.app") }
         )
+
+        // Číslo verzie sa číta z nainštalovaného balíka, nie z konštanty v kóde —
+        // tým vždy sedí s tým, čo je naozaj v telefóne (aj s príponou -debug).
+        // Zámerne bez prekladu: „v1.2" je zrozumiteľné vo všetkých jazykoch.
+        val version = remember {
+            runCatching {
+                context.packageManager.getPackageInfo(context.packageName, 0).versionName
+            }.getOrNull()
+        }
+        if (version != null) {
+            Text(
+                text = "v$version",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 20.dp, bottom = 28.dp)
+            )
+        } else {
+            Spacer(Modifier.height(28.dp))
+        }
     }
 }
 

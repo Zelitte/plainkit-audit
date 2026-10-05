@@ -791,14 +791,6 @@ fun AppListScreen(
                                 modifier = Modifier.padding(top = 14.dp, bottom = 4.dp)
                             )
 
-                            if (hasNotifyBadge) {
-                                Text(
-                                    text = "• " + s.notifyBadge,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-
                             if (namedSorted.isEmpty() && !hasNotifyBadge) {
                                 Text(s.noNamedPerms, style = MaterialTheme.typography.bodySmall)
                             } else if (namedSorted.isNotEmpty()) {
@@ -813,6 +805,16 @@ fun AppListScreen(
                                         else MaterialTheme.colorScheme.onSurface
                                     )
                                 }
+                            }
+
+                            // Na koniec zoznamu: je to najmenej podstatná položka
+                            // zo sekcie a nemá stav udelené/neudelené.
+                            if (hasNotifyBadge) {
+                                Text(
+                                    text = "• " + s.notifyBadge,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             }
 
                             if (tech.isNotEmpty()) {
