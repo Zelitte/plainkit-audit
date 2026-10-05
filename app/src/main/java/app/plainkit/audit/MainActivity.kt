@@ -270,7 +270,6 @@ class MainActivity : ComponentActivity() {
             AuditTheme {
                 val ctx = LocalContext.current
                 var lang by remember { mutableStateOf(Prefs.lang(ctx)) }
-                var splashDone by rememberSaveable { mutableStateOf(false) }
                 val current = lang
                 val s = remember(current) { current?.let { S(ctx, it) } }
 
@@ -278,10 +277,7 @@ class MainActivity : ComponentActivity() {
                     current == null || s == null -> OnboardingScreen { chosen ->
                         Prefs.setLang(ctx, chosen)
                         lang = chosen
-                        splashDone = true
                     }
-
-                    !splashDone -> SplashScreen(s) { splashDone = true }
 
                     else -> Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                         AppListScreen(
@@ -295,7 +291,6 @@ class MainActivity : ComponentActivity() {
                                 AppCache.apps = null
                                 AppCache.scanned.clear()
                                 lang = null
-                                splashDone = false
                             },
                             modifier = Modifier.padding(innerPadding)
                         )
@@ -605,9 +600,19 @@ fun AppListScreen(
         }
         Spacer(Modifier.height(10.dp))
 
+        // Zmeny, z ktorých po odfiltrovaní vlastných povolení aplikácie nič
+        // nezostalo, sa nezobrazujú — inak by na obrazovke visel prázdny rámček.
+        val shownChanges = remember(changes, s) {
+            changes.mapNotNull { ch ->
+                renderChange(ch.text, ch.packageName, s)
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { ch to it }
+            }.take(8)
+        }
+
         // ── zoznam ──
         LazyColumn {
-            if (changes.isNotEmpty() && query.isBlank()) {
+            if (shownChanges.isNotEmpty() && query.isBlank()) {
                 item {
                     Column(
                         modifier = Modifier
@@ -627,9 +632,9 @@ fun AppListScreen(
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.primary
                         )
-                        changes.take(8).forEach { ch ->
+                        shownChanges.forEach { (ch, text) ->
                             Text(
-                                text = "${ch.label} — ${renderChange(ch.text, s)}",
+                                text = "${ch.label} — $text",
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(top = 6.dp)
                             )
@@ -659,7 +664,15 @@ fun AppListScreen(
                 var showTech by remember(app.packageName) { mutableStateOf(false) }
 
                 val named = app.permissions.filter { PERM_NAMES.containsKey(it) }
-                val tech = app.permissions.filterNot { PERM_NAMES.containsKey(it) }
+                // Desiatky povolení na push a na odznak na ikonke zhrnie jeden riadok.
+                val hasNotifyBadge = app.permissions.any { isNotifyOrBadge(it) }
+                // Do „technických" ide zvyšok: ani pomenované, ani zhrnuté,
+                // ani vlastné povolenia toho istého výrobcu.
+                val tech = app.permissions.filterNot {
+                    PERM_NAMES.containsKey(it) ||
+                        isNotifyOrBadge(it) ||
+                        isOwnPermission(it, app.packageName)
+                }
                 val namedSorted = named.sortedWith(
                     compareByDescending<String> { isSensitive(it) && it in app.granted }
                         .thenByDescending { isSensitive(it) }
@@ -778,9 +791,17 @@ fun AppListScreen(
                                 modifier = Modifier.padding(top = 14.dp, bottom = 4.dp)
                             )
 
-                            if (namedSorted.isEmpty()) {
+                            if (hasNotifyBadge) {
+                                Text(
+                                    text = "• " + s.notifyBadge,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+
+                            if (namedSorted.isEmpty() && !hasNotifyBadge) {
                                 Text(s.noNamedPerms, style = MaterialTheme.typography.bodySmall)
-                            } else {
+                            } else if (namedSorted.isNotEmpty()) {
                                 namedSorted.forEach { p ->
                                     val label = permLabel(p, s) ?: p
                                     val isGranted = p in app.granted
@@ -807,7 +828,7 @@ fun AppListScreen(
                                 if (showTech) {
                                     tech.forEach { p ->
                                         Text(
-                                            text = "· " + p.removePrefix("android.permission."),
+                                            text = "· " + techLabel(p),
                                             fontFamily = FontFamily.Monospace,
                                             fontSize = 10.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant

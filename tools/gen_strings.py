@@ -223,9 +223,41 @@ P = [
  ("DETECT_SCREEN_CAPTURE", "zisťovanie snímok obrazovky", "detect screenshots", "Screenshots erkennen", "détecter les captures d'écran", "detectar capturas de pantalla", "rilevare gli screenshot"),
  ("DOWNLOAD_WITHOUT_NOTIFICATION", "sťahovanie bez upozornenia", "downloads without notification", "Downloads ohne Benachrichtigung", "téléchargements sans notification", "descargas sin notificación", "download senza notifica"),
  ("AD_ID", "reklamný identifikátor", "advertising ID", "Werbe-ID", "identifiant publicitaire", "ID de publicidad", "ID pubblicità"),
+
+ # ── služby na pozadí ──
+ # Samotné povolenie neudeľuje prístup k mikrofónu/kamere/polohe; znamená, že
+ # appka smie takú službu držať spustenú, aj keď ju nemáš otvorenú. Preto je
+ # text opisný („služba na pozadí: …"), nie „mikrofón na pozadí".
+ ("FOREGROUND_SERVICE_MICROPHONE", "služba na pozadí: mikrofón", "background service: microphone", "Hintergrunddienst: Mikrofon", "service en arrière-plan : micro", "servicio en segundo plano: micrófono", "servizio in background: microfono"),
+ ("FOREGROUND_SERVICE_CAMERA", "služba na pozadí: kamera", "background service: camera", "Hintergrunddienst: Kamera", "service en arrière-plan : appareil photo", "servicio en segundo plano: cámara", "servizio in background: fotocamera"),
+ ("FOREGROUND_SERVICE_LOCATION", "služba na pozadí: poloha", "background service: location", "Hintergrunddienst: Standort", "service en arrière-plan : position", "servicio en segundo plano: ubicación", "servizio in background: posizione"),
+ ("FOREGROUND_SERVICE_MEDIA_PROJECTION", "služba na pozadí: snímanie obrazovky", "background service: screen capture", "Hintergrunddienst: Bildschirmaufnahme", "service en arrière-plan : capture d'écran", "servicio en segundo plano: captura de pantalla", "servizio in background: acquisizione schermo"),
+
+ # ── obrazovka a hovory ──
+ ("DETECT_SCREEN_RECORDING", "zisťovanie nahrávania obrazovky", "detect screen recording", "Bildschirmaufnahme erkennen", "détecter l'enregistrement de l'écran", "detectar grabación de pantalla", "rilevare la registrazione dello schermo"),
+ ("MANAGE_OWN_CALLS", "hovory cez vlastnú aplikáciu", "calls through its own app", "Anrufe über die eigene App", "appels via sa propre app", "llamadas a través de su propia app", "chiamate tramite la propria app"),
+
+ # ── Google Play ──
+ ("BIND_GET_INSTALL_REFERRER_SERVICE", "zisťovanie, odkiaľ si appku nainštaloval", "where you installed the app from", "woher du die App installiert hast", "d'où tu as installé l'app", "desde dónde instalaste la app", "da dove hai installato l'app"),
+ ("BILLING", "nákupy v aplikácii", "in-app purchases", "In-App-Käufe", "achats dans l'app", "compras dentro de la app", "acquisti in-app"),
+
+ # ── Privacy Sandbox (reklamné rozhrania Androidu) ──
+ ("ACCESS_ADSERVICES_TOPICS", "tvoje reklamné záujmy odvodené Androidom", "your ad interests inferred by Android", "deine von Android abgeleiteten Werbeinteressen", "tes centres d'intérêt publicitaires déduits par Android", "tus intereses publicitarios deducidos por Android", "i tuoi interessi pubblicitari dedotti da Android"),
+ ("ACCESS_ADSERVICES_AD_ID", "reklamný identifikátor cez Privacy Sandbox", "advertising ID via Privacy Sandbox", "Werbe-ID über Privacy Sandbox", "identifiant publicitaire via Privacy Sandbox", "ID de publicidad mediante Privacy Sandbox", "ID pubblicità tramite Privacy Sandbox"),
+ ("ACCESS_ADSERVICES_ATTRIBUTION", "meranie účinnosti reklamy", "ad attribution measurement", "Messung der Werbewirkung", "mesure d'attribution publicitaire", "medición de atribución publicitaria", "misurazione dell'attribuzione pubblicitaria"),
 ]
 for row in P:
     s("perm_" + row[0], *row[1:])
+
+# Zlúčený riadok namiesto desiatok povolení výrobcov na push správy a na odznak
+# s počtom na ikonke. Všetky znamenajú to isté, preto sa ukazujú ako jedna vec.
+s("perm_notify_badge",
+  "upozornenia a odznak s počtom na ikonke",
+  "notifications and the unread count on the icon",
+  "Benachrichtigungen und Zähler am App-Symbol",
+  "notifications et compteur sur l'icône",
+  "notificaciones y contador en el icono",
+  "notifiche e contatore sull'icona")
 
 # ── skupiny citlivých povolení ──
 # SK je v 3. páde (po „prístup k …"), EN s členom; ostatné jazyky holé podstatné mená,

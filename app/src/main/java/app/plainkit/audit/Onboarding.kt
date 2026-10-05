@@ -302,60 +302,6 @@ fun OnboardingScreen(onChosen: (Lang) -> Unit) {
 
 /** Každé ďalšie spustenie: to isté bez ohňostroja, preklepnuteľné. */
 @Composable
-fun SplashScreen(s: S, onDone: () -> Unit) {
-    LaunchedEffect(Unit) {
-        delay(2500)
-        onDone()
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BG)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) { onDone() }
-    ) {
-        BoardBackground()
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .systemBarsPadding()
-                .padding(28.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Logo()
-            Text(
-                text = s.claims,
-                color = ACCENT,
-                fontSize = 15.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Text(
-                text = s.disclosure,
-                color = MUTED,
-                fontSize = 13.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-            )
-            Text(
-                text = s.tapToContinue,
-                color = Color(0xFF4E6B72),
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(top = 28.dp)
-            )
-        }
-
-        Footer(s.partOf, Modifier.align(Alignment.BottomEnd))
-    }
-}
-
-@Composable
 private fun LangButton(label: String, modifier: Modifier, onClick: () -> Unit) {
     Button(
         onClick = onClick,

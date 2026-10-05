@@ -97,11 +97,83 @@ val PERM_NAMES: Map<String, PermName> = mapOf(
     "${A}RECEIVE_BOOT_COMPLETED" to PermName(R.string.perm_RECEIVE_BOOT_COMPLETED, PermKind.INSTALL),
     "${A}DETECT_SCREEN_CAPTURE" to PermName(R.string.perm_DETECT_SCREEN_CAPTURE, PermKind.INSTALL),
     "${A}DOWNLOAD_WITHOUT_NOTIFICATION" to PermName(R.string.perm_DOWNLOAD_WITHOUT_NOTIFICATION, PermKind.INSTALL),
-    "com.google.android.gms.permission.AD_ID" to PermName(R.string.perm_AD_ID, PermKind.INSTALL)
+    "com.google.android.gms.permission.AD_ID" to PermName(R.string.perm_AD_ID, PermKind.INSTALL),
+
+    // Služby na pozadí. Samotné povolenie neudeľuje prístup k mikrofónu, kamere
+    // ani polohe — tie si appka musí vypýtať zvlášť. Znamená, že takú službu
+    // smie držať spustenú, aj keď ju používateľ nemá otvorenú.
+    "${A}FOREGROUND_SERVICE_MICROPHONE" to PermName(R.string.perm_FOREGROUND_SERVICE_MICROPHONE, PermKind.INSTALL),
+    "${A}FOREGROUND_SERVICE_CAMERA" to PermName(R.string.perm_FOREGROUND_SERVICE_CAMERA, PermKind.INSTALL),
+    "${A}FOREGROUND_SERVICE_LOCATION" to PermName(R.string.perm_FOREGROUND_SERVICE_LOCATION, PermKind.INSTALL),
+    "${A}FOREGROUND_SERVICE_MEDIA_PROJECTION" to PermName(R.string.perm_FOREGROUND_SERVICE_MEDIA_PROJECTION, PermKind.INSTALL),
+
+    "${A}DETECT_SCREEN_RECORDING" to PermName(R.string.perm_DETECT_SCREEN_RECORDING, PermKind.INSTALL),
+    "${A}MANAGE_OWN_CALLS" to PermName(R.string.perm_MANAGE_OWN_CALLS, PermKind.INSTALL),
+
+    // Google Play. Install Referrer hovorí appke, z akej reklamy alebo odkazu
+    // si ju nainštaloval — to je atribúcia, nie technická drobnosť.
+    "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" to
+        PermName(R.string.perm_BIND_GET_INSTALL_REFERRER_SERVICE, PermKind.INSTALL),
+    "com.android.vending.BILLING" to PermName(R.string.perm_BILLING, PermKind.INSTALL),
+
+    // Privacy Sandbox — reklamné rozhrania priamo v Androide.
+    "${A}ACCESS_ADSERVICES_TOPICS" to PermName(R.string.perm_ACCESS_ADSERVICES_TOPICS, PermKind.INSTALL),
+    "${A}ACCESS_ADSERVICES_AD_ID" to PermName(R.string.perm_ACCESS_ADSERVICES_AD_ID, PermKind.INSTALL),
+    "${A}ACCESS_ADSERVICES_ATTRIBUTION" to PermName(R.string.perm_ACCESS_ADSERVICES_ATTRIBUTION, PermKind.INSTALL)
 )
 
 fun permLabel(permission: String, s: S): String? =
     PERM_NAMES[permission]?.let { s.str(it.res) }
+
+/**
+ * Povolenie, ktoré si aplikácia vyrobila sama — jeho názov začína jej vlastným
+ * balíkom (napr. com.whatsapp si pýta com.whatsapp.permission.NIECO). Takým
+ * povolením si appka chráni vlastné súčiastky pred inými aplikáciami;
+ * používateľa sa to nijako netýka, preto ho nezobrazujeme.
+ *
+ * Pokrýva to aj DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION, ktoré do každej
+ * modernej aplikácie pridáva knižnica AndroidX a tiež nič neznamená.
+ *
+ * Filtruje sa len ZOBRAZENIE. Do databázy sa ukladá všetko, čo appka deklaruje,
+ * aby sa porovnanie so starším skenom nerozbilo.
+ */
+fun isOwnPermission(permission: String, packageName: String): Boolean {
+    if (permission.startsWith("$packageName.")) return true
+    // Appky jedného výrobcu si navzájom chránia komponenty: Messenger
+    // (com.facebook.orca) si pýta com.facebook.katana.provider.ACCESS. Preto sa
+    // porovnáva aj dodávateľská predpona — prvé dve časti balíka.
+    // Pozor: porovnáva sa s balíkom TEJ ISTEJ appky. Keď si com.facebook.*
+    // vypýta cudzia hra, zostane to viditeľné, lebo to zaujímavé je.
+    val parts = packageName.split('.')
+    if (parts.size < 3) return false
+    return permission.startsWith(parts[0] + "." + parts[1] + ".")
+}
+
+/**
+ * Povolenia na príjem push správ (Google, Amazon, Xiaomi, Nokia, Oppo…) a na
+ * odznak s počtom neprečítaných na ikonke (Samsung, HTC, Huawei, Sony,
+ * Motorola…). Je ich desiatky a všetky znamenajú to isté, preto sa v zozname
+ * ukážu ako jeden riadok.
+ */
+fun isNotifyOrBadge(permission: String): Boolean {
+    val u = permission.uppercase()
+    if ("BADGE" in u) return true
+    if ("SHORTCUT" in u && ("LAUNCHER" in u || "HOME" in u)) return true
+    if ("LAUNCHER" in u && u.endsWith(".READ_SETTINGS")) return true
+    if ("MIPUSH" in u || u.endsWith("C2D_MESSAGE")) return true
+    if (u.endsWith(".RECEIVE") &&
+        ("C2DM" in u || "PUSH" in u || "MESSAGING" in u || "MCS" in u)
+    ) return true
+    return false
+}
+
+/**
+ * Názov technického povolenia na zobrazenie. Zhodí len androidovú predponu,
+ * zvyšok nechá celý — `com.google.android.c2dm.permission.RECEIVE` skrátené
+ * na „RECEIVE" už nikomu nič nepovie.
+ */
+fun techLabel(permission: String): String =
+    permission.removePrefix("android.permission.")
 
 /**
  * Všetky texty appky v zvolenom jazyku.
@@ -207,5 +279,6 @@ class S(context: Context, val lang: Lang) {
     val claims = str(R.string.claims)
     val disclosure = str(R.string.disclosure)
     val tapToContinue = str(R.string.tap_to_continue)
+    val notifyBadge = str(R.string.perm_notify_badge)
     val partOf = str(R.string.part_of)
 }
