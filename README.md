@@ -48,7 +48,7 @@ over the existing app.
   location", not `ACCESS_FINE_LOCATION`)
 * Distinguishes **granted / not granted / automatic at install** — most apps get
   a pile of permissions without ever asking you
-* Scans APKs for ~115 known tracking SDKs, grouped by purpose (ads, attribution,
+* Scans APKs for 148 known tracking SDKs, grouped by purpose (ads, attribution,
   analytics, fraud detection, crash reporting)
 * Explains findings in one sentence, sorted by severity
 * Remembers results and reports what changed after an app update
@@ -73,7 +73,7 @@ signature list.
 
 ## Signatures
 
-The ~115 tracker signatures were written from publicly known facts about each
+The 148 tracker signatures were written from publicly known facts about each
 SDK — package prefixes that anyone can read in the SDK's own documentation.
 They are not copied from another project's database, which means there is no
 licensing ambiguity attached to them: they are part of this repository under

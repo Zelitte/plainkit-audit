@@ -1,0 +1,5 @@
+* Žiadna úvodná obrazovka pri spustení — appka nastúpi rovno do zoznamu
+* 148 sledovacích knižníc namiesto 112
+* Prehľadnejšie povolenia: služby na pozadí (mikrofón, kamera, poloha, snímanie obrazovky) a reklamné rozhrania Androidu sú teraz pomenované, nie schované medzi technickými
+* Vlastné povolenia aplikácií a desiatky povolení na upozornenia už zoznam nezahlcujú
+* Číslo verzie v Nastaveniach

@@ -1,0 +1,5 @@
+* No splash screen on launch — the app goes straight to the list
+* 148 tracking libraries instead of 112
+* Clearer permissions: background services (microphone, camera, location, screen capture) and Android's advertising APIs are now named instead of buried among technical ones
+* Apps' own permissions and dozens of notification permissions no longer clutter the list
+* Version number in Settings
