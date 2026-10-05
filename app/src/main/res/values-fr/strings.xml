@@ -104,7 +104,7 @@
     <string name="perm_FOREGROUND_SERVICE_CAMERA">service en arrière-plan : appareil photo</string>
     <string name="perm_FOREGROUND_SERVICE_LOCATION">service en arrière-plan : position</string>
     <string name="perm_FOREGROUND_SERVICE_MEDIA_PROJECTION">service en arrière-plan : capture d\'écran</string>
-    <string name="perm_DETECT_SCREEN_RECORDING">détecter l\'enregistrement de l\'écran</string>
+    <string name="perm_DETECT_SCREEN_RECORDING">détection de l\'enregistrement de l\'écran</string>
     <string name="perm_MANAGE_OWN_CALLS">appels via sa propre app</string>
     <string name="perm_BIND_GET_INSTALL_REFERRER_SERVICE">d\'où tu as installé l\'app</string>
     <string name="perm_BILLING">achats dans l\'app</string>

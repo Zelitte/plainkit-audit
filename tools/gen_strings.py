@@ -234,7 +234,7 @@ P = [
  ("FOREGROUND_SERVICE_MEDIA_PROJECTION", "služba na pozadí: snímanie obrazovky", "background service: screen capture", "Hintergrunddienst: Bildschirmaufnahme", "service en arrière-plan : capture d'écran", "servicio en segundo plano: captura de pantalla", "servizio in background: acquisizione schermo"),
 
  # ── obrazovka a hovory ──
- ("DETECT_SCREEN_RECORDING", "zisťovanie nahrávania obrazovky", "detect screen recording", "Bildschirmaufnahme erkennen", "détecter l'enregistrement de l'écran", "detectar grabación de pantalla", "rilevare la registrazione dello schermo"),
+ ("DETECT_SCREEN_RECORDING", "zisťovanie nahrávania obrazovky", "detect screen recording", "Bildschirmaufnahme erkennen", "détection de l'enregistrement de l'écran", "detectar grabación de pantalla", "rilevamento della registrazione dello schermo"),
  ("MANAGE_OWN_CALLS", "hovory cez vlastnú aplikáciu", "calls through its own app", "Anrufe über die eigene App", "appels via sa propre app", "llamadas a través de su propia app", "chiamate tramite la propria app"),
 
  # ── Google Play ──
