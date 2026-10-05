@@ -51,6 +51,7 @@ object Prefs {
      * vyprázdni, takže poistka platí pre všetky aplikácie, nie len pre tie
      * zoskenované ako prvé.
      */
+    @Synchronized
     fun needsBaselineRefresh(ctx: Context, pkg: String): Boolean {
         val p = ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
         if (p.getInt(KEY_TRACKER_DB, 0) != TRACKER_DB_VERSION) {
@@ -63,7 +64,15 @@ object Prefs {
         return pkg !in (p.getStringSet(KEY_RESCANNED, emptySet()) ?: emptySet())
     }
 
-    /** Zapíše, že táto aplikácia už bola preskenovaná aktuálnym zoznamom. */
+    /**
+     * Zapíše, že táto aplikácia už bola preskenovaná aktuálnym zoznamom.
+     *
+     * @Synchronized tu nie je ozdoba: „Skenovať všetky" beží v troch vláknach
+     * naraz a bez zámku by si navzájom prepísali zoznam preskenovaných
+     * (načítaj–uprav–zapíš). Časť aplikácií by v ňom chýbala a poistka by sa
+     * im uplatnila druhýkrát — teda by sa stratil skutočný prírastok trackera.
+     */
+    @Synchronized
     fun markRescanned(ctx: Context, pkg: String) {
         val p = ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
         val done = p.getStringSet(KEY_RESCANNED, emptySet()) ?: emptySet()
