@@ -125,8 +125,78 @@ val TRACKERS = listOf(
     Tracker("Instabug", "Lcom/instabug/", TrackerKind.CRASH),
     Tracker("Embrace", "Lio/embrace/android/", TrackerKind.CRASH),
     Tracker("Raygun", "Lcom/raygun/raygun4android/", TrackerKind.CRASH),
-    Tracker("Bugfender", "Lcom/bugfender/sdk/", TrackerKind.CRASH)
+    Tracker("Bugfender", "Lcom/bugfender/sdk/", TrackerKind.CRASH),
+
+    // ══ pribudlo vo v1.2 ══════════════════════════════════════════════
+    // Riziko je asymetrické: zlý alebo zastaraný prefix sa jednoducho netrafí
+    // (tichá strata). Nebezpečný by bol len príliš široký prefix, ktorý by
+    // hlásil nezmysly — taký tu nie je, všetky sú vlastné namespace knižníc.
+
+    // ── Reklamné siete ────────────────────────────────────────────────
+    Tracker("Moloco", "Lcom/moloco/sdk/", TrackerKind.ADS),
+    Tracker("Tappx", "Lcom/tappx/", TrackerKind.ADS),
+    Tracker("Kakao AdFit", "Lcom/kakao/adfit/", TrackerKind.ADS),
+    Tracker("Snap Ad Kit", "Lcom/snap/adkit/", TrackerKind.ADS),
+    Tracker("Tencent GDT", "Lcom/qq/e/", TrackerKind.ADS),
+    Tracker("HyprMX", "Lcom/hyprmx/", TrackerKind.ADS),
+    Tracker("FIVE", "Lcom/five_corp/ad/", TrackerKind.ADS),
+    Tracker("Outbrain", "Lcom/outbrain/", TrackerKind.ADS),
+    Tracker("Verve", "Lnet/verve/", TrackerKind.ADS),
+    Tracker("Kidoz", "Lcom/kidoz/", TrackerKind.ADS),
+    Tracker("SuperAwesome", "Ltv/superawesome/", TrackerKind.ADS),
+    Tracker("MobFox", "Lcom/mobfox/", TrackerKind.ADS),
+    Tracker("Yieldmo", "Lcom/yieldmo/", TrackerKind.ADS),
+    Tracker("AdTiming", "Lcom/adtiming/", TrackerKind.ADS),
+
+    // ── Marketingová automatizácia ────────────────────────────────────
+    Tracker("Klaviyo", "Lcom/klaviyo/", TrackerKind.ATTRIBUTION),
+    Tracker("VWO", "Lcom/vwo/", TrackerKind.ATTRIBUTION),
+    Tracker("Blueshift", "Lcom/blueshift/", TrackerKind.ATTRIBUTION),
+    Tracker("Taplytics", "Lcom/taplytics/", TrackerKind.ATTRIBUTION),
+
+    // ── Analytika a meranie výkonu ────────────────────────────────────
+    Tracker("Tealium", "Lcom/tealium/", TrackerKind.ANALYTICS),
+    Tracker("RudderStack", "Lcom/rudderstack/", TrackerKind.ANALYTICS),
+    Tracker("Treasure Data", "Lcom/treasuredata/android/", TrackerKind.ANALYTICS),
+    Tracker("Instana", "Lcom/instana/", TrackerKind.ANALYTICS),
+    Tracker("AppDynamics", "Lcom/appdynamics/", TrackerKind.ANALYTICS),
+    Tracker("Dynatrace", "Lcom/dynatrace/", TrackerKind.ANALYTICS),
+    Tracker("Elastic APM", "Lco/elastic/apm/", TrackerKind.ANALYTICS),
+    Tracker("GameAnalytics", "Lcom/gameanalytics/", TrackerKind.ANALYTICS),
+    Tracker("Crittercism", "Lcom/crittercism/", TrackerKind.ANALYTICS),
+
+    // Záznam relácie — nahrávajú obrazovku, nie len udalosti. Vlastná
+    // kategória je v pláne (v1.3); dovtedy sú vedené ako analytika.
+    Tracker("Glassbox", "Lcom/glassbox/", TrackerKind.ANALYTICS),
+    Tracker("LogRocket", "Lcom/logrocket/", TrackerKind.ANALYTICS),
+
+    // ── Identifikácia zariadenia a detekcia podvodov ──────────────────
+    Tracker("ThreatMetrix", "Lcom/threatmetrix/", TrackerKind.FRAUD),
+    Tracker("DataDome", "Lco/datadome/", TrackerKind.FRAUD),
+    Tracker("PerimeterX", "Lcom/perimeterx/", TrackerKind.FRAUD),
+    Tracker("HUMAN Security", "Lcom/humansecurity/", TrackerKind.FRAUD),
+
+    // ── Hlásenie pádov ────────────────────────────────────────────────
+    Tracker("Rollbar", "Lcom/rollbar/", TrackerKind.CRASH),
+    Tracker("Backtrace", "Lcom/backtraceio/", TrackerKind.CRASH),
+    Tracker("HockeyApp", "Lcom/microsoft/hockeyapp/", TrackerKind.CRASH)
 )
+
+/**
+ * Verzia zoznamu signatúr. Zvýš ju pri KAŽDOM pridaní alebo odobraní signatúry.
+ *
+ * Prečo: po rozšírení zoznamu by appka pri najbližšom skene nahlásila
+ * „pribudli trackery" u desiatok aplikácií, ktoré sa vôbec nezmenili.
+ * Nepribudla im knižnica — pribudla signatúra, ktorá ju konečne vidí.
+ * Je to ten istý druh klamstva ako falošné „ubudli trackery" z v1.0,
+ * len opačným smerom. Prefs si podľa tejto verzie ustráži, ktorým appkám
+ * sa po zmene zoznamu obnovuje základňa, a prírastky trackerov v tom
+ * jednom skene do logu zmien nezapíše.
+ *
+ * 1 = v1.0 a v1.1 (112 signatúr)
+ * 2 = v1.2 (148 signatúr)
+ */
+const val TRACKER_DB_VERSION = 2
 
 /** `res` = id textu v strings.xml. SK je v 3. páde, pretože veta znie „prístup k …". */
 data class PermGroup(val res: Int, val permissions: Set<String>) {

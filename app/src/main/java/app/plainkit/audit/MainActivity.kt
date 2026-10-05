@@ -1,5 +1,6 @@
 package app.plainkit.audit
 
+import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -212,11 +213,20 @@ private fun scanApk(paths: List<String>): List<Tracker>? {
     return TRACKERS.filter { it.prefix in prefixes }
 }
 
-private suspend fun persist(db: AuditDb, app: AppEntry, trackers: List<Tracker>) {
+private suspend fun persist(ctx: Context, db: AuditDb, app: AppEntry, trackers: List<Tracker>) {
     val dao = db.dao()
     val old = dao.scan(app.packageName)
     val names = trackers.map { it.name }
-    val text = computeDiff(old, names, app.permissions)?.encode()
+
+    // Po rozšírení zoznamu signatúr sa prírastky trackerov v prvom skene
+    // nezapisujú: nevieme rozlíšiť, či knižnica pribudla, alebo ju len
+    // konečne vidí nová signatúra. Zmeny povolení a úbytky trackerov
+    // sú tým nedotknuté — tie sú spoľahlivé aj po zmene zoznamu.
+    val refreshing = Prefs.needsBaselineRefresh(ctx, app.packageName)
+    val diff = computeDiff(old, names, app.permissions)
+        ?.let { if (refreshing) it.copy(trackersAdded = emptyList()) else it }
+        ?.takeIf { !it.isEmpty() }
+    val text = diff?.encode()
     val now = System.currentTimeMillis()
 
     dao.save(
@@ -234,9 +244,11 @@ private suspend fun persist(db: AuditDb, app: AppEntry, trackers: List<Tracker>)
             ChangeRecord(packageName = app.packageName, label = app.label, at = now, text = text)
         )
     }
+    Prefs.markRescanned(ctx, app.packageName)
 }
 
 private suspend fun scanAllApps(
+    ctx: Context,
     apps: List<AppEntry>,
     db: AuditDb,
     onResult: (String, List<Tracker>) -> Unit,
@@ -249,7 +261,7 @@ private suspend fun scanAllApps(
         async(Dispatchers.IO) {
             for (app in chunk) {
                 val result = scanApk(app.apkPaths)
-                if (result != null) persist(db, app, result)
+                if (result != null) persist(ctx, db, app, result)
                 withContext(Dispatchers.Main) {
                     if (result != null) onResult(app.packageName, result)
                     onProgress(counter.incrementAndGet())
@@ -564,6 +576,7 @@ fun AppListScreen(
                     apps = fresh
                     val target = fresh.filter { showSystem || !it.isSystem }
                     scanAllApps(
+                        ctx = context,
                         apps = target,
                         db = db,
                         onResult = { pkg, result -> store(pkg, result) },
@@ -699,7 +712,7 @@ fun AppListScreen(
                                         withContext(Dispatchers.IO) { scanApk(it.apkPaths) }
                                     }
                                     if (fresh != null && result != null) {
-                                        persist(db, fresh, result)
+                                        persist(context, db, fresh, result)
                                         store(app.packageName, result)
                                         apps = apps.map { if (it.packageName == fresh.packageName) fresh else it }
                                         AppCache.apps = apps

@@ -102,6 +102,10 @@ data class ChangeDiff(
         .put("pr", JSONArray(permsRemoved))
         .toString()
 
+    /** Nie je čo zobraziť — všetky štyri zoznamy sú prázdne. */
+    fun isEmpty(): Boolean = trackersAdded.isEmpty() && trackersRemoved.isEmpty() &&
+            permsAdded.isEmpty() && permsRemoved.isEmpty()
+
     companion object {
         /** Vráti null, ak text nie je v novom formáte (teda je to záznam z v1.0). */
         fun decode(text: String): ChangeDiff? {
@@ -132,9 +136,7 @@ fun computeDiff(old: ScanRecord?, newTrackers: List<String>, newPerms: List<Stri
         permsAdded = (newP - oldP).sorted(),
         permsRemoved = (oldP - newP).sorted()
     )
-    val empty = diff.trackersAdded.isEmpty() && diff.trackersRemoved.isEmpty() &&
-            diff.permsAdded.isEmpty() && diff.permsRemoved.isEmpty()
-    return if (empty) null else diff
+    return if (diff.isEmpty()) null else diff
 }
 
 /**

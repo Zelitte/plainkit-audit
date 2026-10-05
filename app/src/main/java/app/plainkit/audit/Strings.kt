@@ -37,6 +37,39 @@ object Prefs {
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
             .edit().remove(KEY_LANG).apply()
     }
+
+    private const val KEY_TRACKER_DB = "tracker_db_version"
+    private const val KEY_RESCANNED = "rescanned_after_db_change"
+
+    /**
+     * Vráti true, ak sa tejto aplikácii po zmene zoznamu signatúr ešte
+     * neobnovila základňa. Pri takom skene sa prírastky trackerov do logu
+     * zmien nezapíšu — nevieme totiž rozlíšiť, či knižnica v appke naozaj
+     * pribudla, alebo ju len konečne vidí nová signatúra.
+     *
+     * Prvé volanie po zmene TRACKER_DB_VERSION zoznam preskenovaných
+     * vyprázdni, takže poistka platí pre všetky aplikácie, nie len pre tie
+     * zoskenované ako prvé.
+     */
+    fun needsBaselineRefresh(ctx: Context, pkg: String): Boolean {
+        val p = ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+        if (p.getInt(KEY_TRACKER_DB, 0) != TRACKER_DB_VERSION) {
+            p.edit()
+                .putInt(KEY_TRACKER_DB, TRACKER_DB_VERSION)
+                .putStringSet(KEY_RESCANNED, emptySet())
+                .apply()
+            return true
+        }
+        return pkg !in (p.getStringSet(KEY_RESCANNED, emptySet()) ?: emptySet())
+    }
+
+    /** Zapíše, že táto aplikácia už bola preskenovaná aktuálnym zoznamom. */
+    fun markRescanned(ctx: Context, pkg: String) {
+        val p = ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+        val done = p.getStringSet(KEY_RESCANNED, emptySet()) ?: emptySet()
+        if (pkg in done) return
+        p.edit().putStringSet(KEY_RESCANNED, done + pkg).apply()
+    }
 }
 
 /**
