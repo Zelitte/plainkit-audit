@@ -179,6 +179,15 @@ fun permLabel(permission: String, s: S): String? =
  * Filtruje sa len ZOBRAZENIE. Do databázy sa ukladá všetko, čo appka deklaruje,
  * aby sa porovnanie so starším skenom nerozbilo.
  */
+/**
+ * com.android a com.google nie sú priestory jedného výrobcu — patrí do nich
+ * systém aj appky mnohých strán. Pre ne sa dodávateľská predpona nepoužíva,
+ * inak by sa Chromu (com.android.chrome) skrylo napríklad
+ * com.android.browser.permission.READ_HISTORY_BOOKMARKS, teda prístup
+ * k histórii prehliadania — a to je presne nález, ktorý má byť vidieť.
+ */
+private val SHARED_VENDOR_PREFIXES = setOf("com.android", "com.google")
+
 fun isOwnPermission(permission: String, packageName: String): Boolean {
     if (permission.startsWith("$packageName.")) return true
     // Appky jedného výrobcu si navzájom chránia komponenty: Messenger
@@ -188,7 +197,9 @@ fun isOwnPermission(permission: String, packageName: String): Boolean {
     // vypýta cudzia hra, zostane to viditeľné, lebo to zaujímavé je.
     val parts = packageName.split('.')
     if (parts.size < 3) return false
-    return permission.startsWith(parts[0] + "." + parts[1] + ".")
+    val vendor = parts[0] + "." + parts[1]
+    if (vendor in SHARED_VENDOR_PREFIXES) return false
+    return permission.startsWith("$vendor.")
 }
 
 /**

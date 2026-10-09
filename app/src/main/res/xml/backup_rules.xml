@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
-   See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older than API 31
-   See https://developer.android.com/about/versions/12/backup-restore
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Pravidlá zálohovania pre Android do verzie 11 (API 30).
+
+   Z databázy sa zálohuje LEN nastavenie jazyka (SharedPreferences).
+   Výsledky skenov sa vedome nezálohujú: základňa patrí ku konkrétnemu
+   telefónu. Keby sa preniesla na iný, prvý sken by ju porovnal s úplne
+   inou sadou aplikácií a vypísal by zmeny, ktoré sa na tom zariadení
+   nikdy nestali.
 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <exclude domain="database" path="." />
 </full-backup-content>

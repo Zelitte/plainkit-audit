@@ -48,6 +48,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -208,6 +209,13 @@ private fun scanApk(paths: List<String>): List<Tracker>? {
             }
         } catch (e: Exception) {
             return null
+        } catch (e: OutOfMemoryError) {
+            // Veľké APK sa načítava celé do pamäte a v troch vláknach naraz
+            // to môže prejsť cez strop haldy. OutOfMemoryError je Error, nie
+            // Exception, takže by catch vyššie neplatil a appka by spadla
+            // uprostred skenu. Takto z toho je bežná hláška „nepodarilo sa
+            // prečítať".
+            return null
         }
     }
     return TRACKERS.filter { it.prefix in prefixes }
@@ -218,13 +226,18 @@ private suspend fun persist(ctx: Context, db: AuditDb, app: AppEntry, trackers: 
     val old = dao.scan(app.packageName)
     val names = trackers.map { it.name }
 
-    // Po rozšírení zoznamu signatúr sa prírastky trackerov v prvom skene
-    // nezapisujú: nevieme rozlíšiť, či knižnica pribudla, alebo ju len
-    // konečne vidí nová signatúra. Zmeny povolení a úbytky trackerov
-    // sú tým nedotknuté — tie sú spoľahlivé aj po zmene zoznamu.
+    // Po zmene zoznamu signatúr sa v prvom skene nezapisujú ani prírastky,
+    // ani úbytky trackerov. Prírastok môže byť len signatúra, ktorá knižnicu
+    // konečne vidí; úbytok zasa signatúra, ktorú sme zo zoznamu odobrali
+    // alebo premenovali — mená trackerov sa ukladajú ako text, takže
+    // premenovanie vyzerá ako odobratie plus pridanie. Ani jedno nie je
+    // zmena v aplikácii. Zmeny povolení sú spoľahlivé a potláčajú sa.
     val refreshing = Prefs.needsBaselineRefresh(ctx, app.packageName)
     val diff = computeDiff(old, names, app.permissions)
-        ?.let { if (refreshing) it.copy(trackersAdded = emptyList()) else it }
+        ?.let {
+            if (refreshing) it.copy(trackersAdded = emptyList(), trackersRemoved = emptyList())
+            else it
+        }
         ?.takeIf { !it.isEmpty() }
     val text = diff?.encode()
     val now = System.currentTimeMillis()
@@ -379,6 +392,9 @@ fun AppListScreen(
     var expanded by rememberSaveable { mutableStateOf<String?>(null) }
     var scanning by remember { mutableStateOf<String?>(null) }
     var progress by remember { mutableStateOf<Int?>(null) }
+    // Menovateľ ukazovateľa priebehu, zafixovaný pri štarte skenu.
+    var scanTotal by remember { mutableIntStateOf(0) }
+    var scanRevision by remember { mutableIntStateOf(0) }
     var changes by remember { mutableStateOf<List<ChangeRecord>>(emptyList()) }
     var showSettings by rememberSaveable { mutableStateOf(false) }
     var justCleared by remember { mutableStateOf(false) }
@@ -390,6 +406,10 @@ fun AppListScreen(
     fun store(pkg: String, result: List<Tracker>) {
         scanned[pkg] = result
         AppCache.scanned[pkg] = result
+        // Kľúč pre prepočet závažností. Nestačí scanned.size — pri opätovnom
+        // skene sa prepíše hodnota existujúceho záznamu a veľkosť mapy
+        // zostane rovnaká, takže by sa závažnosť neprepočítala.
+        scanRevision++
     }
 
     LaunchedEffect(Unit) {
@@ -425,6 +445,7 @@ fun AppListScreen(
                     db.dao().clearChanges()
                     scanned.clear()
                     AppCache.scanned.clear()
+                    scanRevision++
                     changes = emptyList()
                     justCleared = true
                 }
@@ -442,19 +463,30 @@ fun AppListScreen(
     val systemCount = apps.count { it.isSystem }
     val scanTarget = apps.filter { showSystem || !it.isSystem }
 
-    val visible = scanTarget
-        .filter {
-            query.isBlank() ||
-                    it.label.contains(query, ignoreCase = true) ||
-                    it.packageName.contains(query, ignoreCase = true)
+    // Závažnosť sa počíta raz na aplikáciu, nie v komparátore. Predtým to tam
+    // bolo a buildFindings() — ktoré načítava a formátuje texty — sa pri každom
+    // zoradení volalo ~2·N·log N krát. Počas skenu sa zoznam prekresľuje po
+    // každej hotovej appke, takže z toho boli státisíce volaní na hlavnom vlákne.
+    val levels = remember(apps, scanRevision, s) {
+        apps.associate { app ->
+            app.packageName to (scanned[app.packageName]
+                ?.let { worstLevel(buildFindings(app.permissions, app.granted, it, s)).ordinal }
+                ?: -1)
         }
-        .sortedWith(
-            compareByDescending<AppEntry> { app ->
-                scanned[app.packageName]
-                    ?.let { worstLevel(buildFindings(app.permissions, app.granted, it, s)).ordinal }
-                    ?: -1
-            }.thenBy { it.label.lowercase() }
-        )
+    }
+
+    val visible = remember(scanTarget, query, levels) {
+        scanTarget
+            .filter {
+                query.isBlank() ||
+                        it.label.contains(query, ignoreCase = true) ||
+                        it.packageName.contains(query, ignoreCase = true)
+            }
+            .sortedWith(
+                compareByDescending<AppEntry> { levels[it.packageName] ?: -1 }
+                    .thenBy { it.label.lowercase() }
+            )
+    }
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -575,6 +607,10 @@ fun AppListScreen(
                     AppCache.apps = fresh
                     apps = fresh
                     val target = fresh.filter { showSystem || !it.isSystem }
+                    // Celkový počet sa zapamätá pri štarte. Dlaždica SYSTÉMOVÝCH
+                    // zostáva klikateľná a scanTarget sa z nej prepočítava, takže
+                    // prepnutím počas skenu by ukazovateľ ukazoval „300 / 150".
+                    scanTotal = target.size
                     scanAllApps(
                         ctx = context,
                         apps = target,
@@ -593,14 +629,14 @@ fun AppListScreen(
                 .padding(top = 10.dp)
         ) {
             Text(
-                text = progress?.let { s.scanProgress(it, scanTarget.size) } ?: s.scanAll,
+                text = progress?.let { s.scanProgress(it, scanTotal) } ?: s.scanAll,
                 fontFamily = FontFamily.Monospace
             )
         }
 
         val progressNow = progress
         if (progressNow != null) {
-            val total = scanTarget.size.coerceAtLeast(1)
+            val total = scanTotal.coerceAtLeast(1)
             LinearProgressIndicator(
                 progress = { (progressNow.toFloat() / total).coerceIn(0f, 1f) },
                 color = MaterialTheme.colorScheme.primary,
@@ -701,7 +737,15 @@ fun AppListScreen(
                         .background(MaterialTheme.colorScheme.surface)
                         .clickable {
                             expanded = if (expanded == app.packageName) null else app.packageName
-                            if (expanded == app.packageName && !scanned.containsKey(app.packageName)) {
+                            // Počas „Skenovať všetky" sa tu nový sken nespúšťa:
+                            // ten istý balík by inak skenovali dve vlákna naraz,
+                            // obe by prečítali tú istú základňu a tú istú zmenu
+                            // by zapísali dvakrát. Rozbaliť riadok sa dá, výsledok
+                            // doň doplní bežiaci sken, keď naň príde rad.
+                            if (progress == null &&
+                                expanded == app.packageName &&
+                                !scanned.containsKey(app.packageName)
+                            ) {
                                 scanning = app.packageName
                                 failedPkg = null
                                 scope.launch {
