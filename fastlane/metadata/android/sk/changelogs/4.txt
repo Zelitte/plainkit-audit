@@ -1,0 +1,6 @@
+* Opravené: po rozšírení zoznamu sledovacích knižníc mohla appka ohlásiť, že knižnica z aplikácie ubudla, hoci nikam nezmizla
+* Opravené: pri aplikáciách od Googlu a pri systémových sa časť povolení nezobrazovala
+* Opravené: pri veľkej aplikácii mohol sken spadnúť namiesto hlášky, že súbor sa nepodarilo prečítať
+* Opravené: rozkliknutie aplikácie počas skenovania všetkých zapísalo tú istú zmenu dvakrát
+* Presnejší ukazovateľ priebehu a rýchlejší zoznam
+* Výsledky skenov sa už neprenášajú zálohou na iný telefón

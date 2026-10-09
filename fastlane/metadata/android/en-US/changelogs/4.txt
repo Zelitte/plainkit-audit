@@ -1,0 +1,6 @@
+* Fixed: after the tracking-library list grew, the app could report that a library had been removed from an app when nothing had changed
+* Fixed: some permissions were hidden for Google and system apps
+* Fixed: scanning a large app could crash instead of reporting that the file could not be read
+* Fixed: opening an app while scanning all of them recorded the same change twice
+* More accurate progress indicator and a faster list
+* Scan results are no longer carried to another phone by backup
