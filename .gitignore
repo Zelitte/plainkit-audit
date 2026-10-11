@@ -21,3 +21,6 @@ local.properties
 # hotové buildy na vydanie (nepatria do gitu)
 /vydania/
 tools/__pycache__/
+
+# cudzie APK na overovanie signatur - nikdy necommitovat
+/vzorky/

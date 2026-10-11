@@ -20,7 +20,7 @@ val TRACKERS = listOf(
     Tracker("Smaato", "Lcom/smaato/", TrackerKind.ADS),
     Tracker("MoPub", "Lcom/mopub/", TrackerKind.ADS),
     Tracker("Tapjoy", "Lcom/tapjoy/", TrackerKind.ADS),
-    Tracker("Pangle (ByteDance)", "Lcom/bytedance/sdk/openadsdk/", TrackerKind.ADS),
+    Tracker("ByteDance Pangle", "Lcom/bytedance/sdk/openadsdk/", TrackerKind.ADS),
     Tracker("Mintegral", "Lcom/mbridge/msdk/", TrackerKind.ADS),
     Tracker("Digital Turbine", "Lcom/digitalturbine/", TrackerKind.ADS),
     Tracker("StartApp", "Lcom/startapp/", TrackerKind.ADS),
@@ -34,7 +34,7 @@ val TRACKERS = listOf(
     Tracker("Ogury", "Lcom/ogury/", TrackerKind.ADS),
     Tracker("Teads", "Ltv/teads/", TrackerKind.ADS),
     Tracker("Appodeal", "Lcom/appodeal/ads/", TrackerKind.ADS),
-    Tracker("myTarget (VK)", "Lcom/my/target/", TrackerKind.ADS),
+    Tracker("VK myTarget", "Lcom/my/target/", TrackerKind.ADS),
     Tracker("Verizon/Yahoo Ads", "Lcom/verizon/ads/", TrackerKind.ADS),
     Tracker("Adform", "Lcom/adform/sdk/", TrackerKind.ADS),
     Tracker("Nend", "Lnet/nend/android/", TrackerKind.ADS),
@@ -50,7 +50,7 @@ val TRACKERS = listOf(
     Tracker("Tenjin", "Lcom/tenjin/", TrackerKind.ATTRIBUTION),
     Tracker("Airbridge", "Lco/ab180/airbridge/", TrackerKind.ATTRIBUTION),
     Tracker("Braze", "Lcom/braze/", TrackerKind.ATTRIBUTION),
-    Tracker("Appboy (staršia Braze)", "Lcom/appboy/", TrackerKind.ATTRIBUTION),
+    Tracker("Appboy", "Lcom/appboy/", TrackerKind.ATTRIBUTION),
     Tracker("OneSignal", "Lcom/onesignal/", TrackerKind.ATTRIBUTION),
     Tracker("Leanplum", "Lcom/leanplum/", TrackerKind.ATTRIBUTION),
     Tracker("CleverTap", "Lcom/clevertap/android/sdk/", TrackerKind.ATTRIBUTION),
@@ -71,7 +71,7 @@ val TRACKERS = listOf(
 
     // ── Analytika správania ───────────────────────────────────────────
     Tracker("Firebase Analytics", "Lcom/google/firebase/analytics/", TrackerKind.ANALYTICS),
-    Tracker("Google Analytics (staršia)", "Lcom/google/android/gms/analytics/", TrackerKind.ANALYTICS),
+    Tracker("Google Analytics Services", "Lcom/google/android/gms/analytics/", TrackerKind.ANALYTICS),
     Tracker("Google Tag Manager", "Lcom/google/android/gms/tagmanager/", TrackerKind.ANALYTICS),
     Tracker("Firebase Performance", "Lcom/google/firebase/perf/", TrackerKind.ANALYTICS),
     Tracker("Meta App Events", "Lcom/facebook/appevents/", TrackerKind.ANALYTICS),
@@ -85,7 +85,7 @@ val TRACKERS = listOf(
     Tracker("Umeng", "Lcom/umeng/", TrackerKind.ANALYTICS),
     Tracker("Tencent Stats", "Lcom/tencent/stat/", TrackerKind.ANALYTICS),
     Tracker("Matomo", "Lorg/matomo/", TrackerKind.ANALYTICS),
-    Tracker("Piwik (staršia)", "Lorg/piwik/sdk/", TrackerKind.ANALYTICS),
+    Tracker("Piwik", "Lorg/piwik/sdk/", TrackerKind.ANALYTICS),
     Tracker("New Relic", "Lcom/newrelic/", TrackerKind.ANALYTICS),
     Tracker("Countly", "Lly/count/android/", TrackerKind.ANALYTICS),
     Tracker("Adobe Experience Platform", "Lcom/adobe/marketing/mobile/", TrackerKind.ANALYTICS),
@@ -117,8 +117,8 @@ val TRACKERS = listOf(
 
     // ── Hlásenie pádov a diagnostika ──────────────────────────────────
     Tracker("Firebase Crashlytics", "Lcom/google/firebase/crashlytics/", TrackerKind.CRASH),
-    Tracker("Crashlytics (Fabric)", "Lcom/crashlytics/android/", TrackerKind.CRASH),
-    Tracker("Firebase Crash (staršia)", "Lcom/google/firebase/crash/", TrackerKind.CRASH),
+    Tracker("Fabric Crashlytics", "Lcom/crashlytics/android/", TrackerKind.CRASH),
+    Tracker("Firebase Crash Reporting", "Lcom/google/firebase/crash/", TrackerKind.CRASH),
     Tracker("Sentry", "Lio/sentry/", TrackerKind.CRASH),
     Tracker("Bugsnag", "Lcom/bugsnag/", TrackerKind.CRASH),
     Tracker("ACRA", "Lorg/acra/", TrackerKind.CRASH),
@@ -183,7 +183,8 @@ val TRACKERS = listOf(
 )
 
 /**
- * Verzia zoznamu signatúr. Zvýš ju pri KAŽDOM pridaní alebo odobraní signatúry.
+ * Verzia zoznamu signatúr. Zvýš ju pri KAŽDOM pridaní, odobraní alebo premenovaní
+ * signatúry a pri každej zmene spôsobu, akým skener knižnice hľadá.
  *
  * Prečo: po rozšírení zoznamu by appka pri najbližšom skene nahlásila
  * „pribudli trackery" u desiatok aplikácií, ktoré sa vôbec nezmenili.
@@ -195,8 +196,9 @@ val TRACKERS = listOf(
  *
  * 1 = v1.0 a v1.1 (112 signatúr)
  * 2 = v1.2 (148 signatúr)
+ * 3 = v1.3.1 (počítajú sa len triedy, ktoré APK naozaj obsahuje; mená bez zátvoriek)
  */
-const val TRACKER_DB_VERSION = 2
+const val TRACKER_DB_VERSION = 3
 
 /** `res` = id textu v strings.xml. SK je v 3. páde, pretože veta znie „prístup k …". */
 data class PermGroup(val res: Int, val permissions: Set<String>) {

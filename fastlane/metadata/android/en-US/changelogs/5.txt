@@ -1,0 +1,3 @@
+* More accurate findings: the app now counts only libraries that are actually present in an app. Until now it also counted ones the code merely refers to, for example through ad mediation, so some apps showed an inflated number of trackers.
+* Your first scan after the update may therefore show fewer trackers for some apps. This is not recorded in the change log, because the apps did not change — the way they are checked did.
+* Fixed some library names and doubled brackets in findings

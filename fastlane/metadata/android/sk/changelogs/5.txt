@@ -1,0 +1,3 @@
+* Presnejšie nálezy: appka počíta len knižnice, ktoré sú v aplikácii naozaj prítomné. Doteraz započítala aj tie, na ktoré sa kód len odvoláva, napríklad cez reklamnú mediáciu, takže niektoré aplikácie mali nadsadený počet trackerov.
+* Prvý sken po aktualizácii preto pri niektorých aplikáciách ukáže menej trackerov. Do zoznamu zmien sa to nezapíše, lebo sa nezmenili aplikácie, ale spôsob kontroly.
+* Opravené názvy niektorých knižníc a zdvojené zátvorky v texte nálezov

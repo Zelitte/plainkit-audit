@@ -71,6 +71,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -146,43 +148,55 @@ private fun toEntry(pkg: PackageInfo, pm: PackageManager): AppEntry {
     )
 }
 
-private fun collectPrefixes(text: String, out: MutableSet<String>) {
-    var i = 0
-    val n = text.length
-    while (i < n) {
-        if (text[i] != 'L') {
-            i++
-            continue
-        }
+/**
+ * Prefixy balíkov tried, ktoré DEX súbor naozaj DEFINUJE (tabuľka class_defs).
+ *
+ * Do v1.3 sa DEX čítal ako text a hľadali sa v ňom všetky reťazce tvaru
+ * `Lcom/foo/Bar;`. Tie sú však v súbore aj pri triedach, ktoré appka len
+ * SPOMÍNA (tabuľka type_ids) — typicky reklamná mediácia (napr. AppLovin)
+ * má adaptéry skompilované proti desiatkam sietí, ktoré v APK fyzicky nie sú.
+ * Overené na realme Počasí: 7 nahlásených knižníc, 4 naozaj obsiahnuté.
+ * Appka by tak tvrdila viac, než vie dokázať.
+ *
+ * Formát DEX: hlavička little-endian; string_ids_off @0x3C, type_ids_off @0x44,
+ * class_defs_size @0x60, class_defs_off @0x64. Každý class_def má 32 bajtov
+ * a začína indexom typu; typ ukazuje na reťazec (ULEB128 dĺžka + MUTF-8).
+ * Poškodený súbor skončí výnimkou, ktorú scanApk zachytí ako „nečitateľné".
+ */
+private fun collectDefinedPrefixes(dex: ByteArray, out: MutableSet<String>) {
+    if (dex.size < 0x70 ||
+        dex[0] != 'd'.code.toByte() || dex[1] != 'e'.code.toByte() || dex[2] != 'x'.code.toByte()
+    ) {
+        throw IllegalArgumentException("not a dex file")
+    }
+    val buf = ByteBuffer.wrap(dex).order(ByteOrder.LITTLE_ENDIAN)
+    val stringIdsOff = buf.getInt(0x3C)
+    val typeIdsOff = buf.getInt(0x44)
+    val classDefsSize = buf.getInt(0x60)
+    val classDefsOff = buf.getInt(0x64)
+    val semicolon = ';'.code.toByte()
+    val slash = '/'.code.toByte()
 
-        var j = i + 1
-        var slashes = 0
-        while (j < n) {
-            val c = text[j]
-            when {
-                c == ';' -> break
-                c == '/' -> {
-                    slashes++
-                    j++
-                }
+    for (c in 0 until classDefsSize) {
+        val typeIdx = buf.getInt(classDefsOff + 32 * c)
+        val stringIdx = buf.getInt(typeIdsOff + 4 * typeIdx)
+        var p = buf.getInt(stringIdsOff + 4 * stringIdx)
+        // Preskočiť ULEB128 dĺžku reťazca.
+        while ((dex[p].toInt() and 0x80) != 0) p++
+        p++
+        if (dex[p] != 'L'.code.toByte()) continue
 
-                c.isLetterOrDigit() || c == '_' || c == '$' -> j++
-                else -> break
+        var k = p + 1
+        var depth = 0
+        while (k < dex.size && depth < MAX_DEPTH) {
+            val b = dex[k]
+            if (b == semicolon || b == 0.toByte()) break
+            if (b == slash) {
+                out.add(String(dex, p, k + 1 - p, Charsets.ISO_8859_1))
+                depth++
             }
+            k++
         }
-
-        if (j < n && text[j] == ';' && slashes > 0) {
-            var k = i + 1
-            var depth = 0
-            while (k < j && depth < MAX_DEPTH) {
-                if (text[k] == '/') {
-                    out.add(text.substring(i, k + 1))
-                    depth++
-                }
-                k++
-            }
-        }
-        i = j + 1
     }
 }
 
@@ -201,10 +215,8 @@ private fun scanApk(paths: List<String>): List<Tracker>? {
                     it.name.startsWith("classes") && it.name.endsWith(".dex")
                 }
                 for (entry in dexEntries) {
-                    val text = zip.getInputStream(entry).use { input ->
-                        String(input.readBytes(), Charsets.ISO_8859_1)
-                    }
-                    collectPrefixes(text, prefixes)
+                    val bytes = zip.getInputStream(entry).use { it.readBytes() }
+                    collectDefinedPrefixes(bytes, prefixes)
                 }
             }
         } catch (e: Exception) {
