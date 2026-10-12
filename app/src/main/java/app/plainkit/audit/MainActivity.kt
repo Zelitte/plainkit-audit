@@ -159,6 +159,9 @@ private fun toEntry(pkg: PackageInfo, pm: PackageManager): AppEntry {
  */
 private val IGNORED_CLASS_PREFIXES: List<ByteArray> = listOf(
     "Lcom/google/android/gms/ads/identifier/",
+    // To isté u Huawei (čítanie OAID). Overené na Samsung Galaxy Store: 4 triedy
+    // výlučne z hms/ads/identifier/ → falošné „Huawei Ads".
+    "Lcom/huawei/hms/ads/identifier/",
 ).map { it.toByteArray(Charsets.ISO_8859_1) }
 
 private fun startsWithAt(data: ByteArray, at: Int, prefix: ByteArray): Boolean {

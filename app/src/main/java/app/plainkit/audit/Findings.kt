@@ -197,7 +197,7 @@ val TRACKERS = listOf(
  * 1 = v1.0 a v1.1 (112 signatúr)
  * 2 = v1.2 (148 signatúr)
  * 3 = v1.3.1 (počítajú sa len triedy, ktoré APK naozaj obsahuje; mená bez zátvoriek)
- * 4 = v1.3.2 (gms/ads/identifier/ sa už nepovažuje za AdMob)
+ * 4 = v1.3.2 (gms/ads/identifier/ a hms/ads/identifier/ sa už nepovažujú za AdMob / Huawei Ads)
  */
 const val TRACKER_DB_VERSION = 4
 

@@ -1,2 +1,2 @@
-* Fixed a false Google AdMob finding: a small Google library that only reads the phone's advertising ID is no longer treated as an ad SDK. This affected apps that do not actually contain AdMob.
-* Your first scan after the update may therefore show one tracker fewer for some apps. This is not recorded in the change log.
+* Fixed false Google AdMob and Huawei Ads findings: small Google and Huawei libraries that only read the phone's advertising ID are no longer treated as ad SDKs. This affected apps that do not actually contain these ad networks.
+* Your first scan after the update may therefore show fewer trackers for some apps. This is not recorded in the change log.

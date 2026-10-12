@@ -1,2 +1,2 @@
-* Opravený falošný nález Google AdMob: malá knižnica Google, ktorá len číta reklamný identifikátor telefónu, sa už nepovažuje za reklamný SDK. Týkalo sa to aplikácií, ktoré AdMob v skutočnosti nemajú.
-* Prvý sken po aktualizácii preto môže pri niektorých aplikáciách ukázať o jeden tracker menej. Do zoznamu zmien sa to nezapíše.
+* Opravené falošné nálezy Google AdMob a Huawei Ads: malé knižnice Google a Huawei, ktoré len čítajú reklamný identifikátor telefónu, sa už nepovažujú za reklamné SDK. Týkalo sa to aplikácií, ktoré tieto reklamné siete v skutočnosti nemajú.
+* Prvý sken po aktualizácii preto môže pri niektorých aplikáciách ukázať menej trackerov. Do zoznamu zmien sa to nezapíše.
