@@ -197,8 +197,9 @@ val TRACKERS = listOf(
  * 1 = v1.0 a v1.1 (112 signatúr)
  * 2 = v1.2 (148 signatúr)
  * 3 = v1.3.1 (počítajú sa len triedy, ktoré APK naozaj obsahuje; mená bez zátvoriek)
+ * 4 = v1.3.2 (gms/ads/identifier/ sa už nepovažuje za AdMob)
  */
-const val TRACKER_DB_VERSION = 3
+const val TRACKER_DB_VERSION = 4
 
 /** `res` = id textu v strings.xml. SK je v 3. páde, pretože veta znie „prístup k …". */
 data class PermGroup(val res: Int, val permissions: Set<String>) {

@@ -149,6 +149,27 @@ private fun toEntry(pkg: PackageInfo, pm: PackageManager): AppEntry {
 }
 
 /**
+ * Triedy, ktoré ležia pod prefixom niektorej signatúry, ale nie sú tou knižnicou.
+ *
+ * `gms/ads/identifier/` je samostatná malá knižnica Google, ktorá len prečíta
+ * reklamný identifikátor telefónu; ťahá ju Firebase a ďalšie SDK. Nie je to AdMob.
+ * Overené na Lenovo ID: 5 tried výlučne z identifier/, žiadny AdMob — bez tejto
+ * výnimky appka hlásila „obsahuje reklamné SDK (Google AdMob)". Skutočný AdMob
+ * má vždy aj ďalšie triedy (AdView, AdRequest…), takže ho to neskryje.
+ */
+private val IGNORED_CLASS_PREFIXES: List<ByteArray> = listOf(
+    "Lcom/google/android/gms/ads/identifier/",
+).map { it.toByteArray(Charsets.ISO_8859_1) }
+
+private fun startsWithAt(data: ByteArray, at: Int, prefix: ByteArray): Boolean {
+    if (at + prefix.size > data.size) return false
+    for (i in prefix.indices) {
+        if (data[at + i] != prefix[i]) return false
+    }
+    return true
+}
+
+/**
  * Prefixy balíkov tried, ktoré DEX súbor naozaj DEFINUJE (tabuľka class_defs).
  *
  * Do v1.3 sa DEX čítal ako text a hľadali sa v ňom všetky reťazce tvaru
@@ -185,6 +206,7 @@ private fun collectDefinedPrefixes(dex: ByteArray, out: MutableSet<String>) {
         while ((dex[p].toInt() and 0x80) != 0) p++
         p++
         if (dex[p] != 'L'.code.toByte()) continue
+        if (IGNORED_CLASS_PREFIXES.any { startsWithAt(dex, p, it) }) continue
 
         var k = p + 1
         var depth = 0
