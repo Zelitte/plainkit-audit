@@ -1,0 +1,7 @@
+* New switch Apps / System / All, you can now scan only system apps
+* Each app shows where it came from: preinstalled, Google Play, installed manually from an APK file, or another store
+* Button to open the app's settings, and for system apps a guide on removing them via ADB
+* Clearer change log
+* Fixed a false Firebase Analytics finding
+* Link to report an incorrect finding
+* Smaller app

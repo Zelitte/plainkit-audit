@@ -1,15 +1,25 @@
 package app.plainkit.audit
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.provider.Telephony
+import android.telecom.TelecomManager
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,11 +34,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
@@ -48,6 +61,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +70,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -83,6 +103,76 @@ private const val MAX_DEPTH = 6
 
 private val OkGreen = Color(0xFF3FBF7F)
 private val WarnAmber = Color(0xFFFFB020)
+
+/** Čo sa zobrazuje a skenuje: len nainštalované, len systémové, alebo všetko. */
+enum class ListScope { APPS, SYSTEM, ALL }
+
+private fun AppEntry.inScope(scope: ListScope): Boolean = when (scope) {
+    ListScope.APPS -> !isSystem
+    ListScope.SYSTEM -> isSystem
+    ListScope.ALL -> true
+}
+
+private fun installerOf(pm: PackageManager, pkg: String): String? = runCatching {
+    if (Build.VERSION.SDK_INT >= 30) pm.getInstallSourceInfo(pkg).installingPackageName
+    else @Suppress("DEPRECATION") pm.getInstallerPackageName(pkg)
+}.getOrNull()
+
+/**
+ * Odkiaľ appka prišla. Null = nevieme to povedať spoľahlivo, a vtedy nič netvrdíme.
+ *
+ * FLAG_SYSTEM = je v systémovom obraze, teda prišla s telefónom (aj keď ju
+ * neskôr aktualizoval Obchod Play). Pri ostatných rozhoduje inštalátor:
+ * Play, systémový inštalátor balíkov (= ručne zo súboru APK), alebo iný obchod.
+ * Prázdny inštalátor NIE JE „ručne": tak vyzerajú aj appky, ktoré výrobca
+ * predinštaloval mimo systému, alebo inštalácia cez ADB.
+ */
+private fun originText(pm: PackageManager, app: AppEntry, s: S): String? {
+    if (app.isSystem) return s.originSystem
+    val inst = installerOf(pm, app.packageName) ?: return null
+    return when {
+        inst == "com.android.vending" -> s.originPlay
+        inst.contains("packageinstaller") -> s.originManual
+        else -> s.originOther(
+            runCatching { pm.getApplicationLabel(pm.getApplicationInfo(inst, 0)).toString() }
+                .getOrDefault(inst)
+        )
+    }
+}
+
+/**
+ * Súčasti systému, pri ktorých appka návod na odstránenie neponúkne —
+ * ich odstránenie môže telefón zablokovať. Spolu s nimi aj aktuálny launcher,
+ * telefón a SMS (zisťujú sa za behu, líšia sa podľa výrobcu).
+ */
+private val CRITICAL_PACKAGES = setOf(
+    "android", "com.android.systemui", "com.android.phone", "com.android.settings",
+    "com.android.vending", "com.google.android.gms", "com.google.android.gsf",
+    "com.android.shell", "com.android.packageinstaller", "com.google.android.packageinstaller",
+    "com.android.permissioncontroller", "com.google.android.permissioncontroller",
+    "com.android.inputmethod.latin", "com.google.android.inputmethod.latin",
+    "com.android.bluetooth", "com.android.nfc", "com.android.server.telecom",
+    "com.android.networkstack", "com.google.android.networkstack",
+    "com.android.webview", "com.google.android.webview", "com.android.se",
+    "com.android.location.fused", "com.android.externalstorage", "com.android.documentsui",
+    "com.android.keychain", "com.android.certinstaller", "com.android.emergency",
+)
+
+private fun criticalRuntimePackages(ctx: Context): Set<String> = buildSet {
+    runCatching {
+        ctx.packageManager.resolveActivity(
+            Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME),
+            PackageManager.MATCH_DEFAULT_ONLY
+        )?.activityInfo?.packageName
+    }.getOrNull()?.let { add(it) }
+    runCatching { Telephony.Sms.getDefaultSmsPackage(ctx) }.getOrNull()?.let { add(it) }
+    runCatching { ctx.getSystemService(TelecomManager::class.java)?.defaultDialerPackage }
+        .getOrNull()?.let { add(it) }
+    add(ctx.packageName)
+}
+
+private fun isCritical(pkg: String, runtime: Set<String>): Boolean =
+    pkg in CRITICAL_PACKAGES || pkg in runtime || pkg.startsWith("com.android.providers.")
 
 object AppCache {
     var apps: List<AppEntry>? = null
@@ -162,6 +252,11 @@ private val IGNORED_CLASS_PREFIXES: List<ByteArray> = listOf(
     // To isté u Huawei (čítanie OAID). Overené na Samsung Galaxy Store: 4 triedy
     // výlučne z hms/ads/identifier/ → falošné „Huawei Ads".
     "Lcom/huawei/hms/ads/identifier/",
+    // Rozhrania, cez ktoré iné Firebase moduly (Crashlytics, Remote Config) hovoria
+    // s analytikou, ak je prítomná. Samy nič nezbierajú. Overené na Samsung Galaxy
+    // Store: 5 tried výlučne z connector/, žiadna trieda FirebaseAnalytics →
+    // falošné „Firebase Analytics". Skutočná analytika má aj triedu FirebaseAnalytics.
+    "Lcom/google/firebase/analytics/connector/",
 ).map { it.toByteArray(Charsets.ISO_8859_1) }
 
 private fun startsWithAt(data: ByteArray, at: Int, prefix: ByteArray): Boolean {
@@ -398,6 +493,115 @@ private fun StatTile(
     }
 }
 
+/**
+ * Trojstavový prepínač Aplikácie / Systémové / Spolu. Jeden rám, zvýraznenie
+ * sa pri prepnutí posunie (nie skočí), čísla sa dopočítajú. Aktívny segment
+ * má aj značku ▸, aby nebol rozoznateľný len farbou.
+ */
+@Composable
+private fun ScopeSwitch(
+    selected: ListScope,
+    counts: Map<ListScope, Int>?,
+    labels: Map<ListScope, String>,
+    onSelect: (ListScope) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val accent = MaterialTheme.colorScheme.primary
+    val outline = MaterialTheme.colorScheme.outline
+    val entries = ListScope.entries
+    val pos by animateFloatAsState(
+        targetValue = entries.indexOf(selected).toFloat(),
+        animationSpec = tween(200),
+        label = "scopePos"
+    )
+    val shape = RoundedCornerShape(3.dp)
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .clip(shape)
+            .border(1.dp, accent.copy(alpha = 0.4f), shape)
+            .background(MaterialTheme.colorScheme.surface)
+            .drawBehind {
+                val w = size.width / entries.size
+                val left = w * pos
+                drawRect(accent.copy(alpha = 0.12f), Offset(left, 0f), Size(w, size.height))
+                val stroke = 1.dp.toPx()
+                drawRect(
+                    accent.copy(alpha = 0.9f),
+                    Offset(left + stroke / 2, stroke / 2),
+                    Size(w - stroke, size.height - stroke),
+                    style = Stroke(stroke)
+                )
+            }
+    ) {
+        entries.forEachIndexed { i, sc ->
+            if (i > 0) {
+                Box(
+                    Modifier
+                        .width(1.dp)
+                        .fillMaxHeight()
+                        .background(outline.copy(alpha = 0.5f))
+                )
+            }
+            val active = sc == selected
+            val target = counts?.get(sc) ?: 0
+            val shown by animateIntAsState(target, tween(300), label = "count$i")
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 48.dp)
+                    .selectable(selected = active, role = Role.Tab) { onSelect(sc) }
+                    .padding(horizontal = 10.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = if (counts == null) "…" else shown.toString(),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 22.sp,
+                    maxLines = 1,
+                    color = if (active) accent else MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = (if (active) "▸ " else "") + labels.getValue(sc).uppercase(),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 10.sp,
+                    maxLines = 1,
+                    softWrap = false,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (active) accent else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+/** Jeden riadok s ADB príkazom: dá sa označiť aj skopírovať. */
+@Composable
+private fun CommandLine(label: String, cmd: String, s: S, copiedKey: String?, onCopied: (String) -> Unit) {
+    val context = LocalContext.current
+    Text(
+        label,
+        fontFamily = FontFamily.Monospace,
+        fontSize = 10.sp,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 8.dp)
+    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        SelectionContainer(modifier = Modifier.weight(1f)) {
+            Text(cmd, fontFamily = FontFamily.Monospace, fontSize = 11.sp, lineHeight = 15.sp)
+        }
+        TextButton(onClick = {
+            runCatching {
+                context.getSystemService(ClipboardManager::class.java)
+                    ?.setPrimaryClip(ClipData.newPlainText("adb", cmd))
+            }
+            onCopied(cmd)
+        }) {
+            Text(if (copiedKey == cmd) s.copied else s.copy, fontSize = 12.sp)
+        }
+    }
+}
+
 @Composable
 private fun levelColor(level: Level?): Color = when (level) {
     Level.ALERT -> MaterialTheme.colorScheme.error
@@ -424,7 +628,11 @@ fun AppListScreen(
     val sysLabel = s.tileSystem
 
     var apps by remember { mutableStateOf(AppCache.apps ?: emptyList()) }
-    var showSystem by rememberSaveable { mutableStateOf(false) }
+    var listScope by rememberSaveable { mutableStateOf(ListScope.APPS) }
+    var showRemove by remember { mutableStateOf<String?>(null) }
+    var copiedKey by remember { mutableStateOf<String?>(null) }
+    val expandedChanges = remember { mutableStateSetOf<Long>() }
+    val criticalRuntime = remember { criticalRuntimePackages(context) }
     var query by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf<String?>(null) }
     var scanning by remember { mutableStateOf<String?>(null) }
@@ -497,8 +705,12 @@ fun AppListScreen(
         return
     }
 
-    val systemCount = apps.count { it.isSystem }
-    val scanTarget = apps.filter { showSystem || !it.isSystem }
+    val counts = if (apps.isEmpty()) null else mapOf(
+        ListScope.APPS to apps.count { !it.isSystem },
+        ListScope.SYSTEM to apps.count { it.isSystem },
+        ListScope.ALL to apps.size
+    )
+    val scanTarget = apps.filter { it.inScope(listScope) }
 
     // Závažnosť sa počíta raz na aplikáciu, nie v komparátore. Predtým to tam
     // bolo a buildFindings() — ktoré načítava a formátuje texty — sa pri každom
@@ -571,22 +783,17 @@ fun AppListScreen(
             }
         }
 
-        // ── dlaždice ──
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            StatTile(
-                value = if (apps.isEmpty()) "…" else visible.size.toString(),
-                label = appsLabel,
-                active = false,
-                modifier = Modifier.weight(1f)
-            )
-            StatTile(
-                value = systemCount.toString(),
-                label = sysLabel,
-                active = showSystem,
-                modifier = Modifier.weight(1f),
-                onClick = { showSystem = !showSystem }
-            )
-        }
+        // ── rozsah: aplikácie / systémové / spolu ──
+        ScopeSwitch(
+            selected = listScope,
+            counts = counts,
+            labels = mapOf(
+                ListScope.APPS to appsLabel,
+                ListScope.SYSTEM to sysLabel,
+                ListScope.ALL to s.tileAll
+            ),
+            onSelect = { listScope = it }
+        )
 
         // ── hľadanie ──
         OutlinedTextField(
@@ -643,9 +850,9 @@ fun AppListScreen(
                     val fresh = withContext(Dispatchers.IO) { loadApps(context.packageManager) }
                     AppCache.apps = fresh
                     apps = fresh
-                    val target = fresh.filter { showSystem || !it.isSystem }
-                    // Celkový počet sa zapamätá pri štarte. Dlaždica SYSTÉMOVÝCH
-                    // zostáva klikateľná a scanTarget sa z nej prepočítava, takže
+                    val target = fresh.filter { it.inScope(listScope) }
+                    // Celkový počet sa zapamätá pri štarte. Prepínač rozsahu
+                    // zostáva klikateľný a scanTarget sa z neho prepočítava, takže
                     // prepnutím počas skenu by ukazovateľ ukazoval „300 / 150".
                     scanTotal = target.size
                     scanAllApps(
@@ -690,9 +897,9 @@ fun AppListScreen(
         // nezostalo, sa nezobrazujú — inak by na obrazovke visel prázdny rámček.
         val shownChanges = remember(changes, s) {
             changes.mapNotNull { ch ->
-                renderChange(ch.text, ch.packageName, s)
-                    .takeIf { it.isNotEmpty() }
-                    ?.let { ch to it }
+                val full = renderChange(ch.text, ch.packageName, s)
+                if (full.isEmpty()) null
+                else Triple(ch, full, renderChange(ch.text, ch.packageName, s, compact = true))
             }.take(8)
         }
 
@@ -718,11 +925,22 @@ fun AppListScreen(
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.primary
                         )
-                        shownChanges.forEach { (ch, text) ->
+                        shownChanges.forEach { (ch, full, compact) ->
+                            // Dlhé zoznamy technických povolení sa zbalia na počet;
+                            // ťuknutím sa záznam rozbalí celý.
+                            val open = ch.id in expandedChanges
+                            val canToggle = full != compact
                             Text(
-                                text = "${ch.label} — $text",
+                                text = "${ch.label} — " + if (open || !canToggle) full else compact,
                                 style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(top = 6.dp)
+                                modifier = Modifier
+                                    .padding(top = 6.dp)
+                                    .then(
+                                        if (canToggle) Modifier.clickable {
+                                            if (open) expandedChanges.remove(ch.id)
+                                            else expandedChanges.add(ch.id)
+                                        } else Modifier
+                                    )
                             )
                             Text(
                                 text = dateFmt.format(Date(ch.at)),
@@ -824,13 +1042,26 @@ fun AppListScreen(
                                 Spacer(Modifier.width(10.dp))
                             }
                             Column(modifier = Modifier.weight(1f)) {
-                                if (level != null) {
-                                    Text(
-                                        text = s.level(level),
-                                        fontFamily = FontFamily.Monospace,
-                                        fontSize = 10.sp,
-                                        color = stripe
-                                    )
+                                val showTag = listScope == ListScope.ALL && app.isSystem
+                                if (level != null || showTag) {
+                                    Row {
+                                        if (level != null) {
+                                            Text(
+                                                text = s.level(level),
+                                                fontFamily = FontFamily.Monospace,
+                                                fontSize = 10.sp,
+                                                color = stripe
+                                            )
+                                        }
+                                        if (showTag) {
+                                            Text(
+                                                text = (if (level != null) " · " else "") + s.tagPreinstalled,
+                                                fontFamily = FontFamily.Monospace,
+                                                fontSize = 10.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
                                 }
                                 Text(
                                     app.label,
@@ -931,6 +1162,59 @@ fun AppListScreen(
                                         )
                                     }
                                 }
+                            }
+
+                            // ── pôvod ──
+                            val origin = remember(app.packageName, s) { originText(pm, app, s) }
+                            if (origin != null) {
+                                Text(
+                                    text = s.originTitle,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(top = 14.dp, bottom = 4.dp)
+                                )
+                                Text(origin, style = MaterialTheme.typography.bodyMedium)
+                            }
+
+                            // ── čo s tým: nastavenia appky, pri systémových návod na odstránenie ──
+                            Row(modifier = Modifier.padding(top = 8.dp)) {
+                                TextButton(onClick = {
+                                    runCatching {
+                                        context.startActivity(
+                                            Intent(
+                                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                                Uri.fromParts("package", app.packageName, null)
+                                            )
+                                        )
+                                    }
+                                }) { Text(s.openSettings, fontSize = 13.sp) }
+                                if (app.isSystem && !isCritical(app.packageName, criticalRuntime)) {
+                                    TextButton(onClick = {
+                                        showRemove = if (showRemove == app.packageName) null else app.packageName
+                                    }) { Text(s.howToRemove, fontSize = 13.sp) }
+                                }
+                            }
+                            if (showRemove == app.packageName) {
+                                Text(
+                                    s.removeIntro,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                                CommandLine(
+                                    label = s.removeCmd,
+                                    cmd = "adb shell pm uninstall --user 0 ${app.packageName}",
+                                    s = s,
+                                    copiedKey = copiedKey,
+                                    onCopied = { copiedKey = it }
+                                )
+                                CommandLine(
+                                    label = s.restoreCmd,
+                                    cmd = "adb shell cmd package install-existing ${app.packageName}",
+                                    s = s,
+                                    copiedKey = copiedKey,
+                                    onCopied = { copiedKey = it }
+                                )
                             }
                         }
                     }

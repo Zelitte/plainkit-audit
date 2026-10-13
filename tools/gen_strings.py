@@ -27,6 +27,38 @@ s("scan_failed",
   "Impossibile leggere questa app. Riprova più tardi — non è stato salvato nulla.")
 s("tile_apps", "aplikácií", "apps", "Apps", "apps", "apps", "app")
 s("tile_system", "systémových", "system", "System", "système", "sistema", "di sistema")
+s("tile_all", "spolu", "total", "gesamt", "au total", "en total", "in totale")
+s("tag_preinstalled", "PREDINŠTALOVANÁ", "PREINSTALLED", "VORINSTALLIERT", "PRÉINSTALLÉE", "PREINSTALADA", "PREINSTALLATA")
+s("origin_title", "PÔVOD", "SOURCE", "HERKUNFT", "PROVENANCE", "ORIGEN", "PROVENIENZA")
+s("origin_system",
+  "prišla s telefónom (súčasť systému)",
+  "came with the phone (part of the system)",
+  "war auf dem Telefon vorinstalliert (Teil des Systems)",
+  "fournie avec le téléphone (fait partie du système)",
+  "venía con el teléfono (parte del sistema)",
+  "fornita con il telefono (parte del sistema)")
+s("origin_play", "z Obchodu Google Play", "from the Google Play Store", "aus dem Google Play Store", "depuis le Google Play Store", "de Google Play Store", "dal Google Play Store")
+s("origin_manual",
+  "nainštalovaná ručne mimo obchodu (súbor APK)",
+  "installed manually outside a store (APK file)",
+  "manuell außerhalb eines Stores installiert (APK-Datei)",
+  "installée manuellement hors d'un store (fichier APK)",
+  "instalada manualmente fuera de una tienda (archivo APK)",
+  "installata manualmente fuori da uno store (file APK)")
+s("origin_other", "z iného obchodu: %1$s", "from another store: %1$s", "aus einem anderen Store: %1$s", "depuis un autre store : %1$s", "de otra tienda: %1$s", "da un altro store: %1$s")
+s("open_settings", "Otvoriť nastavenia aplikácie", "Open app settings", "App-Einstellungen öffnen", "Ouvrir les paramètres de l'app", "Abrir ajustes de la app", "Apri impostazioni dell'app")
+s("how_to_remove", "Ako ju odstrániť", "How to remove it", "So entfernst du sie", "Comment la supprimer", "Cómo eliminarla", "Come rimuoverla")
+s("remove_intro",
+  "Systémovú aplikáciu často nejde odinštalovať v nastaveniach — najprv skús tlačidlo Vypnúť. Ak chýba, dá sa odstrániť pre tvojho používateľa z počítača cez ADB (ladenie USB). Je to vratné. Odstránenie nesprávnej systémovej služby môže narušiť funkcie telefónu; ak si nie si istý, čo appka robí, nechaj ju tak.",
+  "A system app often cannot be uninstalled in Settings — try the Disable button first. If it is missing, you can remove it for your user from a computer via ADB (USB debugging). This is reversible. Removing the wrong system service can break phone features; if you are not sure what the app does, leave it alone.",
+  "Eine System-App lässt sich in den Einstellungen oft nicht deinstallieren — versuch zuerst die Schaltfläche Deaktivieren. Fehlt sie, kannst du die App über ADB (USB-Debugging) vom Computer aus für deinen Nutzer entfernen. Das ist umkehrbar. Wer den falschen Systemdienst entfernt, kann Funktionen des Telefons beeinträchtigen; wenn du nicht sicher bist, was die App tut, lass sie in Ruhe.",
+  "Une app système ne peut souvent pas être désinstallée dans les paramètres — essaie d'abord le bouton Désactiver. S'il manque, tu peux la supprimer pour ton utilisateur depuis un ordinateur via ADB (débogage USB). C'est réversible. Supprimer le mauvais service système peut casser des fonctions du téléphone ; si tu n'es pas sûr de ce que fait l'app, laisse-la.",
+  "Una app del sistema a menudo no se puede desinstalar en los ajustes; prueba primero el botón Desactivar. Si no aparece, puedes eliminarla para tu usuario desde un ordenador mediante ADB (depuración USB). Es reversible. Eliminar el servicio del sistema equivocado puede romper funciones del teléfono; si no sabes con seguridad qué hace la app, déjala.",
+  "Spesso un'app di sistema non si può disinstallare dalle impostazioni — prova prima il pulsante Disattiva. Se manca, puoi rimuoverla per il tuo utente da un computer tramite ADB (debug USB). È reversibile. Rimuovere il servizio di sistema sbagliato può compromettere funzioni del telefono; se non sei sicuro di cosa faccia l'app, lasciala stare.")
+s("remove_cmd", "Odstrániť:", "Remove:", "Entfernen:", "Supprimer :", "Eliminar:", "Rimuovi:")
+s("restore_cmd", "Vrátiť späť:", "Undo:", "Rückgängig:", "Annuler :", "Deshacer:", "Annulla:")
+s("copy", "Kopírovať", "Copy", "Kopieren", "Copier", "Copiar", "Copia")
+s("copied", "Skopírované", "Copied", "Kopiert", "Copié", "Copiado", "Copiato")
 s("changes_title", "ČO SA ZMENILO", "WHAT CHANGED", "WAS SICH GEÄNDERT HAT", "CE QUI A CHANGÉ", "QUÉ HA CAMBIADO", "COSA È CAMBIATO")
 s("permissions_title", "ČO APPKA MÔŽE", "WHAT THE APP CAN ACCESS", "WORAUF DIE APP ZUGREIFEN KANN", "CE À QUOI L'APP A ACCÈS", "A QUÉ PUEDE ACCEDER LA APP", "A COSA PUÒ ACCEDERE L'APP")
 s("no_named_perms",
@@ -158,6 +190,14 @@ s("about_text",
   "Todo el análisis se hace en tu teléfono. La app lee las aplicaciones instaladas, busca en su código bibliotecas de rastreo conocidas y lo cruza con los permisos. No se envía nada.\n\nLa app muestra lo que está presente en el código, no lo que ocurre en este momento. La lista de firmas no está completa, así que tiende a quedarse corta antes que a exagerar.",
   "Tutta l'analisi avviene sul tuo telefono. L'app legge le applicazioni installate, cerca nel loro codice librerie di tracciamento note e incrocia il risultato con le autorizzazioni. Non viene inviato nulla.\n\nL'app indica ciò che è presente nel codice — non ciò che sta succedendo adesso. L'elenco delle firme non è completo, quindi tende a sottostimare piuttosto che a esagerare.")
 s("privacy_policy", "Zásady ochrany súkromia", "Privacy policy", "Datenschutzerklärung", "Politique de confidentialité", "Política de privacidad", "Informativa sulla privacy")
+s("report_link", "Nahlásiť nesprávny nález", "Report an incorrect finding", "Falschen Befund melden", "Signaler un résultat erroné", "Informar de un resultado incorrecto", "Segnala un risultato errato")
+s("report_note",
+  "Otvorí GitHub v prehliadači (vyžaduje účet). Appka sama nič neodosiela.",
+  "Opens GitHub in the browser (account required). The app itself sends nothing.",
+  "Öffnet GitHub im Browser (Konto erforderlich). Die App selbst sendet nichts.",
+  "Ouvre GitHub dans le navigateur (compte requis). L'app elle-même n'envoie rien.",
+  "Abre GitHub en el navegador (requiere cuenta). La app no envía nada por sí misma.",
+  "Apre GitHub nel browser (serve un account). L'app di per sé non invia nulla.")
 
 # ── úvodná obrazovka ──
 s("claims",

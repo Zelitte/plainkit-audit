@@ -144,7 +144,7 @@ fun computeDiff(old: ScanRecord?, newTrackers: List<String>, newPerms: List<Stri
  * potom technické (s krátkym názvom — posledná časť za bodkou).
  * Napr. „poloha aj na pozadí; technické: BIND_SERVICE".
  */
-private fun permsText(perms: List<String>, packageName: String, s: S): String {
+private fun permsText(perms: List<String>, packageName: String, s: S, compact: Boolean = false): String {
     val named = perms.mapNotNull { permLabel(it, s) }.toMutableList()
     // Push a odznak na ikonke: jeden riadok namiesto desiatok názvov, rovnako
     // ako v detaile aplikácie.
@@ -155,7 +155,12 @@ private fun permsText(perms: List<String>, packageName: String, s: S): String {
         .map { techLabel(it) }
     return buildList {
         if (named.isNotEmpty()) add(named.joinToString(", "))
-        if (tech.isNotEmpty()) add(s.techList(tech.joinToString(", ")))
+        // Kompaktne: viac než dve technické povolenia sa zhrnú na počet
+        // (pri systémových appkách ich býva aj desať naraz). Celé mená
+        // ukáže záznam po rozkliknutí.
+        if (tech.isNotEmpty()) add(
+            s.techList(if (compact && tech.size > 2) "${tech.size} ▸" else tech.joinToString(", "))
+        )
     }.joinToString("; ")
 }
 
@@ -165,12 +170,12 @@ private fun permsText(perms: List<String>, packageName: String, s: S): String {
  * Vráti prázdny reťazec, ak po odfiltrovaní vlastných povolení aplikácie
  * nezostalo nič, čo by malo zmysel ukázať — volajúci taký záznam preskočí.
  */
-fun renderChange(stored: String, packageName: String, s: S): String {
+fun renderChange(stored: String, packageName: String, s: S, compact: Boolean = false): String {
     val d = ChangeDiff.decode(stored) ?: return stored
     val parts = mutableListOf<String>()
     if (d.trackersAdded.isNotEmpty()) parts.add(s.addedTrackers(d.trackersAdded.joinToString(", ")))
     if (d.trackersRemoved.isNotEmpty()) parts.add(s.removedTrackers(d.trackersRemoved.joinToString(", ")))
-    permsText(d.permsAdded, packageName, s).takeIf { it.isNotEmpty() }?.let { parts.add(s.addedPerms(it)) }
-    permsText(d.permsRemoved, packageName, s).takeIf { it.isNotEmpty() }?.let { parts.add(s.removedPerms(it)) }
+    permsText(d.permsAdded, packageName, s, compact).takeIf { it.isNotEmpty() }?.let { parts.add(s.addedPerms(it)) }
+    permsText(d.permsRemoved, packageName, s, compact).takeIf { it.isNotEmpty() }?.let { parts.add(s.removedPerms(it)) }
     return parts.joinToString(" · ")
 }

@@ -1,0 +1,7 @@
+* Nový prepínač Aplikácie / Systémové / Spolu, skenovať sa dajú aj len systémové appky
+* Pri každej appke vidno jej pôvod: prišla s telefónom, z Obchodu Play, ručne zo súboru APK alebo z iného obchodu
+* Tlačidlo na nastavenia aplikácie a pri systémových appkách návod, ako ich odstrániť cez ADB
+* Prehľadnejší zoznam zmien
+* Opravený falošný nález Firebase Analytics
+* Odkaz na nahlásenie nesprávneho nálezu
+* Menšia appka

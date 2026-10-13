@@ -126,6 +126,15 @@ fun SettingsScreen(
             )
         }
 
+        // Číslo verzie sa číta z nainštalovaného balíka, nie z konštanty v kóde —
+        // tým vždy sedí s tým, čo je naozaj v telefóne (aj s príponou -debug).
+        // Zámerne bez prekladu: „v1.2" je zrozumiteľné vo všetkých jazykoch.
+        val version = remember {
+            runCatching {
+                context.packageManager.getPackageInfo(context.packageName, 0).versionName
+            }.getOrNull()
+        }
+
         Text(
             s.aboutTitle,
             style = MaterialTheme.typography.labelMedium,
@@ -143,6 +152,29 @@ fun SettingsScreen(
                 .clickable { open("https://plainkit.app/audit") }
         )
 
+        // Nahlásenie nesprávneho nálezu. Do adresy ide LEN verzia appky —
+        // nie model telefónu ani zoznam aplikácií: prehliadač adresu odošle
+        // GitHubu hneď pri otvorení, ešte skôr, než sa človek rozhodne niečo
+        // odoslať. Ostatné dopíše sám, ak chce.
+        Text(
+            text = s.reportLink,
+            style = MaterialTheme.typography.bodyMedium,
+            color = LINK,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .clickable {
+                    // Titulok jednotne po anglicky — hlásenia prídu zo 6 jazykov, takto sa dajú triediť.
+                    val title = android.net.Uri.encode("Incorrect finding (v${version ?: "?"})")
+                    open("https://github.com/Zelitte/plainkit-audit/issues/new?title=$title")
+                }
+        )
+        Text(
+            s.reportNote,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
         Text(
             text = s.partOf,
             style = MaterialTheme.typography.bodyMedium,
@@ -153,14 +185,6 @@ fun SettingsScreen(
                 .clickable { open("https://plainkit.app") }
         )
 
-        // Číslo verzie sa číta z nainštalovaného balíka, nie z konštanty v kóde —
-        // tým vždy sedí s tým, čo je naozaj v telefóne (aj s príponou -debug).
-        // Zámerne bez prekladu: „v1.2" je zrozumiteľné vo všetkých jazykoch.
-        val version = remember {
-            runCatching {
-                context.packageManager.getPackageInfo(context.packageName, 0).versionName
-            }.getOrNull()
-        }
         if (version != null) {
             Text(
                 text = "v$version",

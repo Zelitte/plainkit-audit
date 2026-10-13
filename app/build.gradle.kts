@@ -14,8 +14,8 @@ android {
         applicationId = "app.plainkit.audit"
         minSdk = 26
         targetSdk = 37
-        versionCode = 6
-        versionName = "1.3.2"
+        versionCode = 7
+        versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,9 +28,23 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
+            // R8: zmenší a premenuje kód. Play od 10/2026 upozorňuje, že
+            // „znejasňovanie" pod 25 % môže znížiť viditeľnosť (termín feb 2027).
+            // Tvrdenie „bez INTERNET" sa tým nemení — manifest R8 neupravuje.
+            // Zdroják ostáva verejný. Debug build sa neoptimalizuje.
             optimization {
-                enable = false
+                enable = true
             }
+        }
+        // Test R8 na telefóne VEDĽA ostrej appky: rovnaká optimalizácia ako release,
+        // ale vlastný názov balíka a ladiaci podpis. Ostrú verziu z Play nemožno
+        // prepísať vlastným release buildom — Play ju podpisuje svojím kľúčom.
+        create("r8test") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".r8"
+            versionNameSuffix = "-r8"
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
         }
     }
     compileOptions {

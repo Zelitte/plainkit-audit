@@ -198,8 +198,9 @@ val TRACKERS = listOf(
  * 2 = v1.2 (148 signatúr)
  * 3 = v1.3.1 (počítajú sa len triedy, ktoré APK naozaj obsahuje; mená bez zátvoriek)
  * 4 = v1.3.2 (gms/ads/identifier/ a hms/ads/identifier/ sa už nepovažujú za AdMob / Huawei Ads)
+ * 5 = v1.4 (firebase/analytics/connector/ sa už nepovažuje za Firebase Analytics)
  */
-const val TRACKER_DB_VERSION = 4
+const val TRACKER_DB_VERSION = 5
 
 /** `res` = id textu v strings.xml. SK je v 3. páde, pretože veta znie „prístup k …". */
 data class PermGroup(val res: Int, val permissions: Set<String>) {
