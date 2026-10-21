@@ -214,7 +214,7 @@
     <string name="dns_title">PRIVATE DNS</string>
     <string name="dns_on">On: %1$s</string>
     <string name="dns_auto">Automatic mode — encrypts lookups but does not block ads.</string>
-    <string name="dns_off">Not active</string>
+    <string name="dns_off">Not active — off, or automatic mode that your current network doesn\'t support.</string>
     <string name="dns_unknown">Can\'t tell — the phone is not connected to a network.</string>
     <string name="dns_guide">Block ads across the whole phone: Settings → Network (or Connections) → Private DNS → Private DNS provider hostname → paste the address below. Works for all apps and the browser.</string>
     <string name="dns_tradeoff">Note: AdGuard then sees which domains the phone visits — instead of your mobile operator. It is not complete protection.</string>

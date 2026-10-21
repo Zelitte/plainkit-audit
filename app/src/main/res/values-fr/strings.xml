@@ -213,7 +213,7 @@
     <string name="dns_title">DNS PRIVÉ</string>
     <string name="dns_on">Activé : %1$s</string>
     <string name="dns_auto">Mode automatique — chiffre les requêtes mais ne bloque pas les pubs.</string>
-    <string name="dns_off">Inactif</string>
+    <string name="dns_off">Inactif — désactivé, ou mode automatique non pris en charge par ton réseau actuel.</string>
     <string name="dns_unknown">Impossible à savoir — le téléphone n\'est pas connecté à un réseau.</string>
     <string name="dns_guide">Bloquer les pubs dans tout le téléphone : Paramètres → Réseau (ou Connexions) → DNS privé → Nom d\'hôte du fournisseur → colle l\'adresse ci-dessous. Vaut pour toutes les apps et le navigateur.</string>
     <string name="dns_tradeoff">Attention : AdGuard voit alors quels domaines le téléphone consulte — à la place de ton opérateur. Ce n\'est pas une protection totale.</string>

@@ -213,7 +213,7 @@
     <string name="dns_title">PRIVATES DNS</string>
     <string name="dns_on">An: %1$s</string>
     <string name="dns_auto">Automatischer Modus — verschlüsselt Anfragen, blockiert aber keine Werbung.</string>
-    <string name="dns_off">Nicht aktiv</string>
+    <string name="dns_off">Nicht aktiv — aus, oder automatischer Modus, den dein aktuelles Netz nicht unterstützt.</string>
     <string name="dns_unknown">Nicht feststellbar — das Telefon ist nicht mit einem Netz verbunden.</string>
     <string name="dns_guide">Werbung im ganzen Telefon blockieren: Einstellungen → Netzwerk (oder Verbindungen) → Privates DNS → Hostname des Anbieters → Adresse unten einfügen. Gilt für alle Apps und den Browser.</string>
     <string name="dns_tradeoff">Achtung: AdGuard sieht dann, welche Domains das Telefon aufruft — statt deines Netzbetreibers. Es ist kein vollständiger Schutz.</string>

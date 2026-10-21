@@ -439,7 +439,13 @@ s("dns_auto",
   "Mode automatique — chiffre les requêtes mais ne bloque pas les pubs.",
   "Modo automático: cifra las consultas, pero no bloquea anuncios.",
   "Modalità automatica — cifra le richieste ma non blocca gli annunci.")
-s("dns_off", "Neaktívne", "Not active", "Nicht aktiv", "Inactif", "Inactivo", "Non attivo")
+s("dns_off",
+  "Neaktívne — vypnuté, alebo automatický režim, ktorý tvoja sieť práve nepodporuje.",
+  "Not active — off, or automatic mode that your current network doesn't support.",
+  "Nicht aktiv — aus, oder automatischer Modus, den dein aktuelles Netz nicht unterstützt.",
+  "Inactif — désactivé, ou mode automatique non pris en charge par ton réseau actuel.",
+  "Inactivo: desactivado, o modo automático que tu red actual no admite.",
+  "Non attivo — disattivato, oppure modalità automatica non supportata dalla rete attuale.")
 s("dns_unknown",
   "Stav sa nedá zistiť — telefón nie je pripojený k sieti.",
   "Can't tell — the phone is not connected to a network.",

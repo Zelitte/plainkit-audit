@@ -213,7 +213,7 @@
     <string name="dns_title">SÚKROMNÉ DNS</string>
     <string name="dns_on">Zapnuté: %1$s</string>
     <string name="dns_auto">Automatický režim — šifruje dopyty, ale reklamy neblokuje.</string>
-    <string name="dns_off">Neaktívne</string>
+    <string name="dns_off">Neaktívne — vypnuté, alebo automatický režim, ktorý tvoja sieť práve nepodporuje.</string>
     <string name="dns_unknown">Stav sa nedá zistiť — telefón nie je pripojený k sieti.</string>
     <string name="dns_guide">Blokovanie reklám v celom telefóne: Nastavenia → Sieť (alebo Pripojenia) → Súkromné DNS → Názov hostiteľa poskytovateľa → vlož adresu nižšie. Platí pre všetky appky aj prehliadač.</string>
     <string name="dns_tradeoff">Pozor: služba AdGuard potom vidí, aké domény telefón navštevuje — namiesto tvojho operátora. Nie je to stopercentná ochrana.</string>

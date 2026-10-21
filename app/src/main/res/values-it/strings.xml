@@ -213,7 +213,7 @@
     <string name="dns_title">DNS PRIVATO</string>
     <string name="dns_on">Attivo: %1$s</string>
     <string name="dns_auto">Modalità automatica — cifra le richieste ma non blocca gli annunci.</string>
-    <string name="dns_off">Non attivo</string>
+    <string name="dns_off">Non attivo — disattivato, oppure modalità automatica non supportata dalla rete attuale.</string>
     <string name="dns_unknown">Impossibile saperlo — il telefono non è connesso a una rete.</string>
     <string name="dns_guide">Bloccare gli annunci in tutto il telefono: Impostazioni → Rete (o Connessioni) → DNS privato → Nome host del provider → incolla l\'indirizzo qui sotto. Vale per tutte le app e per il browser.</string>
     <string name="dns_tradeoff">Attenzione: AdGuard vedrà quali domini visita il telefono — al posto del tuo operatore. Non è una protezione completa.</string>
