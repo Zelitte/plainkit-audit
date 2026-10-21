@@ -152,7 +152,7 @@ private fun permsText(perms: List<String>, packageName: String, s: S, compact: B
     val tech = perms
         .filter { permLabel(it, s) == null }
         .filterNot { isNotifyOrBadge(it) || isOwnPermission(it, packageName) }
-        .map { techLabel(it) }
+        .map { techHuman(it, s) ?: breakable(techLabel(it)) }
     return buildList {
         if (named.isNotEmpty()) add(named.joinToString(", "))
         // Kompaktne: viac než dve technické povolenia sa zhrnú na počet

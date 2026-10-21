@@ -1,0 +1,5 @@
+* Technical permissions in plain language (66 Android permissions) and a "system only" tag read from the phone itself
+* Vendors' own permissions (vivo, Xiaomi, Google…) folded into one line with a count
+* Ad libraries now mention real-time ad auctions, a channel used to spread spyware in 2026
+* Settings: Private DNS status and how to block ads across the whole phone
+* Fixed wrapping of long names

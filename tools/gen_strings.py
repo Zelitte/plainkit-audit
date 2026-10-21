@@ -254,6 +254,7 @@ P = [
  ("POST_NOTIFICATIONS", "notifikácie", "notifications", "Benachrichtigungen", "notifications", "notificaciones", "notifiche"),
  ("MANAGE_EXTERNAL_STORAGE", "prístup ku všetkým súborom", "access all files", "Zugriff auf alle Dateien", "accès à tous les fichiers", "acceso a todos los archivos", "accesso a tutti i file"),
  ("SYSTEM_ALERT_WINDOW", "kreslenie cez iné aplikácie", "draw over other apps", "über anderen Apps einblenden", "afficher par-dessus d'autres apps", "mostrar sobre otras apps", "mostrare sopra altre app"),
+ ("WRITE_SETTINGS", "meniť systémové nastavenia", "change system settings", "Systemeinstellungen ändern", "modifier les paramètres système", "cambiar ajustes del sistema", "modificare le impostazioni di sistema"),
  ("REQUEST_INSTALL_PACKAGES", "inštalovanie aplikácií", "install apps", "Apps installieren", "installer des apps", "instalar apps", "installare app"),
  ("PACKAGE_USAGE_STATS", "štatistiky používania aplikácií", "app usage statistics", "App-Nutzungsstatistiken", "statistiques d'utilisation des apps", "estadísticas de uso de apps", "statistiche di utilizzo delle app"),
  ("SCHEDULE_EXACT_ALARM", "presne načasované budíky", "exact alarms", "exakte Alarme", "alarmes exactes", "alarmas exactas", "allarmi esatti"),
@@ -317,6 +318,151 @@ G = [
 ]
 for row in G:
     s("group_" + row[0], *row[1:])
+
+
+# ── technické povolenia Androidu: ľudský popis (kľúč = tperm_ + názov) ──
+# Úroveň (bežné / len pre systém) sa NEPÍŠE sem — appka ju číta za behu
+# priamo z telefónu (PermissionInfo), takže sedí na každom zariadení.
+# Zoznam overený na vivo V50 Lite a Redmi (pm list permissions -f), 21. 10. 2026.
+T = [
+ ("INTERNET", "prístup na internet", "internet access", "Internetzugriff", "accès à Internet", "acceso a Internet", "accesso a Internet"),
+ ("ACCESS_NETWORK_STATE", "zistiť stav pripojenia k sieti", "see network connections", "Netzwerkverbindungen sehen", "voir les connexions réseau", "ver las conexiones de red", "vedere le connessioni di rete"),
+ ("ACCESS_WIFI_STATE", "zistiť stav Wi-Fi", "see Wi-Fi state", "WLAN-Status sehen", "voir l'état du Wi-Fi", "ver el estado del Wi-Fi", "vedere lo stato del Wi-Fi"),
+ ("CHANGE_NETWORK_STATE", "meniť pripojenie k sieti", "change network connectivity", "Netzwerkverbindung ändern", "modifier la connectivité réseau", "cambiar la conectividad de red", "modificare la connettività di rete"),
+ ("CHANGE_WIFI_STATE", "zapínať a meniť Wi-Fi", "turn Wi-Fi on and off", "WLAN ein- und ausschalten", "activer et désactiver le Wi-Fi", "activar y desactivar el Wi-Fi", "attivare e disattivare il Wi-Fi"),
+ ("WAKE_LOCK", "nedovoliť telefónu uspať sa", "keep the phone awake", "Ruhezustand verhindern", "empêcher la mise en veille", "evitar que el teléfono entre en reposo", "impedire la sospensione del telefono"),
+ ("VIBRATE", "vibrovať", "vibrate", "vibrieren", "faire vibrer", "vibrar", "far vibrare"),
+ ("FOREGROUND_SERVICE", "bežať v popredí s trvalou notifikáciou", "run in the foreground", "im Vordergrund laufen", "s'exécuter au premier plan", "ejecutarse en primer plano", "essere eseguita in primo piano"),
+ ("KILL_BACKGROUND_PROCESSES", "zatvárať iné appky na pozadí", "close other apps in the background", "andere Apps im Hintergrund schließen", "fermer d'autres apps en arrière-plan", "cerrar otras apps en segundo plano", "chiudere altre app in background"),
+ ("RESTART_PACKAGES", "zatvárať iné appky (zastarané)", "close other apps (deprecated)", "andere Apps schließen (veraltet)", "fermer d'autres apps (obsolète)", "cerrar otras apps (obsoleto)", "chiudere altre app (obsoleto)"),
+ ("GET_TASKS", "zoznam spustených appiek (dnes vidí len svoje)", "list running apps (now only its own)", "laufende Apps auflisten (heute nur die eigenen)", "lister les apps en cours (aujourd'hui seulement les siennes)", "listar apps en ejecución (hoy solo las propias)", "elencare le app in esecuzione (oggi solo le proprie)"),
+ ("SET_WALLPAPER", "nastaviť tapetu", "set the wallpaper", "Hintergrundbild festlegen", "définir le fond d'écran", "establecer el fondo de pantalla", "impostare lo sfondo"),
+ ("EXPAND_STATUS_BAR", "rozbaliť panel notifikácií", "expand the notification panel", "Benachrichtigungsleiste aufklappen", "dérouler le volet des notifications", "desplegar el panel de notificaciones", "espandere il pannello delle notifiche"),
+ ("DISABLE_KEYGUARD", "vypnúť zámok obrazovky, ak nie je zabezpečený", "disable the screen lock if it is not secure", "Displaysperre deaktivieren, wenn sie nicht gesichert ist", "désactiver le verrouillage s'il n'est pas sécurisé", "desactivar el bloqueo de pantalla si no es seguro", "disattivare il blocco schermo se non è protetto"),
+ ("USE_BIOMETRIC", "overiť ťa odtlačkom prsta alebo tvárou", "verify you with fingerprint or face", "dich per Fingerabdruck oder Gesicht prüfen", "te vérifier par empreinte ou visage", "verificarte con huella o rostro", "verificarti con impronta o volto"),
+ ("USE_FINGERPRINT", "overiť ťa odtlačkom prsta (zastarané)", "verify you with fingerprint (deprecated)", "dich per Fingerabdruck prüfen (veraltet)", "te vérifier par empreinte (obsolète)", "verificarte con huella (obsoleto)", "verificarti con impronta (obsoleto)"),
+ ("ACCESS_NOTIFICATION_POLICY", "meniť režim Nerušiť", "change Do Not Disturb", "„Nicht stören\" ändern", "modifier « Ne pas déranger »", "cambiar «No molestar»", "modificare «Non disturbare»"),
+ ("MANAGE_ACCOUNTS", "spravovať účty v telefóne (staré Androidy)", "manage accounts (old Android)", "Konten verwalten (altes Android)", "gérer les comptes (ancien Android)", "gestionar cuentas (Android antiguo)", "gestire gli account (vecchio Android)"),
+ ("AUTHENTICATE_ACCOUNTS", "vytvárať účty (staré Androidy)", "create accounts (old Android)", "Konten erstellen (altes Android)", "créer des comptes (ancien Android)", "crear cuentas (Android antiguo)", "creare account (vecchio Android)"),
+ ("NFC", "používať NFC", "use NFC", "NFC verwenden", "utiliser le NFC", "usar NFC", "usare l'NFC"),
+ ("BLUETOOTH", "používať Bluetooth (staré Androidy)", "use Bluetooth (old Android)", "Bluetooth verwenden (altes Android)", "utiliser le Bluetooth (ancien Android)", "usar Bluetooth (Android antiguo)", "usare il Bluetooth (vecchio Android)"),
+ ("BLUETOOTH_ADMIN", "nastavovať Bluetooth (staré Androidy)", "configure Bluetooth (old Android)", "Bluetooth einrichten (altes Android)", "configurer le Bluetooth (ancien Android)", "configurar Bluetooth (Android antiguo)", "configurare il Bluetooth (vecchio Android)"),
+ ("TRANSMIT_IR", "vysielať infračerveným lúčom (diaľkové ovládanie)", "transmit infrared (remote control)", "Infrarot senden (Fernbedienung)", "émettre en infrarouge (télécommande)", "emitir infrarrojos (mando a distancia)", "trasmettere a infrarossi (telecomando)"),
+ ("USE_FULL_SCREEN_INTENT", "upozornenie cez celú obrazovku (napr. hovor)", "full-screen alerts (e.g. calls)", "Vollbild-Hinweise (z. B. Anrufe)", "alertes plein écran (ex. appels)", "alertas a pantalla completa (p. ej. llamadas)", "avvisi a schermo intero (es. chiamate)"),
+ ("INSTALL_PACKAGES", "inštalovať appky bez opýtania", "install apps without asking", "Apps ohne Nachfrage installieren", "installer des apps sans demander", "instalar apps sin preguntar", "installare app senza chiedere"),
+ ("DELETE_PACKAGES", "odinštalovať appky bez opýtania", "uninstall apps without asking", "Apps ohne Nachfrage deinstallieren", "désinstaller des apps sans demander", "desinstalar apps sin preguntar", "disinstallare app senza chiedere"),
+ ("INSTALL_SELF_UPDATES", "aktualizovať sa sama bez opýtania", "update itself without asking", "sich ohne Nachfrage selbst aktualisieren", "se mettre à jour sans demander", "actualizarse sin preguntar", "aggiornarsi senza chiedere"),
+ ("FORCE_STOP_PACKAGES", "násilne ukončiť iné appky", "force-stop other apps", "andere Apps zwangsweise beenden", "forcer l'arrêt d'autres apps", "forzar la detención de otras apps", "forzare l'arresto di altre app"),
+ ("CLEAR_APP_USER_DATA", "vymazať dáta iných appiek", "erase other apps' data", "Daten anderer Apps löschen", "effacer les données d'autres apps", "borrar datos de otras apps", "cancellare i dati di altre app"),
+ ("WRITE_SECURE_SETTINGS", "meniť chránené systémové nastavenia", "change protected system settings", "geschützte Systemeinstellungen ändern", "modifier les paramètres système protégés", "cambiar ajustes protegidos del sistema", "modificare le impostazioni di sistema protette"),
+ ("MANAGE_USERS", "spravovať používateľov telefónu", "manage the phone's users", "Nutzer des Telefons verwalten", "gérer les utilisateurs du téléphone", "gestionar los usuarios del teléfono", "gestire gli utenti del telefono"),
+ ("INTERACT_ACROSS_USERS", "pristupovať k iným používateľom a profilom", "access other users and profiles", "auf andere Nutzer und Profile zugreifen", "accéder aux autres utilisateurs et profils", "acceder a otros usuarios y perfiles", "accedere ad altri utenti e profili"),
+ ("INTERACT_ACROSS_USERS_FULL", "plný prístup k iným používateľom a profilom", "full access to other users and profiles", "voller Zugriff auf andere Nutzer und Profile", "accès complet aux autres utilisateurs et profils", "acceso total a otros usuarios y perfiles", "accesso completo ad altri utenti e profili"),
+ ("READ_LOGS", "čítať systémové záznamy (logy)", "read system logs", "Systemprotokolle lesen", "lire les journaux système", "leer los registros del sistema", "leggere i log di sistema"),
+ ("DUMP", "čítať diagnostické výpisy systému", "read system diagnostic dumps", "Systemdiagnose-Ausgaben lesen", "lire les diagnostics du système", "leer volcados de diagnóstico del sistema", "leggere i dump diagnostici del sistema"),
+ ("REAL_GET_TASKS", "vidieť, ktoré appky práve bežia", "see which apps are running", "sehen, welche Apps gerade laufen", "voir quelles apps sont en cours", "ver qué apps se están ejecutando", "vedere quali app sono in esecuzione"),
+ ("READ_PRIVILEGED_PHONE_STATE", "čítať trvalé identifikátory telefónu (IMEI, sériové číslo)", "read permanent phone IDs (IMEI, serial number)", "dauerhafte Gerätekennungen lesen (IMEI, Seriennummer)", "lire les identifiants permanents (IMEI, n° de série)", "leer identificadores permanentes (IMEI, número de serie)", "leggere gli identificativi permanenti (IMEI, numero di serie)"),
+ ("MODIFY_PHONE_STATE", "ovládať hovory a mobilnú sieť", "control calls and the mobile network", "Anrufe und Mobilfunknetz steuern", "contrôler les appels et le réseau mobile", "controlar llamadas y la red móvil", "controllare chiamate e rete mobile"),
+ ("CALL_PRIVILEGED", "volať na akékoľvek číslo bez potvrdenia", "call any number without confirmation", "jede Nummer ohne Bestätigung anrufen", "appeler n'importe quel numéro sans confirmation", "llamar a cualquier número sin confirmación", "chiamare qualsiasi numero senza conferma"),
+ ("STATUS_BAR", "ovládať stavový riadok", "control the status bar", "Statusleiste steuern", "contrôler la barre d'état", "controlar la barra de estado", "controllare la barra di stato"),
+ ("INTERNAL_SYSTEM_WINDOW", "zobrazovať systémové okná", "show system windows", "Systemfenster anzeigen", "afficher des fenêtres système", "mostrar ventanas del sistema", "mostrare finestre di sistema"),
+ ("ACCESS_SURFACE_FLINGER", "nízkoúrovňový prístup ku grafike obrazovky", "low-level access to screen graphics", "Low-Level-Zugriff auf die Bildschirmgrafik", "accès bas niveau aux graphismes de l'écran", "acceso de bajo nivel a los gráficos de pantalla", "accesso di basso livello alla grafica dello schermo"),
+ ("READ_FRAME_BUFFER", "snímať obsah obrazovky", "capture the screen contents", "Bildschirminhalt erfassen", "capturer le contenu de l'écran", "capturar el contenido de la pantalla", "catturare il contenuto dello schermo"),
+ ("CAPTURE_AUDIO_OUTPUT", "nahrávať zvuk, ktorý telefón prehráva", "record audio the phone is playing", "vom Telefon wiedergegebenen Ton aufnehmen", "enregistrer le son joué par le téléphone", "grabar el audio que reproduce el teléfono", "registrare l'audio riprodotto dal telefono"),
+ ("MODIFY_AUDIO_ROUTING", "presmerovať zvuk", "reroute audio", "Audio umleiten", "rediriger le son", "redirigir el audio", "reindirizzare l'audio"),
+ ("MOUNT_UNMOUNT_FILESYSTEMS", "pripájať a odpájať úložiská", "mount and unmount storage", "Speicher einbinden und trennen", "monter et démonter le stockage", "montar y desmontar almacenamiento", "montare e smontare l'archiviazione"),
+ ("CHANGE_CONFIGURATION", "meniť jazyk, veľkosť písma a podobné nastavenia", "change language, font size and similar settings", "Sprache, Schriftgröße u. Ä. ändern", "modifier la langue, la taille du texte, etc.", "cambiar idioma, tamaño de letra y similares", "modificare lingua, dimensione del testo e simili"),
+ ("START_ACTIVITIES_FROM_BACKGROUND", "otvárať obrazovky z pozadia", "open screens from the background", "Bildschirme aus dem Hintergrund öffnen", "ouvrir des écrans depuis l'arrière-plan", "abrir pantallas desde segundo plano", "aprire schermate dal background"),
+ ("MANAGE_ACTIVITY_STACKS", "spravovať okná iných appiek", "manage other apps' windows", "Fenster anderer Apps verwalten", "gérer les fenêtres d'autres apps", "gestionar ventanas de otras apps", "gestire le finestre di altre app"),
+ ("MANAGE_APP_TOKENS", "spravovať okná appiek", "manage app windows", "App-Fenster verwalten", "gérer les fenêtres des apps", "gestionar ventanas de apps", "gestire le finestre delle app"),
+ ("REMOVE_TASKS", "zatvárať appky v zozname posledných", "close apps in recents", "Apps in „Zuletzt verwendet\" schließen", "fermer des apps dans les récentes", "cerrar apps en recientes", "chiudere app nelle recenti"),
+ ("BROADCAST_CLOSE_SYSTEM_DIALOGS", "zatvárať systémové okná a ponuky", "close system dialogs and menus", "Systemdialoge und -menüs schließen", "fermer les boîtes de dialogue système", "cerrar diálogos y menús del sistema", "chiudere finestre e menu di sistema"),
+ ("ACCESS_KEYGUARD_SECURE_STORAGE", "pristupovať k zabezpečeniu zámku obrazovky", "access screen-lock security storage", "auf den Sicherheitsspeicher der Displaysperre zugreifen", "accéder au stockage sécurisé du verrouillage", "acceder al almacén seguro del bloqueo", "accedere all'archivio sicuro del blocco schermo"),
+ ("CONNECTIVITY_INTERNAL", "spravovať sieťové pripojenia systému", "manage system network connections", "Netzwerkverbindungen des Systems verwalten", "gérer les connexions réseau du système", "gestionar las conexiones de red del sistema", "gestire le connessioni di rete del sistema"),
+ ("SET_PREFERRED_APPLICATIONS", "meniť predvolené appky", "change default apps", "Standard-Apps ändern", "modifier les apps par défaut", "cambiar las apps predeterminadas", "modificare le app predefinite"),
+ ("CHANGE_OVERLAY_PACKAGES", "meniť vzhľad systému (témy)", "change the system look (themes)", "Systemoptik ändern (Designs)", "modifier l'apparence du système (thèmes)", "cambiar el aspecto del sistema (temas)", "modificare l'aspetto del sistema (temi)"),
+ ("MODIFY_DAY_NIGHT_MODE", "prepínať tmavý režim", "switch dark mode", "Dunkelmodus umschalten", "basculer le mode sombre", "cambiar el modo oscuro", "attivare/disattivare la modalità scura"),
+ ("MANAGE_LOW_POWER_STANDBY", "meniť úsporný režim v pohotovosti", "change low-power standby", "Energiespar-Standby ändern", "modifier la veille basse consommation", "cambiar el modo de espera de bajo consumo", "modificare lo standby a basso consumo"),
+ ("SET_WALLPAPER_COMPONENT", "nastaviť živú tapetu", "set a live wallpaper", "Live-Hintergrund festlegen", "définir un fond d'écran animé", "establecer un fondo animado", "impostare uno sfondo animato"),
+ ("BIND_WALLPAPER", "byť živou tapetou", "act as a live wallpaper", "als Live-Hintergrund dienen", "servir de fond d'écran animé", "funcionar como fondo animado", "fungere da sfondo animato"),
+ ("ACCESS_CACHE_FILESYSTEM", "pristupovať k systémovej vyrovnávacej pamäti", "access the system cache", "auf den System-Cache zugreifen", "accéder au cache système", "acceder a la caché del sistema", "accedere alla cache di sistema"),
+ ("GRANT_RUNTIME_PERMISSIONS", "udeľovať povolenia iným appkám", "grant permissions to other apps", "anderen Apps Berechtigungen erteilen", "accorder des autorisations à d'autres apps", "conceder permisos a otras apps", "concedere autorizzazioni ad altre app"),
+ ("REVOKE_RUNTIME_PERMISSIONS", "odoberať povolenia iným appkám", "revoke permissions from other apps", "anderen Apps Berechtigungen entziehen", "retirer des autorisations à d'autres apps", "revocar permisos a otras apps", "revocare autorizzazioni ad altre app"),
+ ("MANAGE_APP_OPS_MODES", "meniť, čo smú iné appky robiť", "change what other apps may do", "ändern, was andere Apps dürfen", "modifier ce que les autres apps peuvent faire", "cambiar lo que pueden hacer otras apps", "modificare cosa possono fare altre app"),
+ ("GET_ACCOUNTS_PRIVILEGED", "vidieť všetky účty v telefóne", "see all accounts on the phone", "alle Konten auf dem Telefon sehen", "voir tous les comptes du téléphone", "ver todas las cuentas del teléfono", "vedere tutti gli account del telefono"),
+ ("LOCATION_HARDWARE", "priamy prístup k hardvéru polohy", "direct access to location hardware", "direkter Zugriff auf die Standort-Hardware", "accès direct au matériel de localisation", "acceso directo al hardware de ubicación", "accesso diretto all'hardware di posizione"),
+]
+for row in T:
+    s("tperm_" + row[0], *row[1:])
+
+# ── v1.5: technický zoznam ──
+s("sys_only", "len pre systém", "system only", "nur System", "système uniquement", "solo sistema", "solo sistema")
+# %1$s = predpona výrobcu (com.vivo), %2$d = počet, %3$d = z toho chránené podpisom
+s("vendor_group",
+  "%1$s · povolenia: %2$d (chránené podpisom: %3$d)",
+  "%1$s · permissions: %2$d (signature-protected: %3$d)",
+  "%1$s · Berechtigungen: %2$d (signaturgeschützt: %3$d)",
+  "%1$s · autorisations : %2$d (protégées par signature : %3$d)",
+  "%1$s · permisos: %2$d (protegidos por firma: %3$d)",
+  "%1$s · autorizzazioni: %2$d (protette da firma: %3$d)")
+s("vendor_group_plain",
+  "%1$s · povolenia: %2$d",
+  "%1$s · permissions: %2$d",
+  "%1$s · Berechtigungen: %2$d",
+  "%1$s · autorisations : %2$d",
+  "%1$s · permisos: %2$d",
+  "%1$s · autorizzazioni: %2$d")
+s("sig_note",
+  "Povolenie chránené podpisom dostane len systém alebo appka od toho istého autora — cudzia appka nie. Popisy výrobcov k ich vlastným povoleniam nie sú verejné, preto ich neprekladáme.",
+  "A signature-protected permission is only granted to the system or to apps by the same author — never to a third-party app. Vendors don't publish what their own permissions do, so we don't guess.",
+  "Eine signaturgeschützte Berechtigung erhält nur das System oder eine App desselben Herstellers — nie eine fremde App. Hersteller veröffentlichen nicht, was ihre eigenen Berechtigungen tun, daher raten wir nicht.",
+  "Une autorisation protégée par signature n'est accordée qu'au système ou aux apps du même auteur — jamais à une app tierce. Les fabricants ne publient pas le rôle de leurs autorisations, donc nous ne devinons pas.",
+  "Un permiso protegido por firma solo se concede al sistema o a apps del mismo autor, nunca a una app ajena. Los fabricantes no publican qué hacen sus propios permisos, así que no adivinamos.",
+  "Un'autorizzazione protetta da firma viene concessa solo al sistema o ad app dello stesso autore — mai a un'app di terzi. I produttori non pubblicano cosa fanno le proprie autorizzazioni, quindi non tiriamo a indovinare.")
+
+# ── v1.5: reklamy z aukcie (AdFection, Citizen Lab 2026) ──
+s("rtb_note",
+  "Reklamy v appke sa predávajú v aukcii v reálnom čase. Tento kanál bol v roku 2026 zneužitý aj na doručenie spyware bez kliknutia (Citizen Lab). Samotná knižnica nie je dôkaz problému, ale zväčšuje plochu útoku.",
+  "Ads in this app are sold in real-time auctions. In 2026 this channel was also abused to deliver spyware without a click (Citizen Lab). The library alone is not proof of a problem, but it widens the attack surface.",
+  "Werbung in dieser App wird in Echtzeit-Auktionen verkauft. 2026 wurde dieser Kanal auch missbraucht, um Spyware ohne Klick auszuliefern (Citizen Lab). Die Bibliothek allein beweist kein Problem, vergrößert aber die Angriffsfläche.",
+  "Les pubs de cette app sont vendues aux enchères en temps réel. En 2026, ce canal a aussi servi à livrer un logiciel espion sans clic (Citizen Lab). La bibliothèque seule ne prouve pas un problème, mais elle élargit la surface d'attaque.",
+  "Los anuncios de esta app se venden en subastas en tiempo real. En 2026 este canal también se usó para entregar spyware sin un clic (Citizen Lab). La biblioteca por sí sola no prueba un problema, pero amplía la superficie de ataque.",
+  "Gli annunci di questa app sono venduti in aste in tempo reale. Nel 2026 questo canale è stato usato anche per distribuire spyware senza clic (Citizen Lab). La libreria da sola non prova un problema, ma amplia la superficie di attacco.")
+
+# ── v1.5: Súkromné DNS v Nastaveniach ──
+s("dns_title", "SÚKROMNÉ DNS", "PRIVATE DNS", "PRIVATES DNS", "DNS PRIVÉ", "DNS PRIVADO", "DNS PRIVATO")
+s("dns_on", "Zapnuté: %1$s", "On: %1$s", "An: %1$s", "Activé : %1$s", "Activado: %1$s", "Attivo: %1$s")
+s("dns_auto",
+  "Automatický režim — šifruje dopyty, ale reklamy neblokuje.",
+  "Automatic mode — encrypts lookups but does not block ads.",
+  "Automatischer Modus — verschlüsselt Anfragen, blockiert aber keine Werbung.",
+  "Mode automatique — chiffre les requêtes mais ne bloque pas les pubs.",
+  "Modo automático: cifra las consultas, pero no bloquea anuncios.",
+  "Modalità automatica — cifra le richieste ma non blocca gli annunci.")
+s("dns_off", "Neaktívne", "Not active", "Nicht aktiv", "Inactif", "Inactivo", "Non attivo")
+s("dns_unknown",
+  "Stav sa nedá zistiť — telefón nie je pripojený k sieti.",
+  "Can't tell — the phone is not connected to a network.",
+  "Nicht feststellbar — das Telefon ist nicht mit einem Netz verbunden.",
+  "Impossible à savoir — le téléphone n'est pas connecté à un réseau.",
+  "No se puede saber: el teléfono no está conectado a ninguna red.",
+  "Impossibile saperlo — il telefono non è connesso a una rete.")
+s("dns_guide",
+  "Blokovanie reklám v celom telefóne: Nastavenia → Sieť (alebo Pripojenia) → Súkromné DNS → Názov hostiteľa poskytovateľa → vlož adresu nižšie. Platí pre všetky appky aj prehliadač.",
+  "Block ads across the whole phone: Settings → Network (or Connections) → Private DNS → Private DNS provider hostname → paste the address below. Works for all apps and the browser.",
+  "Werbung im ganzen Telefon blockieren: Einstellungen → Netzwerk (oder Verbindungen) → Privates DNS → Hostname des Anbieters → Adresse unten einfügen. Gilt für alle Apps und den Browser.",
+  "Bloquer les pubs dans tout le téléphone : Paramètres → Réseau (ou Connexions) → DNS privé → Nom d'hôte du fournisseur → colle l'adresse ci-dessous. Vaut pour toutes les apps et le navigateur.",
+  "Bloquear anuncios en todo el teléfono: Ajustes → Red (o Conexiones) → DNS privado → Nombre de host del proveedor → pega la dirección de abajo. Funciona en todas las apps y en el navegador.",
+  "Bloccare gli annunci in tutto il telefono: Impostazioni → Rete (o Connessioni) → DNS privato → Nome host del provider → incolla l'indirizzo qui sotto. Vale per tutte le app e per il browser.")
+s("dns_tradeoff",
+  "Pozor: služba AdGuard potom vidí, aké domény telefón navštevuje — namiesto tvojho operátora. Nie je to stopercentná ochrana.",
+  "Note: AdGuard then sees which domains the phone visits — instead of your mobile operator. It is not complete protection.",
+  "Achtung: AdGuard sieht dann, welche Domains das Telefon aufruft — statt deines Netzbetreibers. Es ist kein vollständiger Schutz.",
+  "Attention : AdGuard voit alors quels domaines le téléphone consulte — à la place de ton opérateur. Ce n'est pas une protection totale.",
+  "Ojo: AdGuard verá entonces qué dominios visita el teléfono, en lugar de tu operador. No es una protección completa.",
+  "Attenzione: AdGuard vedrà quali domini visita il telefono — al posto del tuo operatore. Non è una protezione completa.")
+s("dns_open", "Otvoriť nastavenia siete", "Open network settings", "Netzwerkeinstellungen öffnen", "Ouvrir les paramètres réseau", "Abrir ajustes de red", "Apri impostazioni di rete")
+s("dns_recheck", "Skontrolovať znova", "Check again", "Erneut prüfen", "Vérifier à nouveau", "Comprobar de nuevo", "Controlla di nuovo")
 
 
 def esc(v):

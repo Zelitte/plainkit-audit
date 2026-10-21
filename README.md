@@ -88,6 +88,10 @@ useful contribution you can make.
 `QUERY_ALL_PACKAGES` — required to see the list of installed apps, which is the
 entire point of the app. The list never leaves the device.
 
+`ACCESS_NETWORK_STATE` — only to show in Settings whether Private DNS is on.
+It does not let the app connect anywhere; the app still has no `INTERNET`
+permission.
+
 ## Privacy policy
 
 <https://plainkit.app/audit>

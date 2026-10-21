@@ -1,6 +1,9 @@
 package app.plainkit.audit
 
 import android.content.Context
+import android.content.pm.PackageManager
+import android.content.pm.PermissionInfo
+import android.os.Build
 import android.content.res.Configuration
 import java.util.Locale
 
@@ -130,6 +133,7 @@ val PERM_NAMES: Map<String, PermName> = mapOf(
 
     "${A}MANAGE_EXTERNAL_STORAGE" to PermName(R.string.perm_MANAGE_EXTERNAL_STORAGE, PermKind.SPECIAL),
     "${A}SYSTEM_ALERT_WINDOW" to PermName(R.string.perm_SYSTEM_ALERT_WINDOW, PermKind.SPECIAL),
+    "${A}WRITE_SETTINGS" to PermName(R.string.perm_WRITE_SETTINGS, PermKind.SPECIAL),
     "${A}REQUEST_INSTALL_PACKAGES" to PermName(R.string.perm_REQUEST_INSTALL_PACKAGES, PermKind.SPECIAL),
     "${A}PACKAGE_USAGE_STATS" to PermName(R.string.perm_PACKAGE_USAGE_STATS, PermKind.SPECIAL),
     "${A}SCHEDULE_EXACT_ALARM" to PermName(R.string.perm_SCHEDULE_EXACT_ALARM, PermKind.SPECIAL),
@@ -229,6 +233,115 @@ fun techLabel(permission: String): String =
     permission.removePrefix("android.permission.")
 
 /**
+ * Dlhý technický názov s neviditeľnými miestami na zalomenie za bodkou
+ * a podčiarkovníkom. Bez nich Compose zalomí riadok hneď za „·" a názov
+ * spadne celý na ďalší riadok (chyba z v1.4).
+ */
+fun breakable(name: String): String =
+    name.replace(".", ".\u200B").replace("_", "_\u200B")
+
+/**
+ * Ľudský popis technických povolení Androidu (v1.5). Len povolenia, ktoré
+ * Android verejne opisuje — nič nehádame. Úroveň (bežné / len pre systém)
+ * sa tu NEUVÁDZA: číta sa za behu z telefónu, viď [isSignatureProtected].
+ * Zoznam overený na vivo V50 Lite a Redmi (pm list permissions -f), 21. 10. 2026.
+ */
+val TECH_NAMES: Map<String, Int> = mapOf(
+    "${A}INTERNET" to R.string.tperm_INTERNET,
+    "${A}ACCESS_NETWORK_STATE" to R.string.tperm_ACCESS_NETWORK_STATE,
+    "${A}ACCESS_WIFI_STATE" to R.string.tperm_ACCESS_WIFI_STATE,
+    "${A}CHANGE_NETWORK_STATE" to R.string.tperm_CHANGE_NETWORK_STATE,
+    "${A}CHANGE_WIFI_STATE" to R.string.tperm_CHANGE_WIFI_STATE,
+    "${A}WAKE_LOCK" to R.string.tperm_WAKE_LOCK,
+    "${A}VIBRATE" to R.string.tperm_VIBRATE,
+    "${A}FOREGROUND_SERVICE" to R.string.tperm_FOREGROUND_SERVICE,
+    "${A}KILL_BACKGROUND_PROCESSES" to R.string.tperm_KILL_BACKGROUND_PROCESSES,
+    "${A}RESTART_PACKAGES" to R.string.tperm_RESTART_PACKAGES,
+    "${A}GET_TASKS" to R.string.tperm_GET_TASKS,
+    "${A}SET_WALLPAPER" to R.string.tperm_SET_WALLPAPER,
+    "${A}EXPAND_STATUS_BAR" to R.string.tperm_EXPAND_STATUS_BAR,
+    "${A}DISABLE_KEYGUARD" to R.string.tperm_DISABLE_KEYGUARD,
+    "${A}USE_BIOMETRIC" to R.string.tperm_USE_BIOMETRIC,
+    "${A}USE_FINGERPRINT" to R.string.tperm_USE_FINGERPRINT,
+    "${A}ACCESS_NOTIFICATION_POLICY" to R.string.tperm_ACCESS_NOTIFICATION_POLICY,
+    "${A}MANAGE_ACCOUNTS" to R.string.tperm_MANAGE_ACCOUNTS,
+    "${A}AUTHENTICATE_ACCOUNTS" to R.string.tperm_AUTHENTICATE_ACCOUNTS,
+    "${A}NFC" to R.string.tperm_NFC,
+    "${A}BLUETOOTH" to R.string.tperm_BLUETOOTH,
+    "${A}BLUETOOTH_ADMIN" to R.string.tperm_BLUETOOTH_ADMIN,
+    "${A}TRANSMIT_IR" to R.string.tperm_TRANSMIT_IR,
+    "${A}USE_FULL_SCREEN_INTENT" to R.string.tperm_USE_FULL_SCREEN_INTENT,
+    "${A}INSTALL_PACKAGES" to R.string.tperm_INSTALL_PACKAGES,
+    "${A}DELETE_PACKAGES" to R.string.tperm_DELETE_PACKAGES,
+    "${A}INSTALL_SELF_UPDATES" to R.string.tperm_INSTALL_SELF_UPDATES,
+    "${A}FORCE_STOP_PACKAGES" to R.string.tperm_FORCE_STOP_PACKAGES,
+    "${A}CLEAR_APP_USER_DATA" to R.string.tperm_CLEAR_APP_USER_DATA,
+    "${A}WRITE_SECURE_SETTINGS" to R.string.tperm_WRITE_SECURE_SETTINGS,
+    "${A}MANAGE_USERS" to R.string.tperm_MANAGE_USERS,
+    "${A}INTERACT_ACROSS_USERS" to R.string.tperm_INTERACT_ACROSS_USERS,
+    "${A}INTERACT_ACROSS_USERS_FULL" to R.string.tperm_INTERACT_ACROSS_USERS_FULL,
+    "${A}READ_LOGS" to R.string.tperm_READ_LOGS,
+    "${A}DUMP" to R.string.tperm_DUMP,
+    "${A}REAL_GET_TASKS" to R.string.tperm_REAL_GET_TASKS,
+    "${A}READ_PRIVILEGED_PHONE_STATE" to R.string.tperm_READ_PRIVILEGED_PHONE_STATE,
+    "${A}MODIFY_PHONE_STATE" to R.string.tperm_MODIFY_PHONE_STATE,
+    "${A}CALL_PRIVILEGED" to R.string.tperm_CALL_PRIVILEGED,
+    "${A}STATUS_BAR" to R.string.tperm_STATUS_BAR,
+    "${A}INTERNAL_SYSTEM_WINDOW" to R.string.tperm_INTERNAL_SYSTEM_WINDOW,
+    "${A}ACCESS_SURFACE_FLINGER" to R.string.tperm_ACCESS_SURFACE_FLINGER,
+    "${A}READ_FRAME_BUFFER" to R.string.tperm_READ_FRAME_BUFFER,
+    "${A}CAPTURE_AUDIO_OUTPUT" to R.string.tperm_CAPTURE_AUDIO_OUTPUT,
+    "${A}MODIFY_AUDIO_ROUTING" to R.string.tperm_MODIFY_AUDIO_ROUTING,
+    "${A}MOUNT_UNMOUNT_FILESYSTEMS" to R.string.tperm_MOUNT_UNMOUNT_FILESYSTEMS,
+    "${A}CHANGE_CONFIGURATION" to R.string.tperm_CHANGE_CONFIGURATION,
+    "${A}START_ACTIVITIES_FROM_BACKGROUND" to R.string.tperm_START_ACTIVITIES_FROM_BACKGROUND,
+    "${A}MANAGE_ACTIVITY_STACKS" to R.string.tperm_MANAGE_ACTIVITY_STACKS,
+    "${A}MANAGE_APP_TOKENS" to R.string.tperm_MANAGE_APP_TOKENS,
+    "${A}REMOVE_TASKS" to R.string.tperm_REMOVE_TASKS,
+    "${A}BROADCAST_CLOSE_SYSTEM_DIALOGS" to R.string.tperm_BROADCAST_CLOSE_SYSTEM_DIALOGS,
+    "${A}ACCESS_KEYGUARD_SECURE_STORAGE" to R.string.tperm_ACCESS_KEYGUARD_SECURE_STORAGE,
+    "${A}CONNECTIVITY_INTERNAL" to R.string.tperm_CONNECTIVITY_INTERNAL,
+    "${A}SET_PREFERRED_APPLICATIONS" to R.string.tperm_SET_PREFERRED_APPLICATIONS,
+    "${A}CHANGE_OVERLAY_PACKAGES" to R.string.tperm_CHANGE_OVERLAY_PACKAGES,
+    "${A}MODIFY_DAY_NIGHT_MODE" to R.string.tperm_MODIFY_DAY_NIGHT_MODE,
+    "${A}MANAGE_LOW_POWER_STANDBY" to R.string.tperm_MANAGE_LOW_POWER_STANDBY,
+    "${A}SET_WALLPAPER_COMPONENT" to R.string.tperm_SET_WALLPAPER_COMPONENT,
+    "${A}BIND_WALLPAPER" to R.string.tperm_BIND_WALLPAPER,
+    "${A}ACCESS_CACHE_FILESYSTEM" to R.string.tperm_ACCESS_CACHE_FILESYSTEM,
+    "${A}GRANT_RUNTIME_PERMISSIONS" to R.string.tperm_GRANT_RUNTIME_PERMISSIONS,
+    "${A}REVOKE_RUNTIME_PERMISSIONS" to R.string.tperm_REVOKE_RUNTIME_PERMISSIONS,
+    "${A}MANAGE_APP_OPS_MODES" to R.string.tperm_MANAGE_APP_OPS_MODES,
+    "${A}GET_ACCOUNTS_PRIVILEGED" to R.string.tperm_GET_ACCOUNTS_PRIVILEGED,
+    "${A}LOCATION_HARDWARE" to R.string.tperm_LOCATION_HARDWARE,
+)
+
+fun techHuman(permission: String, s: S): String? =
+    TECH_NAMES[permission]?.let { s.str(it) }
+
+/**
+ * true  = povolenie dostane len systém alebo appka od toho istého autora
+ *         (úroveň signature / signatureOrSystem / internal),
+ * false = môže ho dostať aj cudzia appka,
+ * null  = telefón také povolenie nepozná (appka ho žiada, ale nikto ho nedefinuje).
+ * Údaj pochádza priamo z telefónu, preto sedí na každom zariadení.
+ */
+fun isSignatureProtected(pm: PackageManager, permission: String): Boolean? = try {
+    val info = pm.getPermissionInfo(permission, 0)
+    val base = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) info.protection
+               else info.protectionLevel and PermissionInfo.PROTECTION_MASK_BASE
+    // 2 = signature, 3 = signatureOrSystem (zastarané), 4 = internal (Android 12+)
+    base == 2 || base == 3 || base == 4
+} catch (e: PackageManager.NameNotFoundException) {
+    null
+} catch (e: RuntimeException) {
+    null
+}
+
+/** Predpona výrobcu = prvé dve časti názvu (com.vivo, bbk.theme, com.google). */
+fun vendorPrefix(permission: String): String =
+    permission.split('.').take(2).joinToString(".")
+
+/**
  * Všetky texty appky v zvolenom jazyku.
  *
  * Texty samotné sú v res/values-xx/strings.xml. Táto trieda si otvorí
@@ -294,6 +407,10 @@ class S(context: Context, val lang: Lang) {
 
     fun techPerms(n: Int) = f(R.string.tech_perms, n)
     val hideTech = str(R.string.hide_tech)
+    val sysOnly = str(R.string.sys_only)
+    fun vendorGroup(prefix: String, n: Int, sig: Int) =
+        if (sig > 0) f(R.string.vendor_group, prefix, n, sig) else f(R.string.vendor_group_plain, prefix, n)
+    val sigNote = str(R.string.sig_note)
 
     fun scanProgress(done: Int, total: Int) = f(R.string.scan_progress, done, total)
     fun summary(perms: Int, trackers: Int?) =
@@ -320,6 +437,7 @@ class S(context: Context, val lang: Lang) {
     val noTrackers = str(R.string.no_trackers)
     fun noTrackersButGranted(granted: String) = f(R.string.no_trackers_but_granted, granted)
     fun pending(text: String) = f(R.string.pending, text)
+    val rtbNote = str(R.string.rtb_note)
 
     // ── log zmien ──
     fun addedTrackers(list: String) = f(R.string.change_trackers_added, list)
@@ -343,6 +461,15 @@ class S(context: Context, val lang: Lang) {
     val privacyPolicy = str(R.string.privacy_policy)
     val reportLink = str(R.string.report_link)
     val reportNote = str(R.string.report_note)
+    val dnsTitle = str(R.string.dns_title)
+    fun dnsOn(host: String) = f(R.string.dns_on, host)
+    val dnsAuto = str(R.string.dns_auto)
+    val dnsOff = str(R.string.dns_off)
+    val dnsUnknown = str(R.string.dns_unknown)
+    val dnsGuide = str(R.string.dns_guide)
+    val dnsTradeoff = str(R.string.dns_tradeoff)
+    val dnsOpen = str(R.string.dns_open)
+    val dnsRecheck = str(R.string.dns_recheck)
 
     // ── úvodná obrazovka ──
     val claims = str(R.string.claims)

@@ -1,0 +1,5 @@
+* Technické povolenia ľudskou rečou (66 povolení Androidu) a značka „len pre systém" priamo podľa telefónu
+* Vlastné povolenia výrobcov (vivo, Xiaomi, Google…) zbalené do jedného riadku s počtom
+* Pri reklamných knižniciach upozornenie na reklamné aukcie, cez ktoré sa v roku 2026 šíril spyware
+* Nastavenia: stav Súkromného DNS a návod na blokovanie reklám v celom telefóne
+* Opravené zalamovanie dlhých názvov

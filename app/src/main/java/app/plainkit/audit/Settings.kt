@@ -1,6 +1,10 @@
 package app.plainkit.audit
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.os.Build
+import android.provider.Settings as AndroidSettings
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -24,6 +28,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -126,6 +133,42 @@ fun SettingsScreen(
             )
         }
 
+        // ── Súkromné DNS (v1.5) ──
+        // Stav sa číta cez verejné API Androidu (LinkProperties). Potrebuje len
+        // bežné povolenie ACCESS_NETWORK_STATE — appka sa k sieti NEpripája.
+        // Na Androide 8 Súkromné DNS neexistuje, sekcia sa vtedy neukáže.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            var recheck by remember { mutableIntStateOf(0) }
+            var copiedKey by remember { mutableStateOf<String?>(null) }
+            val dnsStatus = remember(recheck, s) { privateDnsText(context, s) }
+            Text(
+                s.dnsTitle,
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(top = 24.dp, bottom = 6.dp)
+            )
+            Text(dnsStatus, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                s.dnsGuide,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            CommandLine("", DNS_HOST, s, copiedKey) { copiedKey = it }
+            Text(
+                s.dnsTradeoff,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            Row {
+                TextButton(onClick = {
+                    runCatching {
+                        context.startActivity(Intent(AndroidSettings.ACTION_WIRELESS_SETTINGS))
+                    }
+                }) { Text(s.dnsOpen) }
+                TextButton(onClick = { recheck++ }) { Text(s.dnsRecheck) }
+            }
+        }
+
         // Číslo verzie sa číta z nainštalovaného balíka, nie z konštanty v kóde —
         // tým vždy sedí s tým, čo je naozaj v telefóne (aj s príponou -debug).
         // Zámerne bez prekladu: „v1.2" je zrozumiteľné vo všetkých jazykoch.
@@ -209,4 +252,22 @@ private fun LangChip(label: String, selected: Boolean, modifier: Modifier, onCli
             Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
+}
+
+private const val DNS_HOST = "dns.adguard-dns.com"
+
+/** Stav Súkromného DNS na aktívnej sieti (Android 9+). */
+private fun privateDnsText(context: Context, s: S): String {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return s.dnsUnknown
+    return runCatching {
+        val cm = context.getSystemService(ConnectivityManager::class.java) ?: return s.dnsUnknown
+        val net = cm.activeNetwork ?: return s.dnsUnknown
+        val lp = cm.getLinkProperties(net) ?: return s.dnsUnknown
+        val host = lp.privateDnsServerName
+        when {
+            lp.isPrivateDnsActive && !host.isNullOrBlank() -> s.dnsOn(host)
+            lp.isPrivateDnsActive -> s.dnsAuto
+            else -> s.dnsOff
+        }
+    }.getOrElse { s.dnsUnknown }
 }

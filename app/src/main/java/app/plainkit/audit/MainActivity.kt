@@ -80,6 +80,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -577,9 +580,9 @@ private fun ScopeSwitch(
 
 /** Jeden riadok s ADB príkazom: dá sa označiť aj skopírovať. */
 @Composable
-private fun CommandLine(label: String, cmd: String, s: S, copiedKey: String?, onCopied: (String) -> Unit) {
+internal fun CommandLine(label: String, cmd: String, s: S, copiedKey: String?, onCopied: (String) -> Unit) {
     val context = LocalContext.current
-    Text(
+    if (label.isNotEmpty()) Text(
         label,
         fontFamily = FontFamily.Monospace,
         fontSize = 10.sp,
@@ -599,6 +602,112 @@ private fun CommandLine(label: String, cmd: String, s: S, copiedKey: String?, on
         }) {
             Text(if (copiedKey == cmd) s.copied else s.copy, fontSize = 12.sp)
         }
+    }
+}
+
+/**
+ * Rozbalený zoznam technických povolení (v1.5).
+ *  1. Povolenia Androidu — s ľudským popisom, ak ho máme ([TECH_NAMES]),
+ *     a so značkou „len pre systém" podľa údaja z telefónu.
+ *  2. Povolenia výrobcov (com.vivo, com.google…) — od 3 kusov zbalené do
+ *     jedného riadku s počtom; ich význam výrobcovia nezverejňujú, preto ich
+ *     neprekladáme, len ukážeme, koľko z nich je chránených podpisom.
+ */
+@Composable
+private fun TechList(tech: List<String>, pm: PackageManager, s: S) {
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    val strong = MaterialTheme.colorScheme.onSurface
+    val accent = MaterialTheme.colorScheme.primary
+    // Úroveň ochrany sa pýta telefónu raz, až keď sa zoznam rozbalí.
+    val protectedMap = remember(tech) { tech.associateWith { isSignatureProtected(pm, it) } }
+    val (androidPerms, vendorPerms) = remember(tech) {
+        tech.partition { it.startsWith("android.permission.") }
+    }
+    val groups = remember(vendorPerms) {
+        vendorPerms.groupBy { vendorPrefix(it) }.toList().sortedByDescending { it.second.size }
+    }
+    val expanded = remember(tech) { mutableStateSetOf<String>() }
+    var anyProtected = false
+
+    // a) Android: najprv tie s ľudským popisom, potom zvyšok podľa abecedy
+    val sortedAndroid = androidPerms.sortedWith(
+        compareBy<String> { techHuman(it, s) == null }.thenBy { techHuman(it, s) ?: it }
+    )
+    sortedAndroid.forEach { p ->
+        val human = techHuman(p, s)
+        val sys = protectedMap[p] == true
+        if (sys) anyProtected = true
+        Text(
+            text = buildAnnotatedString {
+                append("·\u00A0")
+                if (human != null) {
+                    withStyle(SpanStyle(color = strong, fontSize = 12.sp)) { append(human) }
+                    withStyle(SpanStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = muted)) {
+                        append("  " + breakable(techLabel(p)))
+                    }
+                } else {
+                    withStyle(SpanStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = muted)) {
+                        append(breakable(techLabel(p)))
+                    }
+                }
+                if (sys) {
+                    withStyle(SpanStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = accent)) {
+                        append(" · " + s.sysOnly)
+                    }
+                }
+            },
+            lineHeight = 16.sp,
+            modifier = Modifier.padding(top = 2.dp)
+        )
+    }
+
+    // b) výrobcovia
+    groups.forEach { (prefix, perms) ->
+        val sig = perms.count { protectedMap[it] == true }
+        if (sig > 0) anyProtected = true
+        if (perms.size < 3) {
+            perms.sorted().forEach { p ->
+                Text(
+                    text = "·\u00A0" + breakable(p),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 10.sp,
+                    lineHeight = 14.sp,
+                    color = muted,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
+        } else {
+            val open = prefix in expanded
+            Text(
+                text = (if (open) "▾ " else "▸ ") + s.vendorGroup(prefix, perms.size, sig),
+                fontSize = 12.sp,
+                color = strong,
+                modifier = Modifier
+                    .padding(top = 6.dp)
+                    .clickable { if (open) expanded.remove(prefix) else expanded.add(prefix) }
+            )
+            if (open) {
+                perms.sorted().forEach { p ->
+                    Text(
+                        text = "·\u00A0" + breakable(p),
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 10.sp,
+                        lineHeight = 14.sp,
+                        color = muted,
+                        modifier = Modifier.padding(start = 12.dp, top = 1.dp)
+                    )
+                }
+            }
+        }
+    }
+
+    if (anyProtected || groups.any { it.second.size >= 3 }) {
+        Text(
+            s.sigNote,
+            style = MaterialTheme.typography.bodySmall,
+            color = muted,
+            modifier = Modifier.padding(top = 8.dp)
+        )
     }
 }
 
@@ -1153,14 +1262,7 @@ fun AppListScreen(
                                     )
                                 }
                                 if (showTech) {
-                                    tech.forEach { p ->
-                                        Text(
-                                            text = "· " + techLabel(p),
-                                            fontFamily = FontFamily.Monospace,
-                                            fontSize = 10.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
+                                    TechList(tech, pm, s)
                                 }
                             }
 

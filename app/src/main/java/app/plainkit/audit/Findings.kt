@@ -286,6 +286,13 @@ fun buildFindings(
         }
     }
 
+    // v1.5: reklamné siete predávajú miesto v aukcii v reálnom čase (RTB).
+    // Týmto kanálom bol v 2026 doručovaný spyware bez kliknutia (Citizen Lab,
+    // „AdFection"). Appka útok zistiť nevie — len upozorní na kanál.
+    if (trackers.any { it.kind == TrackerKind.ADS }) {
+        out.add(Finding(Level.INFO, s.rtbNote))
+    }
+
     if (analytics.isNotEmpty()) {
         if (grantedGroups.isNotEmpty()) {
             out.add(Finding(Level.WARN, s.analyticsWithGranted(names(analytics), grantedText)))
