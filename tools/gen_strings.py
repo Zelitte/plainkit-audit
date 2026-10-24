@@ -85,12 +85,12 @@ s("level_ok", "OK", "OK", "OK", "OK", "OK", "OK")
 
 # ── nálezy ──
 s("no_internet",
-  "Nežiada prístup na internet — nemá kam nič odosielať.",
-  "Does not request internet access — it has nowhere to send anything.",
-  "Fordert keinen Internetzugriff an — sie kann nirgendwohin Daten senden.",
-  "Ne demande pas l'accès à Internet — elle ne peut rien envoyer nulle part.",
-  "No solicita acceso a Internet: no tiene adónde enviar nada.",
-  "Non richiede l'accesso a Internet: non può inviare nulla da nessuna parte.")
+  "Nežiada prístup na internet — sama sa naň pripojiť nemôže.",
+  "Does not request internet access — it cannot connect to the internet on its own.",
+  "Fordert keinen Internetzugriff an — sie kann sich nicht selbst mit dem Internet verbinden.",
+  "Ne demande pas l'accès à Internet — elle ne peut pas s'y connecter elle-même.",
+  "No solicita acceso a Internet: no puede conectarse por sí misma.",
+  "Non richiede l'accesso a Internet: non può connettersi da sola.")
 # %1$s = skupiny povolení, %2$s = názvy SDK
 s("marketing_with_granted",
   "Má udelený prístup k %1$s a zároveň obsahuje reklamné/marketingové SDK (%2$s). Práve tu môžu citlivé údaje skončiť v reklamnej sieti.",
@@ -315,6 +315,7 @@ G = [
  ("phone", "údajom o telefóne", "phone identity", "Telefonidentität", "identité du téléphone", "identidad del teléfono", "identità del telefono"),
  ("media", "fotkám a médiám", "photos and media", "Fotos und Medien", "photos et médias", "fotos y multimedia", "foto e contenuti multimediali"),
  ("activity", "pohybovej aktivite", "physical activity", "körperliche Aktivität", "activité physique", "actividad física", "attività fisica"),
+ ("files", "všetkým súborom", "all files", "alle Dateien", "tous les fichiers", "todos los archivos", "tutti i file"),
 ]
 for row in G:
     s("group_" + row[0], *row[1:])
@@ -470,6 +471,26 @@ s("dns_tradeoff",
 s("dns_open", "Otvoriť nastavenia siete", "Open network settings", "Netzwerkeinstellungen öffnen", "Ouvrir les paramètres réseau", "Abrir ajustes de red", "Apri impostazioni di rete")
 s("dns_recheck", "Skontrolovať znova", "Check again", "Erneut prüfen", "Vérifier à nouveau", "Comprobar de nuevo", "Controlla di nuovo")
 
+
+# ── v1.6: presnosť ──
+s("mark_unused", "na tomto Androide sa nepoužíva", "not used on this Android", "auf diesem Android ohne Wirkung", "sans effet sur cet Android", "sin efecto en este Android", "senza effetto su questo Android")
+s("no_code",
+  "Kód tejto appky sa nedá prečítať (je mimo súboru APK alebo zašifrovaný) — nevieme povedať, či obsahuje sledovacie knižnice.",
+  "This app's code cannot be read (it is stored outside the APK or encrypted) — we can't tell whether it contains tracking libraries.",
+  "Der Code dieser App ist nicht lesbar (außerhalb der APK gespeichert oder verschlüsselt) — wir können nicht sagen, ob er Tracking-Bibliotheken enthält.",
+  "Le code de cette app est illisible (stocké hors de l'APK ou chiffré) — impossible de dire s'il contient des bibliothèques de pistage.",
+  "El código de esta app no se puede leer (está fuera del APK o cifrado): no podemos saber si contiene bibliotecas de rastreo.",
+  "Il codice di questa app non è leggibile (è fuori dall'APK o cifrato) — non possiamo dire se contiene librerie di tracciamento.")
+s("summary_no_code", "kód nečitateľný", "code unreadable", "Code nicht lesbar", "code illisible", "código ilegible", "codice illeggibile")
+s("shared_title", "ZDIEĽA POVOLENIA A DÁTA S", "SHARES PERMISSIONS AND DATA WITH", "TEILT BERECHTIGUNGEN UND DATEN MIT", "PARTAGE AUTORISATIONS ET DONNÉES AVEC", "COMPARTE PERMISOS Y DATOS CON", "CONDIVIDE AUTORIZZAZIONI E DATI CON")
+s("shared_more", "a ďalších %1$d", "and %1$d more", "und %1$d weitere", "et %1$d autres", "y %1$d más", "e altre %1$d")
+s("shared_net",
+  "Sama nežiada prístup na internet, ale zdieľa povolenia a dáta s appkou %1$s, ktorá ho má.",
+  "Does not request internet access itself, but shares permissions and data with %1$s, which has it.",
+  "Fordert selbst keinen Internetzugriff an, teilt aber Berechtigungen und Daten mit %1$s, die ihn hat.",
+  "Ne demande pas elle-même l'accès à Internet, mais partage autorisations et données avec %1$s, qui l'a.",
+  "No solicita acceso a Internet, pero comparte permisos y datos con %1$s, que sí lo tiene.",
+  "Non richiede l'accesso a Internet, ma condivide autorizzazioni e dati con %1$s, che lo ha.")
 
 def esc(v):
     v = v.replace("\\", "\\\\").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")

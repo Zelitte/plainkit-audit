@@ -82,6 +82,26 @@ object Prefs {
         if (pkg in done) return
         p.edit().putStringSet(KEY_RESCANNED, done + pkg).apply()
     }
+
+    // v1.6: appky, v ktorých APK nebol žiadny čitateľný kód (classes*.dex).
+    // Mimo Room zámerne — zmena schémy by bez Migration zmazala celú základňu.
+    private const val KEY_NO_CODE = "no_code"
+
+    fun noCode(ctx: Context): Set<String> =
+        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+            .getStringSet(KEY_NO_CODE, emptySet())?.toSet() ?: emptySet()
+
+    @Synchronized
+    fun setNoCode(ctx: Context, pkg: String, noCode: Boolean) {
+        val p = ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+        val cur = p.getStringSet(KEY_NO_CODE, emptySet())?.toSet() ?: emptySet()
+        val next = if (noCode) cur + pkg else cur - pkg
+        if (next != cur) p.edit().putStringSet(KEY_NO_CODE, next).apply()
+    }
+
+    fun clearNoCode(ctx: Context) {
+        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().remove(KEY_NO_CODE).apply()
+    }
 }
 
 /**
@@ -167,6 +187,42 @@ val PERM_NAMES: Map<String, PermName> = mapOf(
     "${A}ACCESS_ADSERVICES_AD_ID" to PermName(R.string.perm_ACCESS_ADSERVICES_AD_ID, PermKind.INSTALL),
     "${A}ACCESS_ADSERVICES_ATTRIBUTION" to PermName(R.string.perm_ACCESS_ADSERVICES_ATTRIBUTION, PermKind.INSTALL)
 )
+
+/**
+ * v1.6: špeciálne povolenia sa nezapínajú oknom „Povoliť", ale prepínačom
+ * v nastaveniach. Ich stav Android neukladá medzi bežné povolenia, ale do
+ * AppOps. Kľúč = povolenie, hodnota = názov operácie v AppOps.
+ */
+val SPECIAL_OPS: Map<String, String> = mapOf(
+    "${A}MANAGE_EXTERNAL_STORAGE" to "android:manage_external_storage",
+    "${A}SYSTEM_ALERT_WINDOW" to "android:system_alert_window",
+    "${A}WRITE_SETTINGS" to "android:write_settings",
+    "${A}PACKAGE_USAGE_STATS" to "android:get_usage_stats",
+    "${A}REQUEST_INSTALL_PACKAGES" to "android:request_install_packages",
+    "${A}SCHEDULE_EXACT_ALARM" to "android:schedule_exact_alarm"
+)
+const val BATTERY_PERM = "${A}REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+
+/**
+ * v1.6: povolenie, ktoré na TOMTO telefóne nič neznamená — buď už nahradené
+ * (staré úložné povolenia pri appke cielenej na nový Android), alebo ešte
+ * neexistuje (napr. notifikácie na Androide 12 a starších). Bez toho by sa
+ * ukázalo „neudelené", hoci appka môže mať prístup inou cestou.
+ */
+fun isUnusedHere(permission: String, targetSdk: Int): Boolean {
+    val sdk = Build.VERSION.SDK_INT
+    return when (permission) {
+        "${A}READ_EXTERNAL_STORAGE" -> sdk >= 33 && targetSdk >= 33
+        "${A}WRITE_EXTERNAL_STORAGE" -> sdk >= 30 && targetSdk >= 30
+        "${A}POST_NOTIFICATIONS", "${A}NEARBY_WIFI_DEVICES",
+        "${A}READ_MEDIA_IMAGES", "${A}READ_MEDIA_VIDEO", "${A}READ_MEDIA_AUDIO" -> sdk < 33
+        "${A}READ_MEDIA_VISUAL_USER_SELECTED" -> sdk < 34
+        "${A}BLUETOOTH_CONNECT", "${A}BLUETOOTH_SCAN" -> sdk < 31
+        "${A}ACCESS_BACKGROUND_LOCATION", "${A}ACTIVITY_RECOGNITION",
+        "${A}ACCESS_MEDIA_LOCATION" -> sdk < 29
+        else -> false
+    }
+}
 
 fun permLabel(permission: String, s: S): String? =
     PERM_NAMES[permission]?.let { s.str(it.res) }
@@ -394,16 +450,31 @@ class S(context: Context, val lang: Lang) {
     private val markInstall = "  — " + str(R.string.mark_install)
     private val markSpecial = "  — " + str(R.string.mark_special)
 
-    fun permMark(permission: String, granted: Boolean): String =
-        when (PERM_NAMES[permission]?.kind) {
+    private val markUnused = "  — " + str(R.string.mark_unused)
+
+    /**
+     * @param specialKnown pri špeciálnom povolení: podarilo sa zistiť skutočný
+     *        stav (AppOps)? Ak nie, ostáva „povoľuje sa zvlášť".
+     * @param unused povolenie na tomto Androide nič neznamená ([isUnusedHere]).
+     */
+    fun permMark(permission: String, granted: Boolean, specialKnown: Boolean = false, unused: Boolean = false): String {
+        if (unused) return markUnused
+        return when (PERM_NAMES[permission]?.kind) {
             PermKind.RUNTIME -> if (granted) markGranted else markNotGranted
             PermKind.INSTALL -> markInstall
-            PermKind.SPECIAL -> markSpecial
+            PermKind.SPECIAL -> if (specialKnown) (if (granted) markGranted else markNotGranted) else markSpecial
             null -> ""
         }
+    }
 
-    fun permIsActive(permission: String, granted: Boolean): Boolean =
-        PERM_NAMES[permission]?.kind == PermKind.RUNTIME && granted
+    fun permIsActive(permission: String, granted: Boolean, specialKnown: Boolean = false, unused: Boolean = false): Boolean {
+        if (unused || !granted) return false
+        return when (PERM_NAMES[permission]?.kind) {
+            PermKind.RUNTIME -> true
+            PermKind.SPECIAL -> specialKnown
+            else -> false
+        }
+    }
 
     fun techPerms(n: Int) = f(R.string.tech_perms, n)
     val hideTech = str(R.string.hide_tech)
@@ -413,9 +484,12 @@ class S(context: Context, val lang: Lang) {
     val sigNote = str(R.string.sig_note)
 
     fun scanProgress(done: Int, total: Int) = f(R.string.scan_progress, done, total)
-    fun summary(perms: Int, trackers: Int?) =
-        f(R.string.summary_perms, perms) +
-                if (trackers != null) " · " + f(R.string.summary_trackers, trackers) else ""
+    fun summary(perms: Int, trackers: Int?, noCode: Boolean = false) =
+        f(R.string.summary_perms, perms) + when {
+            trackers == null -> ""
+            noCode -> " · " + str(R.string.summary_no_code)
+            else -> " · " + f(R.string.summary_trackers, trackers)
+        }
 
     // ── úrovne ──
     fun level(l: Level) = when (l) {
@@ -427,6 +501,10 @@ class S(context: Context, val lang: Lang) {
 
     // ── nálezy ──
     val noInternet = str(R.string.no_internet)
+    val noCode = str(R.string.no_code)
+    fun sharedNet(label: String) = f(R.string.shared_net, label)
+    val sharedTitle = str(R.string.shared_title)
+    fun sharedMore(n: Int) = f(R.string.shared_more, n)
     fun marketingWithGranted(granted: String, names: String) = f(R.string.marketing_with_granted, granted, names)
     fun marketingOnly(names: String) = f(R.string.marketing_only, names)
     fun analyticsWithGranted(names: String, granted: String) = f(R.string.analytics_with_granted, names, granted)

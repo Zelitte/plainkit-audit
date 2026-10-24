@@ -237,7 +237,10 @@ val SENSITIVE = listOf(
         "android.permission.READ_MEDIA_VIDEO")),
     PermGroup(R.string.group_activity, setOf(
         "android.permission.ACTIVITY_RECOGNITION",
-        "android.permission.BODY_SENSORS"))
+        "android.permission.BODY_SENSORS")),
+    // v1.6: „prístup ku všetkým súborom". Do `granted` sa dostane, len ak
+    // AppOps potvrdí, že je naozaj zapnutý (viď toEntry).
+    PermGroup(R.string.group_files, setOf("android.permission.MANAGE_EXTERNAL_STORAGE"))
 )
 
 fun isSensitive(permission: String): Boolean =
@@ -247,17 +250,30 @@ enum class Level { OK, INFO, WARN, ALERT }
 
 data class Finding(val level: Level, val text: String)
 
+/**
+ * @param codeReadable false = v APK nebol žiadny kód (classes*.dex), takže
+ *        „0 trackerov" neznamená „čistá", ale „nevieme".
+ * @param sharedNet meno appky, s ktorou táto zdieľa identitu (sharedUserId)
+ *        a ktorá má INTERNET; null = nič také.
+ */
 fun buildFindings(
     permissions: List<String>,
     granted: Set<String>,
     trackers: List<Tracker>,
-    s: S
+    s: S,
+    codeReadable: Boolean = true,
+    sharedNet: String? = null
 ): List<Finding> {
     val out = mutableListOf<Finding>()
 
     if ("android.permission.INTERNET" !in permissions) {
-        out.add(Finding(Level.OK, s.noInternet))
-        return out
+        if (sharedNet == null) {
+            out.add(Finding(Level.OK, s.noInternet))
+            return out
+        }
+        // Sama internet nemá, ale zdieľa povolenia s appkou, ktorá ho má —
+        // posudzuje sa preto ako appka s internetom.
+        out.add(Finding(Level.INFO, s.sharedNet(sharedNet)))
     }
 
     val grantedGroups = SENSITIVE.filter { g ->
@@ -313,7 +329,9 @@ fun buildFindings(
         out.add(Finding(Level.WARN, s.tooMany(marketing.size + analytics.size)))
     }
 
-    if (trackers.isEmpty()) {
+    if (trackers.isEmpty() && !codeReadable) {
+        out.add(Finding(Level.INFO, s.noCode))
+    } else if (trackers.isEmpty()) {
         out.add(Finding(
             if (grantedGroups.isEmpty()) Level.OK else Level.INFO,
             if (grantedGroups.isEmpty()) s.noTrackers else s.noTrackersButGranted(grantedText)

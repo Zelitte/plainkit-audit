@@ -1,5 +1,7 @@
 package app.plainkit.audit
 
+import android.app.AppOpsManager
+import android.os.PowerManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -189,17 +191,30 @@ data class AppEntry(
     val permissions: List<String>,
     val granted: Set<String>,
     val apkPaths: List<String>,
-    val versionCode: Long
+    val versionCode: Long,
+    // ── v1.6 ──
+    val targetSdk: Int = 0,
+    /** Špeciálne povolenia, ktorých skutočný stav sa podarilo zistiť (AppOps / PowerManager). */
+    val specialKnown: Set<String> = emptySet(),
+    /** Surová odpoveď AppOps (len na ladenie, zobrazuje sa v debug builde). */
+    val specialModes: Map<String, Int> = emptyMap(),
+    /** Ostatné appky s tou istou identitou (sharedUserId) — zdieľajú povolenia aj dáta. */
+    val sharedWith: List<String> = emptyList(),
+    /** Meno appky z tej istej identity, ktorá má INTERNET (null = žiadna). */
+    val sharedNet: String? = null
 )
 
 private fun codeOf(pkg: PackageInfo): Long =
     if (Build.VERSION.SDK_INT >= 28) pkg.longVersionCode
     else @Suppress("DEPRECATION") pkg.versionCode.toLong()
 
-private fun loadApps(pm: PackageManager): List<AppEntry> =
-    pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
-        .map { toEntry(it, pm) }
+private fun loadApps(ctx: Context): List<AppEntry> {
+    val pm = ctx.packageManager
+    val uidCache = HashMap<Int, Pair<List<String>, String?>>()
+    return pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+        .map { toEntry(it, ctx, uidCache) }
         .sortedBy { it.label.lowercase() }
+}
 
 /**
  * Čerstvé údaje o jednej appke priamo zo systému. Null = medzitým ju odinštalovali.
@@ -207,11 +222,53 @@ private fun loadApps(pm: PackageManager): List<AppEntry> =
  * Keď sa medzitým iná appka aktualizuje, jej stará cesta k APK už neexistuje
  * a aj zoznam povolení je starý.
  */
-private fun loadApp(pm: PackageManager, packageName: String): AppEntry? = runCatching {
-    toEntry(pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS), pm)
+private fun loadApp(ctx: Context, packageName: String): AppEntry? = runCatching {
+    toEntry(ctx.packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS), ctx, HashMap())
 }.getOrNull()
 
-private fun toEntry(pkg: PackageInfo, pm: PackageManager): AppEntry {
+/**
+ * Appky s tou istou identitou (sharedUserId) a meno prvej z nich, ktorá má INTERNET.
+ * Zdieľajú všetky povolenia aj súkromné dáta — appka bez INTERNET sa tak
+ * môže dostať na internet cez „sestru" z tej istej skupiny.
+ */
+private fun sharedInfo(pm: PackageManager, uid: Int): Pair<List<String>, String?> {
+    val pkgs = runCatching { pm.getPackagesForUid(uid)?.toList() }.getOrNull() ?: emptyList()
+    if (pkgs.size < 2) return Pair(pkgs, null)
+    val net = pkgs.firstOrNull { other ->
+        runCatching {
+            pm.getPackageInfo(other, PackageManager.GET_PERMISSIONS)
+                .requestedPermissions?.contains("android.permission.INTERNET") == true
+        }.getOrDefault(false)
+    }
+    val netLabel = net?.let { n ->
+        runCatching { pm.getApplicationLabel(pm.getApplicationInfo(n, 0)).toString() }.getOrDefault(n)
+    }
+    return Pair(pkgs, netLabel)
+}
+
+/** Surový stav špeciálnych povolení z AppOps; -1 = Android odpoveď odmietol. */
+private fun specialModes(ctx: Context, uid: Int, pkg: String, perms: List<String>): Map<String, Int> {
+    val ops = ctx.getSystemService(AppOpsManager::class.java) ?: return emptyMap()
+    return buildMap {
+        for (p in perms) {
+            val op = SPECIAL_OPS[p] ?: continue
+            val mode = try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ops.unsafeCheckOpNoThrow(op, uid, pkg)
+                else @Suppress("DEPRECATION") ops.checkOpNoThrow(op, uid, pkg)
+            } catch (e: Exception) {
+                -1
+            }
+            put(p, mode)
+        }
+    }
+}
+
+private fun toEntry(
+    pkg: PackageInfo,
+    ctx: Context,
+    uidCache: MutableMap<Int, Pair<List<String>, String?>>
+): AppEntry {
+    val pm = ctx.packageManager
     val info = pkg.applicationInfo
     val paths = buildList {
         info?.sourceDir?.let { add(it) }
@@ -230,14 +287,53 @@ private fun toEntry(pkg: PackageInfo, pm: PackageManager): AppEntry {
             }
         }
     }
+
+    // ── v1.6: skutočný stav špeciálnych povolení ──
+    // Pravidlo Androidu: ALLOWED = áno, IGNORED/ERRORED = nie, DEFAULT = rozhodne
+    // samotné povolenie (príznak GRANTED). Keď Android odpoveď odmietne (-1),
+    // stav nevieme a ostane „povoľuje sa zvlášť".
+    val uid = info?.uid ?: -1
+    val modes = if (uid >= 0) specialModes(ctx, uid, pkg.packageName, perms) else emptyMap()
+    val known = mutableSetOf<String>()
+    val finalGranted = granted.toMutableSet()
+    for (p in perms) {
+        if (PERM_NAMES[p]?.kind != PermKind.SPECIAL) continue
+        val flagGranted = p in granted
+        val state: Boolean? = when {
+            p == BATTERY_PERM -> runCatching {
+                ctx.getSystemService(PowerManager::class.java)?.isIgnoringBatteryOptimizations(pkg.packageName)
+            }.getOrNull()
+            p in modes -> when (modes[p]) {
+                AppOpsManager.MODE_ALLOWED -> true
+                AppOpsManager.MODE_IGNORED, AppOpsManager.MODE_ERRORED -> false
+                AppOpsManager.MODE_DEFAULT -> flagGranted
+                else -> null
+            }
+            else -> null
+        }
+        finalGranted.remove(p)
+        if (state != null) {
+            known.add(p)
+            if (state) finalGranted.add(p)
+        }
+    }
+
+    val (group, netLabel) = if (uid >= 0) uidCache.getOrPut(uid) { sharedInfo(pm, uid) }
+                            else Pair(emptyList(), null)
+
     return AppEntry(
         label = info?.loadLabel(pm)?.toString() ?: pkg.packageName,
         packageName = pkg.packageName,
         isSystem = ((info?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0,
         permissions = perms,
-        granted = granted,
+        granted = finalGranted,
         apkPaths = paths,
-        versionCode = codeOf(pkg)
+        versionCode = codeOf(pkg),
+        targetSdk = info?.targetSdkVersion ?: 0,
+        specialKnown = known,
+        specialModes = modes,
+        sharedWith = group.filter { it != pkg.packageName },
+        sharedNet = netLabel
     )
 }
 
@@ -328,15 +424,17 @@ private fun collectDefinedPrefixes(dex: ByteArray, out: MutableSet<String>) {
  * Predtým sa chyba potichu zhltla a výsledok bol prázdny zoznam — a ten sa
  * uložil ako „appka nemá žiadne trackery" a do logu zapísal „ubudli trackery: …".
  */
-private fun scanApk(paths: List<String>): List<Tracker>? {
+private fun scanApk(paths: List<String>, codeSeen: (Boolean) -> Unit = {}): List<Tracker>? {
     if (paths.isEmpty()) return null
     val prefixes = HashSet<String>(8192)
+    var dexCount = 0
     for (path in paths) {
         try {
             ZipFile(path).use { zip ->
                 val dexEntries = zip.entries().toList().filter {
                     it.name.startsWith("classes") && it.name.endsWith(".dex")
                 }
+                dexCount += dexEntries.size
                 for (entry in dexEntries) {
                     val bytes = zip.getInputStream(entry).use { it.readBytes() }
                     collectDefinedPrefixes(bytes, prefixes)
@@ -353,6 +451,9 @@ private fun scanApk(paths: List<String>): List<Tracker>? {
             return null
         }
     }
+    // v1.6: žiadny classes*.dex = kód je mimo APK (predkompilovaný výrobcom)
+    // alebo zašifrovaný. „0 trackerov" by tu znamenalo „nevieme", nie „čistá".
+    codeSeen(dexCount > 0)
     return TRACKERS.filter { it.prefix in prefixes }
 }
 
@@ -408,7 +509,7 @@ private suspend fun scanAllApps(
     apps.chunked(chunkSize).map { chunk ->
         async(Dispatchers.IO) {
             for (app in chunk) {
-                val result = scanApk(app.apkPaths)
+                val result = scanApk(app.apkPaths) { Prefs.setNoCode(ctx, app.packageName, !it) }
                 if (result != null) persist(ctx, db, app, result)
                 withContext(Dispatchers.Main) {
                     if (result != null) onResult(app.packageName, result)
@@ -749,6 +850,11 @@ fun AppListScreen(
     // Menovateľ ukazovateľa priebehu, zafixovaný pri štarte skenu.
     var scanTotal by remember { mutableIntStateOf(0) }
     var scanRevision by remember { mutableIntStateOf(0) }
+    // v1.6: appky bez čitateľného kódu (zapisuje sken do Prefs)
+    val noCode = remember(scanRevision) { Prefs.noCode(context) }
+    val debuggable = remember {
+        (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+    }
     var changes by remember { mutableStateOf<List<ChangeRecord>>(emptyList()) }
     var showSettings by rememberSaveable { mutableStateOf(false) }
     var justCleared by remember { mutableStateOf(false) }
@@ -768,7 +874,7 @@ fun AppListScreen(
 
     LaunchedEffect(Unit) {
         if (AppCache.apps == null) {
-            val loaded = withContext(Dispatchers.IO) { loadApps(context.packageManager) }
+            val loaded = withContext(Dispatchers.IO) { loadApps(context) }
             AppCache.apps = loaded
             apps = loaded
         }
@@ -797,6 +903,7 @@ fun AppListScreen(
                 scope.launch {
                     db.dao().clearScans()
                     db.dao().clearChanges()
+                    Prefs.clearNoCode(context)
                     scanned.clear()
                     AppCache.scanned.clear()
                     scanRevision++
@@ -828,7 +935,10 @@ fun AppListScreen(
     val levels = remember(apps, scanRevision, s) {
         apps.associate { app ->
             app.packageName to (scanned[app.packageName]
-                ?.let { worstLevel(buildFindings(app.permissions, app.granted, it, s)).ordinal }
+                ?.let {
+                    worstLevel(buildFindings(app.permissions, app.granted, it, s,
+                        app.packageName !in noCode, app.sharedNet)).ordinal
+                }
                 ?: -1)
         }
     }
@@ -956,7 +1066,7 @@ fun AppListScreen(
                 scope.launch {
                     // čerstvý zoznam: aktuálne cesty k APK, aktuálne povolenia,
                     // a aj appky nainštalované od spustenia Auditu
-                    val fresh = withContext(Dispatchers.IO) { loadApps(context.packageManager) }
+                    val fresh = withContext(Dispatchers.IO) { loadApps(context) }
                     AppCache.apps = fresh
                     apps = fresh
                     val target = fresh.filter { it.inScope(listScope) }
@@ -1065,7 +1175,8 @@ fun AppListScreen(
             items(visible, key = { it.packageName }) { app ->
                 val trackers = scanned[app.packageName]
                 val findings = trackers?.let {
-                    buildFindings(app.permissions, app.granted, it, s)
+                    buildFindings(app.permissions, app.granted, it, s,
+                        app.packageName !in noCode, app.sharedNet)
                 }
                 val level = findings?.let { worstLevel(it) }
                 val stripe = levelColor(level)
@@ -1114,10 +1225,12 @@ fun AppListScreen(
                                 failedPkg = null
                                 scope.launch {
                                     val fresh = withContext(Dispatchers.IO) {
-                                        loadApp(context.packageManager, app.packageName)
+                                        loadApp(context, app.packageName)
                                     }
                                     val result = fresh?.let {
-                                        withContext(Dispatchers.IO) { scanApk(it.apkPaths) }
+                                        withContext(Dispatchers.IO) {
+                                            scanApk(it.apkPaths) { has -> Prefs.setNoCode(context, it.packageName, !has) }
+                                        }
                                     }
                                     if (fresh != null && result != null) {
                                         persist(context, db, fresh, result)
@@ -1185,7 +1298,7 @@ fun AppListScreen(
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text = s.summary(app.permissions.size, trackers?.size),
+                                    text = s.summary(app.permissions.size, trackers?.size, app.packageName in noCode),
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1231,10 +1344,14 @@ fun AppListScreen(
                                 namedSorted.forEach { p ->
                                     val label = permLabel(p, s) ?: p
                                     val isGranted = p in app.granted
+                                    val known = p in app.specialKnown
+                                    val unused = isUnusedHere(p, app.targetSdk)
+                                    // Ladenie (len debug build): surová odpoveď AppOps
+                                    val dbg = if (debuggable) app.specialModes[p]?.let { "  [op=$it]" } ?: "" else ""
                                     Text(
-                                        text = "• $label" + s.permMark(p, isGranted),
+                                        text = "• $label" + s.permMark(p, isGranted, known, unused) + dbg,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = if (s.permIsActive(p, isGranted))
+                                        color = if (s.permIsActive(p, isGranted, known, unused))
                                             MaterialTheme.colorScheme.error
                                         else MaterialTheme.colorScheme.onSurface
                                     )
@@ -1263,6 +1380,44 @@ fun AppListScreen(
                                 }
                                 if (showTech) {
                                     TechList(tech, pm, s)
+                                }
+                            }
+
+                            // ── zdieľaná identita (v1.6) ──
+                            if (app.sharedWith.isNotEmpty()) {
+                                val names = remember(app.packageName, app.sharedWith) {
+                                    app.sharedWith.map { other ->
+                                        runCatching {
+                                            pm.getApplicationLabel(pm.getApplicationInfo(other, 0)).toString()
+                                        }.getOrDefault(other)
+                                    }.sorted()
+                                }
+                                Text(
+                                    text = s.sharedTitle,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(top = 14.dp, bottom = 4.dp)
+                                )
+                                // Pri systémovej identite býva skupina veľká (desiatky appiek) —
+                                // ukáže sa prvých 5 a zvyšok po ťuknutí na „a ďalších N".
+                                var sharedOpen by remember(app.packageName) { mutableStateOf(false) }
+                                if (names.size <= 5 || sharedOpen) {
+                                    Text(
+                                        text = names.joinToString(", "),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                } else {
+                                    Text(
+                                        text = buildAnnotatedString {
+                                            append(names.take(5).joinToString(", ") + " ")
+                                            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                                append(s.sharedMore(names.size - 5) + " ▸")
+                                            }
+                                        },
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.clickable { sharedOpen = true }
+                                    )
                                 }
                             }
 

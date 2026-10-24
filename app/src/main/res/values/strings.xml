@@ -39,7 +39,7 @@
     <string name="level_warn">NOTICE</string>
     <string name="level_info">INFO</string>
     <string name="level_ok">OK</string>
-    <string name="no_internet">Does not request internet access — it has nowhere to send anything.</string>
+    <string name="no_internet">Does not request internet access — it cannot connect to the internet on its own.</string>
     <string name="marketing_with_granted">Has been granted access to %1$s and also contains advertising/marketing SDKs (%2$s). This is where sensitive data can end up in an ad network.</string>
     <string name="marketing_only">Contains advertising/marketing SDKs (%1$s). Your behaviour in the app is tied to an advertising profile.</string>
     <string name="analytics_with_granted">Contains analytics SDKs (%1$s) and has been granted access to %2$s. Analytics does not send this data by itself, but the app has it available — the combination is worth noticing.</string>
@@ -140,6 +140,7 @@
     <string name="group_phone">phone identity</string>
     <string name="group_media">photos and media</string>
     <string name="group_activity">physical activity</string>
+    <string name="group_files">all files</string>
     <string name="tperm_INTERNET">internet access</string>
     <string name="tperm_ACCESS_NETWORK_STATE">see network connections</string>
     <string name="tperm_ACCESS_WIFI_STATE">see Wi-Fi state</string>
@@ -220,4 +221,10 @@
     <string name="dns_tradeoff">Note: AdGuard then sees which domains the phone visits — instead of your mobile operator. It is not complete protection.</string>
     <string name="dns_open">Open network settings</string>
     <string name="dns_recheck">Check again</string>
+    <string name="mark_unused">not used on this Android</string>
+    <string name="no_code">This app\'s code cannot be read (it is stored outside the APK or encrypted) — we can\'t tell whether it contains tracking libraries.</string>
+    <string name="summary_no_code">code unreadable</string>
+    <string name="shared_title">SHARES PERMISSIONS AND DATA WITH</string>
+    <string name="shared_more">and %1$d more</string>
+    <string name="shared_net">Does not request internet access itself, but shares permissions and data with %1$s, which has it.</string>
 </resources>

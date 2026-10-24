@@ -38,7 +38,7 @@
     <string name="level_warn">À NOTER</string>
     <string name="level_info">INFO</string>
     <string name="level_ok">OK</string>
-    <string name="no_internet">Ne demande pas l\'accès à Internet — elle ne peut rien envoyer nulle part.</string>
+    <string name="no_internet">Ne demande pas l\'accès à Internet — elle ne peut pas s\'y connecter elle-même.</string>
     <string name="marketing_with_granted">A accès à %1$s et contient aussi des SDK publicitaires/marketing (%2$s). C\'est ici que des données sensibles peuvent finir dans un réseau publicitaire.</string>
     <string name="marketing_only">Contient des SDK publicitaires/marketing (%1$s). Ton comportement dans l\'app est relié à un profil publicitaire.</string>
     <string name="analytics_with_granted">Contient des SDK d\'analyse (%1$s) et a accès à %2$s. L\'analyse n\'envoie pas ces données d\'elle-même, mais l\'app les a à disposition — la combinaison mérite attention.</string>
@@ -139,6 +139,7 @@
     <string name="group_phone">identité du téléphone</string>
     <string name="group_media">photos et médias</string>
     <string name="group_activity">activité physique</string>
+    <string name="group_files">tous les fichiers</string>
     <string name="tperm_INTERNET">accès à Internet</string>
     <string name="tperm_ACCESS_NETWORK_STATE">voir les connexions réseau</string>
     <string name="tperm_ACCESS_WIFI_STATE">voir l\'état du Wi-Fi</string>
@@ -219,4 +220,10 @@
     <string name="dns_tradeoff">Attention : AdGuard voit alors quels domaines le téléphone consulte — à la place de ton opérateur. Ce n\'est pas une protection totale.</string>
     <string name="dns_open">Ouvrir les paramètres réseau</string>
     <string name="dns_recheck">Vérifier à nouveau</string>
+    <string name="mark_unused">sans effet sur cet Android</string>
+    <string name="no_code">Le code de cette app est illisible (stocké hors de l\'APK ou chiffré) — impossible de dire s\'il contient des bibliothèques de pistage.</string>
+    <string name="summary_no_code">code illisible</string>
+    <string name="shared_title">PARTAGE AUTORISATIONS ET DONNÉES AVEC</string>
+    <string name="shared_more">et %1$d autres</string>
+    <string name="shared_net">Ne demande pas elle-même l\'accès à Internet, mais partage autorisations et données avec %1$s, qui l\'a.</string>
 </resources>

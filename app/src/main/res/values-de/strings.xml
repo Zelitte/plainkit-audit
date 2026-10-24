@@ -38,7 +38,7 @@
     <string name="level_warn">HINWEIS</string>
     <string name="level_info">INFO</string>
     <string name="level_ok">OK</string>
-    <string name="no_internet">Fordert keinen Internetzugriff an — sie kann nirgendwohin Daten senden.</string>
+    <string name="no_internet">Fordert keinen Internetzugriff an — sie kann sich nicht selbst mit dem Internet verbinden.</string>
     <string name="marketing_with_granted">Hat Zugriff auf %1$s und enthält zugleich Werbe-/Marketing-SDKs (%2$s). Genau hier können sensible Daten in einem Werbenetzwerk landen.</string>
     <string name="marketing_only">Enthält Werbe-/Marketing-SDKs (%1$s). Dein Verhalten in der App wird mit einem Werbeprofil verknüpft.</string>
     <string name="analytics_with_granted">Enthält Analyse-SDKs (%1$s) und hat Zugriff auf %2$s. Die Analyse sendet diese Daten nicht von selbst, aber die App hat sie zur Verfügung — die Kombination verdient Aufmerksamkeit.</string>
@@ -139,6 +139,7 @@
     <string name="group_phone">Telefonidentität</string>
     <string name="group_media">Fotos und Medien</string>
     <string name="group_activity">körperliche Aktivität</string>
+    <string name="group_files">alle Dateien</string>
     <string name="tperm_INTERNET">Internetzugriff</string>
     <string name="tperm_ACCESS_NETWORK_STATE">Netzwerkverbindungen sehen</string>
     <string name="tperm_ACCESS_WIFI_STATE">WLAN-Status sehen</string>
@@ -219,4 +220,10 @@
     <string name="dns_tradeoff">Achtung: AdGuard sieht dann, welche Domains das Telefon aufruft — statt deines Netzbetreibers. Es ist kein vollständiger Schutz.</string>
     <string name="dns_open">Netzwerkeinstellungen öffnen</string>
     <string name="dns_recheck">Erneut prüfen</string>
+    <string name="mark_unused">auf diesem Android ohne Wirkung</string>
+    <string name="no_code">Der Code dieser App ist nicht lesbar (außerhalb der APK gespeichert oder verschlüsselt) — wir können nicht sagen, ob er Tracking-Bibliotheken enthält.</string>
+    <string name="summary_no_code">Code nicht lesbar</string>
+    <string name="shared_title">TEILT BERECHTIGUNGEN UND DATEN MIT</string>
+    <string name="shared_more">und %1$d weitere</string>
+    <string name="shared_net">Fordert selbst keinen Internetzugriff an, teilt aber Berechtigungen und Daten mit %1$s, die ihn hat.</string>
 </resources>

@@ -38,7 +38,7 @@
     <string name="level_warn">VŠIMNI SI</string>
     <string name="level_info">INFO</string>
     <string name="level_ok">OK</string>
-    <string name="no_internet">Nežiada prístup na internet — nemá kam nič odosielať.</string>
+    <string name="no_internet">Nežiada prístup na internet — sama sa naň pripojiť nemôže.</string>
     <string name="marketing_with_granted">Má udelený prístup k %1$s a zároveň obsahuje reklamné/marketingové SDK (%2$s). Práve tu môžu citlivé údaje skončiť v reklamnej sieti.</string>
     <string name="marketing_only">Obsahuje reklamné/marketingové SDK (%1$s). Tvoje správanie v appke sa spája s reklamným profilom.</string>
     <string name="analytics_with_granted">Obsahuje analytické SDK (%1$s) a má udelený prístup k %2$s. Analytika tieto údaje sama neodosiela, ale appka ich má k dispozícii — kombinácia stojí za pozornosť.</string>
@@ -139,6 +139,7 @@
     <string name="group_phone">údajom o telefóne</string>
     <string name="group_media">fotkám a médiám</string>
     <string name="group_activity">pohybovej aktivite</string>
+    <string name="group_files">všetkým súborom</string>
     <string name="tperm_INTERNET">prístup na internet</string>
     <string name="tperm_ACCESS_NETWORK_STATE">zistiť stav pripojenia k sieti</string>
     <string name="tperm_ACCESS_WIFI_STATE">zistiť stav Wi-Fi</string>
@@ -219,4 +220,10 @@
     <string name="dns_tradeoff">Pozor: služba AdGuard potom vidí, aké domény telefón navštevuje — namiesto tvojho operátora. Nie je to stopercentná ochrana.</string>
     <string name="dns_open">Otvoriť nastavenia siete</string>
     <string name="dns_recheck">Skontrolovať znova</string>
+    <string name="mark_unused">na tomto Androide sa nepoužíva</string>
+    <string name="no_code">Kód tejto appky sa nedá prečítať (je mimo súboru APK alebo zašifrovaný) — nevieme povedať, či obsahuje sledovacie knižnice.</string>
+    <string name="summary_no_code">kód nečitateľný</string>
+    <string name="shared_title">ZDIEĽA POVOLENIA A DÁTA S</string>
+    <string name="shared_more">a ďalších %1$d</string>
+    <string name="shared_net">Sama nežiada prístup na internet, ale zdieľa povolenia a dáta s appkou %1$s, ktorá ho má.</string>
 </resources>

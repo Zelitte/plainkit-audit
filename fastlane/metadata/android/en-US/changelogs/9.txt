@@ -1,0 +1,5 @@
+* Real status of special permissions: all files access, draw over other apps, install apps and more now show GRANTED / not granted
+* All files access now counts in the assessment
+* Old permissions that mean nothing on your Android are no longer shown as "not granted"
+* An app whose code can't be read is no longer marked as clean
+* New: which apps it shares permissions and data with

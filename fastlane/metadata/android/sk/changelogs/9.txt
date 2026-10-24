@@ -1,0 +1,5 @@
+* Skutočný stav špeciálnych povolení: prístup ku všetkým súborom, kreslenie cez iné appky, inštalácia appiek a ďalšie už ukazujú UDELENÉ / neudelené
+* Prístup ku všetkým súborom sa započítava do hodnotenia
+* Staré povolenia, ktoré na tvojom Androide nič neznamenajú, už nehlási ako „neudelené"
+* Appka s nečitateľným kódom už nie je označená ako čistá
+* Nové: s ktorými appkami zdieľa povolenia a dáta
