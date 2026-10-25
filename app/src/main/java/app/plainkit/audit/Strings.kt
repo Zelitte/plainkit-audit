@@ -99,10 +99,27 @@ object Prefs {
         if (next != cur) p.edit().putStringSet(KEY_NO_CODE, next).apply()
     }
 
+    // v1.7: zoradenie zoznamu
+    private const val KEY_SORT = "sort"
+
+    fun sort(ctx: Context): SortMode = runCatching {
+        SortMode.valueOf(
+            ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+                .getString(KEY_SORT, SortMode.SEVERITY.name) ?: SortMode.SEVERITY.name
+        )
+    }.getOrDefault(SortMode.SEVERITY)
+
+    fun setSort(ctx: Context, mode: SortMode) {
+        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putString(KEY_SORT, mode.name).apply()
+    }
+
     fun clearNoCode(ctx: Context) {
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().remove(KEY_NO_CODE).apply()
     }
 }
+
+/** v1.7: poradie zoznamu appiek. */
+enum class SortMode { SEVERITY, NAME, FINDINGS }
 
 /**
  * RUNTIME  = kliknúť „Povoliť"
@@ -369,6 +386,25 @@ val TECH_NAMES: Map<String, Int> = mapOf(
     "${A}MANAGE_APP_OPS_MODES" to R.string.tperm_MANAGE_APP_OPS_MODES,
     "${A}GET_ACCOUNTS_PRIVILEGED" to R.string.tperm_GET_ACCOUNTS_PRIVILEGED,
     "${A}LOCATION_HARDWARE" to R.string.tperm_LOCATION_HARDWARE,
+    // v1.7
+    "${A}REORDER_TASKS" to R.string.tperm_REORDER_TASKS,
+    "${A}GET_PACKAGE_SIZE" to R.string.tperm_GET_PACKAGE_SIZE,
+    "${A}FOREGROUND_SERVICE_SPECIAL_USE" to R.string.tperm_FOREGROUND_SERVICE_SPECIAL_USE,
+    "${A}FOREGROUND_SERVICE_DATA_SYNC" to R.string.tperm_FOREGROUND_SERVICE_DATA_SYNC,
+    "${A}FOREGROUND_SERVICE_MEDIA_PLAYBACK" to R.string.tperm_FOREGROUND_SERVICE_MEDIA_PLAYBACK,
+    "${A}FOREGROUND_SERVICE_CONNECTED_DEVICE" to R.string.tperm_FOREGROUND_SERVICE_CONNECTED_DEVICE,
+    "${A}FOREGROUND_SERVICE_PHONE_CALL" to R.string.tperm_FOREGROUND_SERVICE_PHONE_CALL,
+    "${A}FOREGROUND_SERVICE_HEALTH" to R.string.tperm_FOREGROUND_SERVICE_HEALTH,
+    "${A}FOREGROUND_SERVICE_REMOTE_MESSAGING" to R.string.tperm_FOREGROUND_SERVICE_REMOTE_MESSAGING,
+    "${A}FOREGROUND_SERVICE_SYSTEM_EXEMPTED" to R.string.tperm_FOREGROUND_SERVICE_SYSTEM_EXEMPTED,
+    "${A}FOREGROUND_SERVICE_MEDIA_PROCESSING" to R.string.tperm_FOREGROUND_SERVICE_MEDIA_PROCESSING,
+    "${A}MODIFY_AUDIO_SETTINGS" to R.string.tperm_MODIFY_AUDIO_SETTINGS,
+    "${A}READ_SYNC_SETTINGS" to R.string.tperm_READ_SYNC_SETTINGS,
+    "${A}WRITE_SYNC_SETTINGS" to R.string.tperm_WRITE_SYNC_SETTINGS,
+    "${A}REQUEST_DELETE_PACKAGES" to R.string.tperm_REQUEST_DELETE_PACKAGES,
+    "${A}UPDATE_PACKAGES_WITHOUT_USER_ACTION" to R.string.tperm_UPDATE_PACKAGES_WITHOUT_USER_ACTION,
+    "${A}CHANGE_WIFI_MULTICAST_STATE" to R.string.tperm_CHANGE_WIFI_MULTICAST_STATE,
+    "${A}READ_BASIC_PHONE_STATE" to R.string.tperm_READ_BASIC_PHONE_STATE,
 )
 
 fun techHuman(permission: String, s: S): String? =
@@ -416,6 +452,8 @@ class S(context: Context, val lang: Lang) {
 
     fun str(id: Int): String = res.getString(id)
     private fun f(id: Int, vararg args: Any): String = res.getString(id, *args)
+    /** Plurál: správny tvar podľa čísla (1 tracker / 2 trackery / 5 trackerov). */
+    private fun q(id: Int, n: Int): String = res.getQuantityString(id, n, n)
 
     // ── obrazovka so zoznamom ──
     val searchLabel = str(R.string.search_label)
@@ -476,7 +514,7 @@ class S(context: Context, val lang: Lang) {
         }
     }
 
-    fun techPerms(n: Int) = f(R.string.tech_perms, n)
+    fun techPerms(n: Int) = q(R.plurals.tech_perms, n)
     val hideTech = str(R.string.hide_tech)
     val sysOnly = str(R.string.sys_only)
     fun vendorGroup(prefix: String, n: Int, sig: Int) =
@@ -485,10 +523,10 @@ class S(context: Context, val lang: Lang) {
 
     fun scanProgress(done: Int, total: Int) = f(R.string.scan_progress, done, total)
     fun summary(perms: Int, trackers: Int?, noCode: Boolean = false) =
-        f(R.string.summary_perms, perms) + when {
+        q(R.plurals.summary_perms, perms) + when {
             trackers == null -> ""
             noCode -> " · " + str(R.string.summary_no_code)
-            else -> " · " + f(R.string.summary_trackers, trackers)
+            else -> " · " + q(R.plurals.summary_trackers, trackers)
         }
 
     // ── úrovne ──
@@ -504,7 +542,27 @@ class S(context: Context, val lang: Lang) {
     val noCode = str(R.string.no_code)
     fun sharedNet(label: String) = f(R.string.shared_net, label)
     val sharedTitle = str(R.string.shared_title)
-    fun sharedMore(n: Int) = f(R.string.shared_more, n)
+    fun sharedMore(n: Int) = q(R.plurals.shared_more, n)
+
+    // ── v1.7 ──
+    val capsTitle = str(R.string.caps_title)
+    val capA11y = str(R.string.cap_a11y)
+    val capNotif = str(R.string.cap_notif)
+    val capIme = str(R.string.cap_ime)
+    val capAdmin = str(R.string.cap_admin)
+    val capA11yShort = str(R.string.cap_a11y_short)
+    val capNotifShort = str(R.string.cap_notif_short)
+    fun capsWarn(list: String) = f(R.string.caps_warn, list)
+    val webapkNote = str(R.string.webapk_note)
+    val originWebapk = str(R.string.origin_webapk)
+    fun changesMore(n: Int) = f(R.string.changes_more, n)
+    val changesLess = str(R.string.changes_less)
+    val sortLabel = str(R.string.sort_label)
+    fun sortName(m: SortMode) = when (m) {
+        SortMode.SEVERITY -> str(R.string.sort_severity)
+        SortMode.NAME -> str(R.string.sort_name)
+        SortMode.FINDINGS -> str(R.string.sort_findings)
+    }
     fun marketingWithGranted(granted: String, names: String) = f(R.string.marketing_with_granted, granted, names)
     fun marketingOnly(names: String) = f(R.string.marketing_only, names)
     fun analyticsWithGranted(names: String, granted: String) = f(R.string.analytics_with_granted, names, granted)

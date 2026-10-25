@@ -31,10 +31,7 @@
     <string name="mark_not_granted">not granted</string>
     <string name="mark_install">automatic at install</string>
     <string name="mark_special">enabled separately</string>
-    <string name="tech_perms">+ %1$d technical permissions</string>
     <string name="hide_tech">hide technical permissions</string>
-    <string name="summary_perms">%1$d permissions</string>
-    <string name="summary_trackers">%1$d trackers</string>
     <string name="level_alert">WARNING</string>
     <string name="level_warn">NOTICE</string>
     <string name="level_info">INFO</string>
@@ -225,6 +222,55 @@
     <string name="no_code">This app\'s code cannot be read (it is stored outside the APK or encrypted) — we can\'t tell whether it contains tracking libraries.</string>
     <string name="summary_no_code">code unreadable</string>
     <string name="shared_title">SHARES PERMISSIONS AND DATA WITH</string>
-    <string name="shared_more">and %1$d more</string>
     <string name="shared_net">Does not request internet access itself, but shares permissions and data with %1$s, which has it.</string>
+    <string name="caps_title">SPECIAL ACCESS TURNED ON</string>
+    <string name="cap_a11y">accessibility service — sees what is on the screen and can tap for you</string>
+    <string name="cap_notif">notification access — reads all notifications, including SMS codes</string>
+    <string name="cap_ime">enabled keyboard — sees what you type while you use it</string>
+    <string name="cap_admin">device admin — may be allowed to lock or wipe the phone</string>
+    <string name="cap_a11y_short">accessibility service</string>
+    <string name="cap_notif_short">notification access</string>
+    <string name="caps_warn">Turned on: %1$s. Malicious apps abuse this kind of access to steal passwords and codes — keep it only for apps you trust.</string>
+    <string name="webapk_note">This is a website saved to the home screen via Chrome. It runs in the browser, which has internet access — what the site does can only be checked in the browser, not here.</string>
+    <string name="origin_webapk">website installed via Chrome</string>
+    <string name="changes_more">show more (%1$d) ▸</string>
+    <string name="changes_less">show less ▴</string>
+    <string name="sort_label">Sort:</string>
+    <string name="sort_severity">severity</string>
+    <string name="sort_name">name</string>
+    <string name="sort_findings">number of findings</string>
+    <string name="tperm_REORDER_TASKS">reorder running apps</string>
+    <string name="tperm_GET_PACKAGE_SIZE">see app sizes</string>
+    <string name="tperm_FOREGROUND_SERVICE_SPECIAL_USE">run in the foreground (special use)</string>
+    <string name="tperm_FOREGROUND_SERVICE_DATA_SYNC">run in the foreground (data sync)</string>
+    <string name="tperm_FOREGROUND_SERVICE_MEDIA_PLAYBACK">run in the foreground (media playback)</string>
+    <string name="tperm_FOREGROUND_SERVICE_CONNECTED_DEVICE">run in the foreground (connected device)</string>
+    <string name="tperm_FOREGROUND_SERVICE_PHONE_CALL">run in the foreground (phone call)</string>
+    <string name="tperm_FOREGROUND_SERVICE_HEALTH">run in the foreground (health)</string>
+    <string name="tperm_FOREGROUND_SERVICE_REMOTE_MESSAGING">run in the foreground (messaging)</string>
+    <string name="tperm_FOREGROUND_SERVICE_SYSTEM_EXEMPTED">run in the foreground (system exempted)</string>
+    <string name="tperm_FOREGROUND_SERVICE_MEDIA_PROCESSING">run in the foreground (media processing)</string>
+    <string name="tperm_MODIFY_AUDIO_SETTINGS">change audio settings</string>
+    <string name="tperm_READ_SYNC_SETTINGS">read sync settings</string>
+    <string name="tperm_WRITE_SYNC_SETTINGS">turn sync on and off</string>
+    <string name="tperm_REQUEST_DELETE_PACKAGES">ask to uninstall apps</string>
+    <string name="tperm_UPDATE_PACKAGES_WITHOUT_USER_ACTION">update apps without confirmation</string>
+    <string name="tperm_CHANGE_WIFI_MULTICAST_STATE">receive Wi-Fi multicast</string>
+    <string name="tperm_READ_BASIC_PHONE_STATE">read basic phone state</string>
+    <plurals name="summary_perms">
+        <item quantity="one">%1$d permission</item>
+        <item quantity="other">%1$d permissions</item>
+    </plurals>
+    <plurals name="summary_trackers">
+        <item quantity="one">%1$d tracker</item>
+        <item quantity="other">%1$d trackers</item>
+    </plurals>
+    <plurals name="tech_perms">
+        <item quantity="one">+ %1$d technical permission</item>
+        <item quantity="other">+ %1$d technical permissions</item>
+    </plurals>
+    <plurals name="shared_more">
+        <item quantity="one">and %1$d more</item>
+        <item quantity="other">and %1$d more</item>
+    </plurals>
 </resources>

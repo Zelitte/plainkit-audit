@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 
 private val LINK = Color(0xFF00D4E8)
@@ -228,6 +229,27 @@ fun SettingsScreen(
                 .clickable { open("https://plainkit.app") }
         )
 
+        // v1.7, len debug build: počty z rozhraní mimoriadnych schopností (x = rozhranie odmietlo)
+        // a jednorazový prieskum, koľko appiek je zabalených „packerom" (zašifrovaný kód).
+        if ((context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            var packed by remember { mutableStateOf("") }
+            Text(
+                text = "caps: " + AppCache.capsDebug,
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 12.dp)
+            )
+            TextButton(onClick = {
+                packed = "…"
+                Thread { packed = debugPackedReport(AppCache.apps ?: emptyList()) }.start()
+            }) { Text("debug: hľadať zašifrované appky", fontSize = 12.sp) }
+            if (packed.isNotEmpty()) {
+                androidx.compose.foundation.text.selection.SelectionContainer {
+                    Text(packed, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+
         if (version != null) {
             Text(
                 text = "v$version",
@@ -270,4 +292,40 @@ private fun privateDnsText(context: Context, s: S): String {
             else -> s.dnsOff
         }
     }.getOrElse { s.dnsUnknown }
+}
+
+/**
+ * Len na ladenie (v1.7): ktoré appky nesú knižnicu známeho „packera" — kód je
+ * zašifrovaný a skener v ňom nič nenájde. Mená knižníc sú len kandidáti na
+ * overenie, do appky ako tvrdenie zatiaľ NEJDÚ.
+ */
+private val PACKER_LIBS = listOf(
+    "libjiagu", "libprotectClass", "libsecexe", "libsecmain", "libDexHelper", "libexec.so",
+    "libshell", "libtup", "liblegu", "libnesec", "libbaiduprotect", "libSecShell", "libitsec", "libmobisec"
+)
+
+internal fun debugPackedReport(apps: List<AppEntry>): String {
+    val hits = mutableListOf<String>()
+    var noDex = 0
+    for (app in apps) {
+        var dex = 0
+        val libs = mutableSetOf<String>()
+        for (path in app.apkPaths) {
+            try {
+                java.util.zip.ZipFile(path).use { zip ->
+                    for (e in zip.entries()) {
+                        val n = e.name
+                        if (n.startsWith("classes") && n.endsWith(".dex")) dex++
+                        if (n.startsWith("lib/") || n.startsWith("assets/")) {
+                            val base = n.substringAfterLast('/')
+                            PACKER_LIBS.firstOrNull { base.startsWith(it) }?.let { libs.add(base) }
+                        }
+                    }
+                }
+            } catch (e: Exception) { }
+        }
+        if (dex == 0) noDex++
+        if (libs.isNotEmpty()) hits.add("${app.label} (${app.packageName}): ${libs.joinToString()}")
+    }
+    return "appky: ${apps.size}, bez dex: $noDex, packer: ${hits.size}\n" + hits.joinToString("\n")
 }

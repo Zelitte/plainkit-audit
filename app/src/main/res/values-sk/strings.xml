@@ -30,10 +30,7 @@
     <string name="mark_not_granted">neudelené</string>
     <string name="mark_install">automaticky pri inštalácii</string>
     <string name="mark_special">povoľuje sa zvlášť</string>
-    <string name="tech_perms">+ %1$d technických povolení</string>
     <string name="hide_tech">skryť technické povolenia</string>
-    <string name="summary_perms">%1$d povolení</string>
-    <string name="summary_trackers">%1$d trackerov</string>
     <string name="level_alert">POZOR</string>
     <string name="level_warn">VŠIMNI SI</string>
     <string name="level_info">INFO</string>
@@ -224,6 +221,63 @@
     <string name="no_code">Kód tejto appky sa nedá prečítať (je mimo súboru APK alebo zašifrovaný) — nevieme povedať, či obsahuje sledovacie knižnice.</string>
     <string name="summary_no_code">kód nečitateľný</string>
     <string name="shared_title">ZDIEĽA POVOLENIA A DÁTA S</string>
-    <string name="shared_more">a ďalších %1$d</string>
     <string name="shared_net">Sama nežiada prístup na internet, ale zdieľa povolenia a dáta s appkou %1$s, ktorá ho má.</string>
+    <string name="caps_title">ZAPNUTÉ MIMORIADNE SCHOPNOSTI</string>
+    <string name="cap_a11y">služba dostupnosti — vidí, čo je na obrazovke, a môže ťukať za teba</string>
+    <string name="cap_notif">prístup k notifikáciám — číta všetky notifikácie vrátane SMS kódov</string>
+    <string name="cap_ime">zapnutá klávesnica — vidí, čo píšeš, keď ju používaš</string>
+    <string name="cap_admin">správca zariadenia — môže mať právo zamknúť alebo vymazať telefón</string>
+    <string name="cap_a11y_short">služba dostupnosti</string>
+    <string name="cap_notif_short">prístup k notifikáciám</string>
+    <string name="caps_warn">Má zapnuté: %1$s. Takýto prístup zneužívajú aj škodlivé appky na krádež hesiel a kódov — nechaj ho zapnutý len appkám, ktorým veríš.</string>
+    <string name="webapk_note">Toto je webová stránka uložená na plochu cez Chrome. Beží v prehliadači, ktorý prístup na internet má — čo stránka robí, sa dá overiť len v prehliadači, nie tu.</string>
+    <string name="origin_webapk">webová stránka nainštalovaná cez Chrome</string>
+    <string name="changes_more">zobraziť ďalšie (%1$d) ▸</string>
+    <string name="changes_less">zobraziť menej ▴</string>
+    <string name="sort_label">Zoradiť:</string>
+    <string name="sort_severity">závažnosť</string>
+    <string name="sort_name">názov</string>
+    <string name="sort_findings">počet nálezov</string>
+    <string name="tperm_REORDER_TASKS">meniť poradie spustených appiek</string>
+    <string name="tperm_GET_PACKAGE_SIZE">zistiť veľkosť appiek</string>
+    <string name="tperm_FOREGROUND_SERVICE_SPECIAL_USE">bežať v popredí (špeciálny účel)</string>
+    <string name="tperm_FOREGROUND_SERVICE_DATA_SYNC">bežať v popredí (synchronizácia dát)</string>
+    <string name="tperm_FOREGROUND_SERVICE_MEDIA_PLAYBACK">bežať v popredí (prehrávanie)</string>
+    <string name="tperm_FOREGROUND_SERVICE_CONNECTED_DEVICE">bežať v popredí (pripojené zariadenie)</string>
+    <string name="tperm_FOREGROUND_SERVICE_PHONE_CALL">bežať v popredí (hovor)</string>
+    <string name="tperm_FOREGROUND_SERVICE_HEALTH">bežať v popredí (zdravie a pohyb)</string>
+    <string name="tperm_FOREGROUND_SERVICE_REMOTE_MESSAGING">bežať v popredí (správy)</string>
+    <string name="tperm_FOREGROUND_SERVICE_SYSTEM_EXEMPTED">bežať v popredí (výnimka systému)</string>
+    <string name="tperm_FOREGROUND_SERVICE_MEDIA_PROCESSING">bežať v popredí (spracovanie médií)</string>
+    <string name="tperm_MODIFY_AUDIO_SETTINGS">meniť nastavenia zvuku</string>
+    <string name="tperm_READ_SYNC_SETTINGS">čítať nastavenia synchronizácie</string>
+    <string name="tperm_WRITE_SYNC_SETTINGS">zapínať a vypínať synchronizáciu</string>
+    <string name="tperm_REQUEST_DELETE_PACKAGES">požiadať o odinštalovanie appky</string>
+    <string name="tperm_UPDATE_PACKAGES_WITHOUT_USER_ACTION">aktualizovať appky bez potvrdenia</string>
+    <string name="tperm_CHANGE_WIFI_MULTICAST_STATE">prijímať skupinové vysielanie cez Wi-Fi</string>
+    <string name="tperm_READ_BASIC_PHONE_STATE">zistiť základný stav telefónu</string>
+    <plurals name="summary_perms">
+        <item quantity="one">%1$d povolenie</item>
+        <item quantity="few">%1$d povolenia</item>
+        <item quantity="many">%1$d povolenia</item>
+        <item quantity="other">%1$d povolení</item>
+    </plurals>
+    <plurals name="summary_trackers">
+        <item quantity="one">%1$d tracker</item>
+        <item quantity="few">%1$d trackery</item>
+        <item quantity="many">%1$d trackera</item>
+        <item quantity="other">%1$d trackerov</item>
+    </plurals>
+    <plurals name="tech_perms">
+        <item quantity="one">+ %1$d technické povolenie</item>
+        <item quantity="few">+ %1$d technické povolenia</item>
+        <item quantity="many">+ %1$d technického povolenia</item>
+        <item quantity="other">+ %1$d technických povolení</item>
+    </plurals>
+    <plurals name="shared_more">
+        <item quantity="one">a ďalšia %1$d</item>
+        <item quantity="few">a ďalšie %1$d</item>
+        <item quantity="many">a ďalších %1$d</item>
+        <item quantity="other">a ďalších %1$d</item>
+    </plurals>
 </resources>

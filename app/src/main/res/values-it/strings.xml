@@ -30,10 +30,7 @@
     <string name="mark_not_granted">non concessa</string>
     <string name="mark_install">automatica all\'installazione</string>
     <string name="mark_special">si abilita separatamente</string>
-    <string name="tech_perms">+ %1$d autorizzazioni tecniche</string>
     <string name="hide_tech">nascondi autorizzazioni tecniche</string>
-    <string name="summary_perms">%1$d autorizzazioni</string>
-    <string name="summary_trackers">%1$d tracker</string>
     <string name="level_alert">ATTENZIONE</string>
     <string name="level_warn">NOTA</string>
     <string name="level_info">INFO</string>
@@ -224,6 +221,59 @@
     <string name="no_code">Il codice di questa app non è leggibile (è fuori dall\'APK o cifrato) — non possiamo dire se contiene librerie di tracciamento.</string>
     <string name="summary_no_code">codice illeggibile</string>
     <string name="shared_title">CONDIVIDE AUTORIZZAZIONI E DATI CON</string>
-    <string name="shared_more">e altre %1$d</string>
     <string name="shared_net">Non richiede l\'accesso a Internet, ma condivide autorizzazioni e dati con %1$s, che lo ha.</string>
+    <string name="caps_title">ACCESSI SPECIALI ATTIVI</string>
+    <string name="cap_a11y">servizio di accessibilità — vede lo schermo e può toccare al posto tuo</string>
+    <string name="cap_notif">accesso alle notifiche — legge tutte le notifiche, compresi i codici SMS</string>
+    <string name="cap_ime">tastiera attiva — vede ciò che scrivi mentre la usi</string>
+    <string name="cap_admin">amministratore del dispositivo — può avere il diritto di bloccare o cancellare il telefono</string>
+    <string name="cap_a11y_short">servizio di accessibilità</string>
+    <string name="cap_notif_short">accesso alle notifiche</string>
+    <string name="caps_warn">Attivo: %1$s. Le app dannose abusano di questo accesso per rubare password e codici — lascialo solo alle app di cui ti fidi.</string>
+    <string name="webapk_note">È un sito web salvato nella schermata Home tramite Chrome. Funziona nel browser, che ha accesso a Internet — cosa fa il sito si può verificare solo nel browser, non qui.</string>
+    <string name="origin_webapk">sito web installato tramite Chrome</string>
+    <string name="changes_more">mostra altri (%1$d) ▸</string>
+    <string name="changes_less">mostra meno ▴</string>
+    <string name="sort_label">Ordina:</string>
+    <string name="sort_severity">gravità</string>
+    <string name="sort_name">nome</string>
+    <string name="sort_findings">numero di rilevamenti</string>
+    <string name="tperm_REORDER_TASKS">riordinare le app in esecuzione</string>
+    <string name="tperm_GET_PACKAGE_SIZE">vedere la dimensione delle app</string>
+    <string name="tperm_FOREGROUND_SERVICE_SPECIAL_USE">essere eseguita in primo piano (uso speciale)</string>
+    <string name="tperm_FOREGROUND_SERVICE_DATA_SYNC">essere eseguita in primo piano (sincronizzazione)</string>
+    <string name="tperm_FOREGROUND_SERVICE_MEDIA_PLAYBACK">essere eseguita in primo piano (riproduzione)</string>
+    <string name="tperm_FOREGROUND_SERVICE_CONNECTED_DEVICE">essere eseguita in primo piano (dispositivo connesso)</string>
+    <string name="tperm_FOREGROUND_SERVICE_PHONE_CALL">essere eseguita in primo piano (chiamata)</string>
+    <string name="tperm_FOREGROUND_SERVICE_HEALTH">essere eseguita in primo piano (salute)</string>
+    <string name="tperm_FOREGROUND_SERVICE_REMOTE_MESSAGING">essere eseguita in primo piano (messaggi)</string>
+    <string name="tperm_FOREGROUND_SERVICE_SYSTEM_EXEMPTED">essere eseguita in primo piano (esenzione di sistema)</string>
+    <string name="tperm_FOREGROUND_SERVICE_MEDIA_PROCESSING">essere eseguita in primo piano (elaborazione media)</string>
+    <string name="tperm_MODIFY_AUDIO_SETTINGS">modificare le impostazioni audio</string>
+    <string name="tperm_READ_SYNC_SETTINGS">leggere le impostazioni di sincronizzazione</string>
+    <string name="tperm_WRITE_SYNC_SETTINGS">attivare e disattivare la sincronizzazione</string>
+    <string name="tperm_REQUEST_DELETE_PACKAGES">chiedere di disinstallare app</string>
+    <string name="tperm_UPDATE_PACKAGES_WITHOUT_USER_ACTION">aggiornare app senza conferma</string>
+    <string name="tperm_CHANGE_WIFI_MULTICAST_STATE">ricevere multicast Wi-Fi</string>
+    <string name="tperm_READ_BASIC_PHONE_STATE">leggere lo stato di base del telefono</string>
+    <plurals name="summary_perms">
+        <item quantity="one">%1$d autorizzazione</item>
+        <item quantity="many">%1$d autorizzazioni</item>
+        <item quantity="other">%1$d autorizzazioni</item>
+    </plurals>
+    <plurals name="summary_trackers">
+        <item quantity="one">%1$d tracker</item>
+        <item quantity="many">%1$d tracker</item>
+        <item quantity="other">%1$d tracker</item>
+    </plurals>
+    <plurals name="tech_perms">
+        <item quantity="one">+ %1$d autorizzazione tecnica</item>
+        <item quantity="many">+ %1$d autorizzazioni tecniche</item>
+        <item quantity="other">+ %1$d autorizzazioni tecniche</item>
+    </plurals>
+    <plurals name="shared_more">
+        <item quantity="one">e %1$d altra</item>
+        <item quantity="many">e altre %1$d</item>
+        <item quantity="other">e altre %1$d</item>
+    </plurals>
 </resources>

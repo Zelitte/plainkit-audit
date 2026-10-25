@@ -1,6 +1,12 @@
 package app.plainkit.audit
 
 import android.app.AppOpsManager
+import androidx.core.app.NotificationManagerCompat
+import android.view.inputmethod.InputMethodManager
+import android.view.accessibility.AccessibilityManager
+import android.content.ComponentName
+import android.app.admin.DevicePolicyManager
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.os.PowerManager
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -133,6 +139,7 @@ private fun installerOf(pm: PackageManager, pkg: String): String? = runCatching 
  * predinštaloval mimo systému, alebo inštalácia cez ADB.
  */
 private fun originText(pm: PackageManager, app: AppEntry, s: S): String? {
+    if (app.isWebApk) return s.originWebapk
     if (app.isSystem) return s.originSystem
     val inst = installerOf(pm, app.packageName) ?: return null
     return when {
@@ -181,6 +188,8 @@ private fun isCritical(pkg: String, runtime: Set<String>): Boolean =
 
 object AppCache {
     var apps: List<AppEntry>? = null
+    /** v1.7: počty z rozhraní mimoriadnych schopností (ladenie). */
+    var capsDebug: String = ""
     val scanned = mutableMapOf<String, List<Tracker>>()
 }
 
@@ -201,8 +210,52 @@ data class AppEntry(
     /** Ostatné appky s tou istou identitou (sharedUserId) — zdieľajú povolenia aj dáta. */
     val sharedWith: List<String> = emptyList(),
     /** Meno appky z tej istej identity, ktorá má INTERNET (null = žiadna). */
-    val sharedNet: String? = null
+    val sharedNet: String? = null,
+    // ── v1.7 ──
+    /** Zapnuté mimoriadne schopnosti (služba dostupnosti, notifikácie, klávesnica, správca). */
+    val caps: Set<Cap> = emptySet(),
+    /** Webová stránka uložená na plochu cez Chrome (WebAPK) — beží v prehliadači. */
+    val isWebApk: Boolean = false
 )
+
+/** v1.7: mimoriadne schopnosti — nie sú to bežné povolenia, zapína ich používateľ (alebo výrobca) v nastaveniach. */
+enum class Cap { A11Y, NOTIF, IME, ADMIN }
+
+/**
+ * v1.7: ktoré appky majú zapnuté mimoriadne schopnosti. Všetko cez verejné
+ * rozhrania Androidu, bez nového povolenia. Zisťuje sa raz pri načítaní zoznamu.
+ * `debug` = počty z jednotlivých zdrojov (len na ladenie, ukazuje sa v debug builde).
+ */
+class CapsInfo(val byPkg: Map<String, Set<Cap>>, val debug: String)
+
+private fun loadCaps(ctx: Context): CapsInfo {
+    fun <T> safe(block: () -> T?): T? = try { block() } catch (e: Exception) { null }
+    val a11yApi = safe {
+        ctx.getSystemService(AccessibilityManager::class.java)
+            ?.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+            ?.mapNotNull { it.resolveInfo?.serviceInfo?.packageName }?.toSet() ?: emptySet()
+    }
+    // Záloha: verejný kľúč nastavení so zoznamom zapnutých služieb dostupnosti.
+    // (null výsledok = nič zapnuté → prázdna množina; „x" v ladení = rozhranie hodilo výnimku)
+    val a11ySettings = safe {
+        Settings.Secure.getString(ctx.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+            ?.split(':')?.mapNotNull { ComponentName.unflattenFromString(it)?.packageName }?.toSet() ?: emptySet()
+    }
+    val notif = safe { NotificationManagerCompat.getEnabledListenerPackages(ctx) }
+    val ime = safe {
+        ctx.getSystemService(InputMethodManager::class.java)?.enabledInputMethodList?.map { it.packageName }?.toSet() ?: emptySet()
+    }
+    val admin = safe {
+        ctx.getSystemService(DevicePolicyManager::class.java)?.activeAdmins?.map { it.packageName }?.toSet() ?: emptySet()
+    }
+    val map = HashMap<String, MutableSet<Cap>>()
+    fun add(pkgs: Set<String>?, cap: Cap) = pkgs?.forEach { map.getOrPut(it) { mutableSetOf() }.add(cap) }
+    add(a11yApi, Cap.A11Y); add(a11ySettings, Cap.A11Y)
+    add(notif, Cap.NOTIF); add(ime, Cap.IME); add(admin, Cap.ADMIN)
+    val dbg = "a11y=${a11yApi?.size ?: "x"}/${a11ySettings?.size ?: "x"} notif=${notif?.size ?: "x"} " +
+            "ime=${ime?.size ?: "x"} admin=${admin?.size ?: "x"}"
+    return CapsInfo(map, dbg)
+}
 
 private fun codeOf(pkg: PackageInfo): Long =
     if (Build.VERSION.SDK_INT >= 28) pkg.longVersionCode
@@ -211,8 +264,10 @@ private fun codeOf(pkg: PackageInfo): Long =
 private fun loadApps(ctx: Context): List<AppEntry> {
     val pm = ctx.packageManager
     val uidCache = HashMap<Int, Pair<List<String>, String?>>()
+    val caps = loadCaps(ctx)
+    AppCache.capsDebug = caps.debug
     return pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
-        .map { toEntry(it, ctx, uidCache) }
+        .map { toEntry(it, ctx, uidCache, caps) }
         .sortedBy { it.label.lowercase() }
 }
 
@@ -223,7 +278,7 @@ private fun loadApps(ctx: Context): List<AppEntry> {
  * a aj zoznam povolení je starý.
  */
 private fun loadApp(ctx: Context, packageName: String): AppEntry? = runCatching {
-    toEntry(ctx.packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS), ctx, HashMap())
+    toEntry(ctx.packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS), ctx, HashMap(), loadCaps(ctx))
 }.getOrNull()
 
 /**
@@ -266,7 +321,8 @@ private fun specialModes(ctx: Context, uid: Int, pkg: String, perms: List<String
 private fun toEntry(
     pkg: PackageInfo,
     ctx: Context,
-    uidCache: MutableMap<Int, Pair<List<String>, String?>>
+    uidCache: MutableMap<Int, Pair<List<String>, String?>>,
+    caps: CapsInfo
 ): AppEntry {
     val pm = ctx.packageManager
     val info = pkg.applicationInfo
@@ -333,7 +389,9 @@ private fun toEntry(
         specialKnown = known,
         specialModes = modes,
         sharedWith = group.filter { it != pkg.packageName },
-        sharedNet = netLabel
+        sharedNet = netLabel,
+        caps = caps.byPkg[pkg.packageName] ?: emptySet(),
+        isWebApk = pkg.packageName.startsWith("org.chromium.webapk.")
     )
 }
 
@@ -740,7 +798,7 @@ private fun TechList(tech: List<String>, pm: PackageManager, s: S) {
         if (sys) anyProtected = true
         Text(
             text = buildAnnotatedString {
-                append("·\u00A0")
+                append("•\u00A0")
                 if (human != null) {
                     withStyle(SpanStyle(color = strong, fontSize = 12.sp)) { append(human) }
                     withStyle(SpanStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = muted)) {
@@ -769,7 +827,7 @@ private fun TechList(tech: List<String>, pm: PackageManager, s: S) {
         if (perms.size < 3) {
             perms.sorted().forEach { p ->
                 Text(
-                    text = "·\u00A0" + breakable(p),
+                    text = "•\u00A0" + breakable(p),
                     fontFamily = FontFamily.Monospace,
                     fontSize = 10.sp,
                     lineHeight = 14.sp,
@@ -790,7 +848,7 @@ private fun TechList(tech: List<String>, pm: PackageManager, s: S) {
             if (open) {
                 perms.sorted().forEach { p ->
                     Text(
-                        text = "·\u00A0" + breakable(p),
+                        text = "•\u00A0" + breakable(p),
                         fontFamily = FontFamily.Monospace,
                         fontSize = 10.sp,
                         lineHeight = 14.sp,
@@ -842,6 +900,9 @@ fun AppListScreen(
     var showRemove by remember { mutableStateOf<String?>(null) }
     var copiedKey by remember { mutableStateOf<String?>(null) }
     val expandedChanges = remember { mutableStateSetOf<Long>() }
+    // v1.7
+    var sortMode by remember { mutableStateOf(Prefs.sort(context)) }
+    var allChanges by remember { mutableStateOf(false) }
     val criticalRuntime = remember { criticalRuntimePackages(context) }
     var query by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf<String?>(null) }
@@ -937,13 +998,13 @@ fun AppListScreen(
             app.packageName to (scanned[app.packageName]
                 ?.let {
                     worstLevel(buildFindings(app.permissions, app.granted, it, s,
-                        app.packageName !in noCode, app.sharedNet)).ordinal
+                        app.packageName !in noCode, app.sharedNet, app.caps, app.isWebApk)).ordinal
                 }
                 ?: -1)
         }
     }
 
-    val visible = remember(scanTarget, query, levels) {
+    val visible = remember(scanTarget, query, levels, sortMode, scanRevision) {
         scanTarget
             .filter {
                 query.isBlank() ||
@@ -951,8 +1012,14 @@ fun AppListScreen(
                         it.packageName.contains(query, ignoreCase = true)
             }
             .sortedWith(
-                compareByDescending<AppEntry> { levels[it.packageName] ?: -1 }
-                    .thenBy { it.label.lowercase() }
+                when (sortMode) {
+                    SortMode.SEVERITY -> compareByDescending<AppEntry> { levels[it.packageName] ?: -1 }
+                        .thenBy { it.label.lowercase() }
+                    SortMode.NAME -> compareBy { it.label.lowercase() }
+                    // Neoskenované (-1) idú na koniec, aby sa nemiešali s tými, čo majú 0.
+                    SortMode.FINDINGS -> compareByDescending<AppEntry> { scanned[it.packageName]?.size ?: -1 }
+                        .thenBy { it.label.lowercase() }
+                }
             )
     }
 
@@ -1110,7 +1177,21 @@ fun AppListScreen(
                     .padding(top = 4.dp)
             )
         }
-        Spacer(Modifier.height(10.dp))
+        // v1.7: zoradenie — jeden nenápadný riadok, ťuknutím sa prepína
+        Text(
+            text = s.sortLabel + " " + s.sortName(sortMode) + " ▾",
+            fontFamily = FontFamily.Monospace,
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .align(Alignment.End)
+                .clickable {
+                    val next = SortMode.entries[(sortMode.ordinal + 1) % SortMode.entries.size]
+                    sortMode = next
+                    Prefs.setSort(context, next)
+                }
+                .padding(top = 8.dp, bottom = 4.dp)
+        )
 
         // Zmeny, z ktorých po odfiltrovaní vlastných povolení aplikácie nič
         // nezostalo, sa nezobrazujú — inak by na obrazovke visel prázdny rámček.
@@ -1119,7 +1200,7 @@ fun AppListScreen(
                 val full = renderChange(ch.text, ch.packageName, s)
                 if (full.isEmpty()) null
                 else Triple(ch, full, renderChange(ch.text, ch.packageName, s, compact = true))
-            }.take(8)
+            }
         }
 
         // ── zoznam ──
@@ -1144,7 +1225,9 @@ fun AppListScreen(
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.primary
                         )
-                        shownChanges.forEach { (ch, full, compact) ->
+                        // v1.7: posledných 5, zvyšok po ťuknutí
+                        val listed = if (allChanges) shownChanges else shownChanges.take(5)
+                        listed.forEach { (ch, full, compact) ->
                             // Dlhé zoznamy technických povolení sa zbalia na počet;
                             // ťuknutím sa záznam rozbalí celý.
                             val open = ch.id in expandedChanges
@@ -1168,6 +1251,16 @@ fun AppListScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+                        if (shownChanges.size > 5) {
+                            Text(
+                                text = if (allChanges) s.changesLess else s.changesMore(shownChanges.size - 5),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .padding(top = 10.dp)
+                                    .clickable { allChanges = !allChanges }
+                            )
+                        }
                     }
                 }
             }
@@ -1176,7 +1269,7 @@ fun AppListScreen(
                 val trackers = scanned[app.packageName]
                 val findings = trackers?.let {
                     buildFindings(app.permissions, app.granted, it, s,
-                        app.packageName !in noCode, app.sharedNet)
+                        app.packageName !in noCode, app.sharedNet, app.caps, app.isWebApk)
                 }
                 val level = findings?.let { worstLevel(it) }
                 val stripe = levelColor(level)
@@ -1348,12 +1441,22 @@ fun AppListScreen(
                                     val unused = isUnusedHere(p, app.targetSdk)
                                     // Ladenie (len debug build): surová odpoveď AppOps
                                     val dbg = if (debuggable) app.specialModes[p]?.let { "  [op=$it]" } ?: "" else ""
+                                    // v1.7: stav za pomlčkou menším a tlmeným písmom, aby sa
+                                    // nelámal uprostred a oko videlo najprv názov. Červené
+                                    // UDELENÉ ostáva celé červené.
+                                    val active = s.permIsActive(p, isGranted, known, unused)
+                                    val main = if (active) MaterialTheme.colorScheme.error
+                                               else MaterialTheme.colorScheme.onSurface
+                                    val sub = if (active) MaterialTheme.colorScheme.error
+                                              else MaterialTheme.colorScheme.onSurfaceVariant
                                     Text(
-                                        text = "• $label" + s.permMark(p, isGranted, known, unused) + dbg,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = if (s.permIsActive(p, isGranted, known, unused))
-                                            MaterialTheme.colorScheme.error
-                                        else MaterialTheme.colorScheme.onSurface
+                                        text = buildAnnotatedString {
+                                            withStyle(SpanStyle(color = main)) { append("• $label") }
+                                            withStyle(SpanStyle(color = sub, fontSize = 13.sp)) {
+                                                append(s.permMark(p, isGranted, known, unused) + dbg)
+                                            }
+                                        },
+                                        style = MaterialTheme.typography.bodyMedium
                                     )
                                 }
                             }
@@ -1366,6 +1469,30 @@ fun AppListScreen(
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
+                            }
+
+                            // ── v1.7: mimoriadne schopnosti ──
+                            if (app.caps.isNotEmpty()) {
+                                Text(
+                                    text = s.capsTitle,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(top = 14.dp, bottom = 4.dp)
+                                )
+                                listOf(
+                                    Cap.A11Y to s.capA11y, Cap.NOTIF to s.capNotif,
+                                    Cap.IME to s.capIme, Cap.ADMIN to s.capAdmin
+                                ).filter { it.first in app.caps }.forEach { (cap, text) ->
+                                    Text(
+                                        text = "• $text",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        // Dostupnosť a notifikácie červeno — najčastejšia cesta krádeže kódov.
+                                        color = if (cap == Cap.A11Y || cap == Cap.NOTIF)
+                                            MaterialTheme.colorScheme.error
+                                        else MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
                             }
 
                             if (tech.isNotEmpty()) {

@@ -72,10 +72,7 @@ s("mark_granted", "UDELENÉ", "GRANTED", "ERTEILT", "ACCORDÉE", "CONCEDIDO", "C
 s("mark_not_granted", "neudelené", "not granted", "nicht erteilt", "non accordée", "no concedido", "non concessa")
 s("mark_install", "automaticky pri inštalácii", "automatic at install", "automatisch bei der Installation", "automatique à l'installation", "automático al instalar", "automatica all'installazione")
 s("mark_special", "povoľuje sa zvlášť", "enabled separately", "wird separat erlaubt", "autorisée séparément", "se activa por separado", "si abilita separatamente")
-s("tech_perms", "+ %1$d technických povolení", "+ %1$d technical permissions", "+ %1$d technische Berechtigungen", "+ %1$d autorisations techniques", "+ %1$d permisos técnicos", "+ %1$d autorizzazioni tecniche")
 s("hide_tech", "skryť technické povolenia", "hide technical permissions", "technische Berechtigungen ausblenden", "masquer les autorisations techniques", "ocultar permisos técnicos", "nascondi autorizzazioni tecniche")
-s("summary_perms", "%1$d povolení", "%1$d permissions", "%1$d Berechtigungen", "%1$d autorisations", "%1$d permisos", "%1$d autorizzazioni")
-s("summary_trackers", "%1$d trackerov", "%1$d trackers", "%1$d Tracker", "%1$d traceurs", "%1$d rastreadores", "%1$d tracker")
 
 # ── úrovne ──
 s("level_alert", "POZOR", "WARNING", "WARNUNG", "ATTENTION", "ATENCIÓN", "ATTENZIONE")
@@ -483,7 +480,6 @@ s("no_code",
   "Il codice di questa app non è leggibile (è fuori dall'APK o cifrato) — non possiamo dire se contiene librerie di tracciamento.")
 s("summary_no_code", "kód nečitateľný", "code unreadable", "Code nicht lesbar", "code illisible", "código ilegible", "codice illeggibile")
 s("shared_title", "ZDIEĽA POVOLENIA A DÁTA S", "SHARES PERMISSIONS AND DATA WITH", "TEILT BERECHTIGUNGEN UND DATEN MIT", "PARTAGE AUTORISATIONS ET DONNÉES AVEC", "COMPARTE PERMISOS Y DATOS CON", "CONDIVIDE AUTORIZZAZIONI E DATI CON")
-s("shared_more", "a ďalších %1$d", "and %1$d more", "und %1$d weitere", "et %1$d autres", "y %1$d más", "e altre %1$d")
 s("shared_net",
   "Sama nežiada prístup na internet, ale zdieľa povolenia a dáta s appkou %1$s, ktorá ho má.",
   "Does not request internet access itself, but shares permissions and data with %1$s, which has it.",
@@ -491,6 +487,124 @@ s("shared_net",
   "Ne demande pas elle-même l'accès à Internet, mais partage autorisations et données avec %1$s, qui l'a.",
   "No solicita acceso a Internet, pero comparte permisos y datos con %1$s, que sí lo tiene.",
   "Non richiede l'accesso a Internet, ma condivide autorizzazioni e dati con %1$s, che lo ha.")
+
+# ── v1.7: mimoriadne schopnosti ──
+s("caps_title", "ZAPNUTÉ MIMORIADNE SCHOPNOSTI", "SPECIAL ACCESS TURNED ON", "AKTIVIERTE SONDERZUGRIFFE", "ACCÈS SPÉCIAUX ACTIVÉS", "ACCESOS ESPECIALES ACTIVADOS", "ACCESSI SPECIALI ATTIVI")
+s("cap_a11y",
+  "služba dostupnosti — vidí, čo je na obrazovke, a môže ťukať za teba",
+  "accessibility service — sees what is on the screen and can tap for you",
+  "Bedienungshilfe — sieht den Bildschirminhalt und kann für dich tippen",
+  "service d'accessibilité — voit l'écran et peut appuyer à ta place",
+  "servicio de accesibilidad — ve la pantalla y puede tocar por ti",
+  "servizio di accessibilità — vede lo schermo e può toccare al posto tuo")
+s("cap_notif",
+  "prístup k notifikáciám — číta všetky notifikácie vrátane SMS kódov",
+  "notification access — reads all notifications, including SMS codes",
+  "Benachrichtigungszugriff — liest alle Benachrichtigungen, auch SMS-Codes",
+  "accès aux notifications — lit toutes les notifications, y compris les codes SMS",
+  "acceso a notificaciones — lee todas las notificaciones, incluidos los códigos SMS",
+  "accesso alle notifiche — legge tutte le notifiche, compresi i codici SMS")
+s("cap_ime",
+  "zapnutá klávesnica — vidí, čo píšeš, keď ju používaš",
+  "enabled keyboard — sees what you type while you use it",
+  "aktivierte Tastatur — sieht, was du tippst, während du sie nutzt",
+  "clavier activé — voit ce que tu tapes quand tu l'utilises",
+  "teclado activado — ve lo que escribes mientras lo usas",
+  "tastiera attiva — vede ciò che scrivi mentre la usi")
+s("cap_admin",
+  "správca zariadenia — môže mať právo zamknúť alebo vymazať telefón",
+  "device admin — may be allowed to lock or wipe the phone",
+  "Geräteadministrator — darf das Telefon ggf. sperren oder löschen",
+  "administrateur de l'appareil — peut avoir le droit de verrouiller ou effacer le téléphone",
+  "administrador del dispositivo — puede tener permiso para bloquear o borrar el teléfono",
+  "amministratore del dispositivo — può avere il diritto di bloccare o cancellare il telefono")
+s("cap_a11y_short", "služba dostupnosti", "accessibility service", "Bedienungshilfe", "service d'accessibilité", "servicio de accesibilidad", "servizio di accessibilità")
+s("cap_notif_short", "prístup k notifikáciám", "notification access", "Benachrichtigungszugriff", "accès aux notifications", "acceso a notificaciones", "accesso alle notifiche")
+# %1$s = zoznam schopností
+s("caps_warn",
+  "Má zapnuté: %1$s. Takýto prístup zneužívajú aj škodlivé appky na krádež hesiel a kódov — nechaj ho zapnutý len appkám, ktorým veríš.",
+  "Turned on: %1$s. Malicious apps abuse this kind of access to steal passwords and codes — keep it only for apps you trust.",
+  "Aktiviert: %1$s. Schadsoftware missbraucht solchen Zugriff, um Passwörter und Codes zu stehlen — erlaube ihn nur Apps, denen du vertraust.",
+  "Activé : %1$s. Des apps malveillantes abusent de cet accès pour voler mots de passe et codes — ne l'accorde qu'aux apps de confiance.",
+  "Activado: %1$s. Las apps maliciosas abusan de este acceso para robar contraseñas y códigos; déjalo solo a apps de confianza.",
+  "Attivo: %1$s. Le app dannose abusano di questo accesso per rubare password e codici — lascialo solo alle app di cui ti fidi.")
+
+# ── v1.7: webová stránka uložená cez Chrome (WebAPK) ──
+s("webapk_note",
+  "Toto je webová stránka uložená na plochu cez Chrome. Beží v prehliadači, ktorý prístup na internet má — čo stránka robí, sa dá overiť len v prehliadači, nie tu.",
+  "This is a website saved to the home screen via Chrome. It runs in the browser, which has internet access — what the site does can only be checked in the browser, not here.",
+  "Das ist eine Website, die über Chrome auf dem Startbildschirm gespeichert wurde. Sie läuft im Browser, der Internetzugriff hat — was die Seite tut, lässt sich nur im Browser prüfen, nicht hier.",
+  "C'est un site web enregistré sur l'écran d'accueil via Chrome. Il s'exécute dans le navigateur, qui a accès à Internet — ce que fait le site ne se vérifie que dans le navigateur, pas ici.",
+  "Es una web guardada en la pantalla de inicio con Chrome. Funciona en el navegador, que tiene acceso a Internet: lo que hace la web solo se puede comprobar en el navegador, no aquí.",
+  "È un sito web salvato nella schermata Home tramite Chrome. Funziona nel browser, che ha accesso a Internet — cosa fa il sito si può verificare solo nel browser, non qui.")
+s("origin_webapk", "webová stránka nainštalovaná cez Chrome", "website installed via Chrome", "über Chrome installierte Website", "site web installé via Chrome", "web instalada con Chrome", "sito web installato tramite Chrome")
+
+# ── v1.7: zoznam zmien a zoradenie ──
+s("changes_more", "zobraziť ďalšie (%1$d) ▸", "show more (%1$d) ▸", "mehr anzeigen (%1$d) ▸", "afficher plus (%1$d) ▸", "mostrar más (%1$d) ▸", "mostra altri (%1$d) ▸")
+s("changes_less", "zobraziť menej ▴", "show less ▴", "weniger anzeigen ▴", "afficher moins ▴", "mostrar menos ▴", "mostra meno ▴")
+s("sort_label", "Zoradiť:", "Sort:", "Sortieren:", "Trier :", "Ordenar:", "Ordina:")
+s("sort_severity", "závažnosť", "severity", "Schweregrad", "gravité", "gravedad", "gravità")
+s("sort_name", "názov", "name", "Name", "nom", "nombre", "nome")
+s("sort_findings", "počet nálezov", "number of findings", "Anzahl Funde", "nombre de détections", "número de hallazgos", "numero di rilevamenti")
+
+# ── v1.7: ďalšie technické povolenia Androidu ──
+T2 = [
+ ("REORDER_TASKS", "meniť poradie spustených appiek", "reorder running apps", "laufende Apps neu anordnen", "réorganiser les apps en cours", "reordenar apps en ejecución", "riordinare le app in esecuzione"),
+ ("GET_PACKAGE_SIZE", "zistiť veľkosť appiek", "see app sizes", "App-Größen sehen", "voir la taille des apps", "ver el tamaño de las apps", "vedere la dimensione delle app"),
+ ("FOREGROUND_SERVICE_SPECIAL_USE", "bežať v popredí (špeciálny účel)", "run in the foreground (special use)", "im Vordergrund laufen (Sonderzweck)", "s'exécuter au premier plan (usage spécial)", "ejecutarse en primer plano (uso especial)", "essere eseguita in primo piano (uso speciale)"),
+ ("FOREGROUND_SERVICE_DATA_SYNC", "bežať v popredí (synchronizácia dát)", "run in the foreground (data sync)", "im Vordergrund laufen (Datensynchronisierung)", "s'exécuter au premier plan (synchro de données)", "ejecutarse en primer plano (sincronización)", "essere eseguita in primo piano (sincronizzazione)"),
+ ("FOREGROUND_SERVICE_MEDIA_PLAYBACK", "bežať v popredí (prehrávanie)", "run in the foreground (media playback)", "im Vordergrund laufen (Wiedergabe)", "s'exécuter au premier plan (lecture)", "ejecutarse en primer plano (reproducción)", "essere eseguita in primo piano (riproduzione)"),
+ ("FOREGROUND_SERVICE_CONNECTED_DEVICE", "bežať v popredí (pripojené zariadenie)", "run in the foreground (connected device)", "im Vordergrund laufen (verbundenes Gerät)", "s'exécuter au premier plan (appareil connecté)", "ejecutarse en primer plano (dispositivo conectado)", "essere eseguita in primo piano (dispositivo connesso)"),
+ ("FOREGROUND_SERVICE_PHONE_CALL", "bežať v popredí (hovor)", "run in the foreground (phone call)", "im Vordergrund laufen (Anruf)", "s'exécuter au premier plan (appel)", "ejecutarse en primer plano (llamada)", "essere eseguita in primo piano (chiamata)"),
+ ("FOREGROUND_SERVICE_HEALTH", "bežať v popredí (zdravie a pohyb)", "run in the foreground (health)", "im Vordergrund laufen (Gesundheit)", "s'exécuter au premier plan (santé)", "ejecutarse en primer plano (salud)", "essere eseguita in primo piano (salute)"),
+ ("FOREGROUND_SERVICE_REMOTE_MESSAGING", "bežať v popredí (správy)", "run in the foreground (messaging)", "im Vordergrund laufen (Nachrichten)", "s'exécuter au premier plan (messagerie)", "ejecutarse en primer plano (mensajería)", "essere eseguita in primo piano (messaggi)"),
+ ("FOREGROUND_SERVICE_SYSTEM_EXEMPTED", "bežať v popredí (výnimka systému)", "run in the foreground (system exempted)", "im Vordergrund laufen (Systemausnahme)", "s'exécuter au premier plan (exemption système)", "ejecutarse en primer plano (exención del sistema)", "essere eseguita in primo piano (esenzione di sistema)"),
+ ("FOREGROUND_SERVICE_MEDIA_PROCESSING", "bežať v popredí (spracovanie médií)", "run in the foreground (media processing)", "im Vordergrund laufen (Medienverarbeitung)", "s'exécuter au premier plan (traitement média)", "ejecutarse en primer plano (procesamiento multimedia)", "essere eseguita in primo piano (elaborazione media)"),
+ ("MODIFY_AUDIO_SETTINGS", "meniť nastavenia zvuku", "change audio settings", "Audioeinstellungen ändern", "modifier les paramètres audio", "cambiar ajustes de audio", "modificare le impostazioni audio"),
+ ("READ_SYNC_SETTINGS", "čítať nastavenia synchronizácie", "read sync settings", "Synchronisierungseinstellungen lesen", "lire les paramètres de synchro", "leer ajustes de sincronización", "leggere le impostazioni di sincronizzazione"),
+ ("WRITE_SYNC_SETTINGS", "zapínať a vypínať synchronizáciu", "turn sync on and off", "Synchronisierung ein- und ausschalten", "activer et désactiver la synchro", "activar y desactivar la sincronización", "attivare e disattivare la sincronizzazione"),
+ ("REQUEST_DELETE_PACKAGES", "požiadať o odinštalovanie appky", "ask to uninstall apps", "Deinstallation von Apps anfragen", "demander la désinstallation d'apps", "pedir desinstalar apps", "chiedere di disinstallare app"),
+ ("UPDATE_PACKAGES_WITHOUT_USER_ACTION", "aktualizovať appky bez potvrdenia", "update apps without confirmation", "Apps ohne Bestätigung aktualisieren", "mettre à jour des apps sans confirmation", "actualizar apps sin confirmación", "aggiornare app senza conferma"),
+ ("CHANGE_WIFI_MULTICAST_STATE", "prijímať skupinové vysielanie cez Wi-Fi", "receive Wi-Fi multicast", "WLAN-Multicast empfangen", "recevoir le multicast Wi-Fi", "recibir multidifusión Wi-Fi", "ricevere multicast Wi-Fi"),
+ ("READ_BASIC_PHONE_STATE", "zistiť základný stav telefónu", "read basic phone state", "einfachen Telefonstatus lesen", "lire l'état de base du téléphone", "leer el estado básico del teléfono", "leggere lo stato di base del telefono"),
+]
+for row in T2:
+    s("tperm_" + row[0], *row[1:])
+T += T2
+
+# ── v1.7: plurály ──
+# Android `plurals`: každý jazyk má vlastné tvary. Kľúče: one, few, many, other.
+PL = {}
+def pl(key, **langs):
+    PL[key] = langs
+pl("summary_perms",
+   sk={"one": "%1$d povolenie", "few": "%1$d povolenia", "many": "%1$d povolenia", "other": "%1$d povolení"},
+   en={"one": "%1$d permission", "other": "%1$d permissions"},
+   de={"one": "%1$d Berechtigung", "other": "%1$d Berechtigungen"},
+   fr={"one": "%1$d autorisation", "many": "%1$d autorisations", "other": "%1$d autorisations"},
+   es={"one": "%1$d permiso", "many": "%1$d permisos", "other": "%1$d permisos"},
+   it={"one": "%1$d autorizzazione", "many": "%1$d autorizzazioni", "other": "%1$d autorizzazioni"})
+pl("summary_trackers",
+   sk={"one": "%1$d tracker", "few": "%1$d trackery", "many": "%1$d trackera", "other": "%1$d trackerov"},
+   en={"one": "%1$d tracker", "other": "%1$d trackers"},
+   de={"one": "%1$d Tracker", "other": "%1$d Tracker"},
+   fr={"one": "%1$d traceur", "many": "%1$d traceurs", "other": "%1$d traceurs"},
+   es={"one": "%1$d rastreador", "many": "%1$d rastreadores", "other": "%1$d rastreadores"},
+   it={"one": "%1$d tracker", "many": "%1$d tracker", "other": "%1$d tracker"})
+pl("tech_perms",
+   sk={"one": "+ %1$d technické povolenie", "few": "+ %1$d technické povolenia", "many": "+ %1$d technického povolenia", "other": "+ %1$d technických povolení"},
+   en={"one": "+ %1$d technical permission", "other": "+ %1$d technical permissions"},
+   de={"one": "+ %1$d technische Berechtigung", "other": "+ %1$d technische Berechtigungen"},
+   fr={"one": "+ %1$d autorisation technique", "many": "+ %1$d autorisations techniques", "other": "+ %1$d autorisations techniques"},
+   es={"one": "+ %1$d permiso técnico", "many": "+ %1$d permisos técnicos", "other": "+ %1$d permisos técnicos"},
+   it={"one": "+ %1$d autorizzazione tecnica", "many": "+ %1$d autorizzazioni tecniche", "other": "+ %1$d autorizzazioni tecniche"})
+pl("shared_more",
+   sk={"one": "a ďalšia %1$d", "few": "a ďalšie %1$d", "many": "a ďalších %1$d", "other": "a ďalších %1$d"},
+   en={"one": "and %1$d more", "other": "and %1$d more"},
+   de={"one": "und %1$d weitere", "other": "und %1$d weitere"},
+   fr={"one": "et %1$d autre", "many": "et %1$d autres", "other": "et %1$d autres"},
+   es={"one": "y %1$d más", "many": "y %1$d más", "other": "y %1$d más"},
+   it={"one": "e %1$d altra", "many": "e altre %1$d", "other": "e altre %1$d"})
 
 def esc(v):
     v = v.replace("\\", "\\\\").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -511,10 +625,16 @@ def main(res_dir):
             lines.append('    <string name="app_name" translatable="false">Audit</string>')
         for key, vals in S.items():
             lines.append(f'    <string name="{key}">{esc(vals[i])}</string>')
+        for key, langs in PL.items():
+            lines.append(f'    <plurals name="{key}">')
+            for q in ("zero", "one", "two", "few", "many", "other"):
+                if q in langs[lang]:
+                    lines.append(f'        <item quantity="{q}">{esc(langs[lang][q])}</item>')
+            lines.append('    </plurals>')
         lines.append('</resources>')
         with open(os.path.join(d, "strings.xml"), "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")
-    print(len(S), "kľúčov ×", len(LANGS), "jazykov")
+    print(len(S), "kľúčov +", len(PL), "plurálov ×", len(LANGS), "jazykov")
 
 
 if __name__ == "__main__":

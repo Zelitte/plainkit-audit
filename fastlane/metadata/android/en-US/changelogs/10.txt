@@ -1,0 +1,5 @@
+* New: special access that is turned on — accessibility service, notification access, keyboard, device admin
+* A website saved to the home screen via Chrome is no longer shown as an app without internet
+* Sort the list by severity, name or number of findings
+* Correct number forms (1 tracker, 2 trackers) and more plain-language permission names
+* Cleaner permission rows and a shorter change log

@@ -30,10 +30,7 @@
     <string name="mark_not_granted">nicht erteilt</string>
     <string name="mark_install">automatisch bei der Installation</string>
     <string name="mark_special">wird separat erlaubt</string>
-    <string name="tech_perms">+ %1$d technische Berechtigungen</string>
     <string name="hide_tech">technische Berechtigungen ausblenden</string>
-    <string name="summary_perms">%1$d Berechtigungen</string>
-    <string name="summary_trackers">%1$d Tracker</string>
     <string name="level_alert">WARNUNG</string>
     <string name="level_warn">HINWEIS</string>
     <string name="level_info">INFO</string>
@@ -224,6 +221,55 @@
     <string name="no_code">Der Code dieser App ist nicht lesbar (außerhalb der APK gespeichert oder verschlüsselt) — wir können nicht sagen, ob er Tracking-Bibliotheken enthält.</string>
     <string name="summary_no_code">Code nicht lesbar</string>
     <string name="shared_title">TEILT BERECHTIGUNGEN UND DATEN MIT</string>
-    <string name="shared_more">und %1$d weitere</string>
     <string name="shared_net">Fordert selbst keinen Internetzugriff an, teilt aber Berechtigungen und Daten mit %1$s, die ihn hat.</string>
+    <string name="caps_title">AKTIVIERTE SONDERZUGRIFFE</string>
+    <string name="cap_a11y">Bedienungshilfe — sieht den Bildschirminhalt und kann für dich tippen</string>
+    <string name="cap_notif">Benachrichtigungszugriff — liest alle Benachrichtigungen, auch SMS-Codes</string>
+    <string name="cap_ime">aktivierte Tastatur — sieht, was du tippst, während du sie nutzt</string>
+    <string name="cap_admin">Geräteadministrator — darf das Telefon ggf. sperren oder löschen</string>
+    <string name="cap_a11y_short">Bedienungshilfe</string>
+    <string name="cap_notif_short">Benachrichtigungszugriff</string>
+    <string name="caps_warn">Aktiviert: %1$s. Schadsoftware missbraucht solchen Zugriff, um Passwörter und Codes zu stehlen — erlaube ihn nur Apps, denen du vertraust.</string>
+    <string name="webapk_note">Das ist eine Website, die über Chrome auf dem Startbildschirm gespeichert wurde. Sie läuft im Browser, der Internetzugriff hat — was die Seite tut, lässt sich nur im Browser prüfen, nicht hier.</string>
+    <string name="origin_webapk">über Chrome installierte Website</string>
+    <string name="changes_more">mehr anzeigen (%1$d) ▸</string>
+    <string name="changes_less">weniger anzeigen ▴</string>
+    <string name="sort_label">Sortieren:</string>
+    <string name="sort_severity">Schweregrad</string>
+    <string name="sort_name">Name</string>
+    <string name="sort_findings">Anzahl Funde</string>
+    <string name="tperm_REORDER_TASKS">laufende Apps neu anordnen</string>
+    <string name="tperm_GET_PACKAGE_SIZE">App-Größen sehen</string>
+    <string name="tperm_FOREGROUND_SERVICE_SPECIAL_USE">im Vordergrund laufen (Sonderzweck)</string>
+    <string name="tperm_FOREGROUND_SERVICE_DATA_SYNC">im Vordergrund laufen (Datensynchronisierung)</string>
+    <string name="tperm_FOREGROUND_SERVICE_MEDIA_PLAYBACK">im Vordergrund laufen (Wiedergabe)</string>
+    <string name="tperm_FOREGROUND_SERVICE_CONNECTED_DEVICE">im Vordergrund laufen (verbundenes Gerät)</string>
+    <string name="tperm_FOREGROUND_SERVICE_PHONE_CALL">im Vordergrund laufen (Anruf)</string>
+    <string name="tperm_FOREGROUND_SERVICE_HEALTH">im Vordergrund laufen (Gesundheit)</string>
+    <string name="tperm_FOREGROUND_SERVICE_REMOTE_MESSAGING">im Vordergrund laufen (Nachrichten)</string>
+    <string name="tperm_FOREGROUND_SERVICE_SYSTEM_EXEMPTED">im Vordergrund laufen (Systemausnahme)</string>
+    <string name="tperm_FOREGROUND_SERVICE_MEDIA_PROCESSING">im Vordergrund laufen (Medienverarbeitung)</string>
+    <string name="tperm_MODIFY_AUDIO_SETTINGS">Audioeinstellungen ändern</string>
+    <string name="tperm_READ_SYNC_SETTINGS">Synchronisierungseinstellungen lesen</string>
+    <string name="tperm_WRITE_SYNC_SETTINGS">Synchronisierung ein- und ausschalten</string>
+    <string name="tperm_REQUEST_DELETE_PACKAGES">Deinstallation von Apps anfragen</string>
+    <string name="tperm_UPDATE_PACKAGES_WITHOUT_USER_ACTION">Apps ohne Bestätigung aktualisieren</string>
+    <string name="tperm_CHANGE_WIFI_MULTICAST_STATE">WLAN-Multicast empfangen</string>
+    <string name="tperm_READ_BASIC_PHONE_STATE">einfachen Telefonstatus lesen</string>
+    <plurals name="summary_perms">
+        <item quantity="one">%1$d Berechtigung</item>
+        <item quantity="other">%1$d Berechtigungen</item>
+    </plurals>
+    <plurals name="summary_trackers">
+        <item quantity="one">%1$d Tracker</item>
+        <item quantity="other">%1$d Tracker</item>
+    </plurals>
+    <plurals name="tech_perms">
+        <item quantity="one">+ %1$d technische Berechtigung</item>
+        <item quantity="other">+ %1$d technische Berechtigungen</item>
+    </plurals>
+    <plurals name="shared_more">
+        <item quantity="one">und %1$d weitere</item>
+        <item quantity="other">und %1$d weitere</item>
+    </plurals>
 </resources>

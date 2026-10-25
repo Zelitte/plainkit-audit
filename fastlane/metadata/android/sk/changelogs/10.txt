@@ -1,0 +1,5 @@
+* Nové: zapnuté mimoriadne schopnosti — služba dostupnosti, prístup k notifikáciám, klávesnica, správca zariadenia
+* Webová stránka uložená na plochu cez Chrome už nie je označená ako appka bez internetu
+* Zoradenie zoznamu podľa závažnosti, názvu alebo počtu nálezov
+* Správne tvary čísel (1 tracker, 2 trackery, 5 trackerov) a ďalšie ľudské popisy povolení
+* Prehľadnejšie riadky povolení a skrátený zoznam zmien

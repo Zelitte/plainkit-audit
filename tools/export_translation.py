@@ -35,5 +35,14 @@ for g, keys in groups.items():
         L.append(f"### `{k}`")
         L += [f"- **{NAMES[l]}:** {v[l]}" for l in order]
         L += ["- **NOVÝ:** ", ""]
+PL = ns.get("PL", {})
+if PL:
+    L += ["## Tvary podľa čísla (plurály)", "",
+          "Každý jazyk má vlastné tvary: one = 1, few = 2–4 (SK), many/other = ostatné. Nový jazyk: doplň tvary, ktoré používa.", ""]
+    for k, langs in PL.items():
+        L.append(f"### `{k}`")
+        for lang in order:
+            L.append(f"- **{NAMES[lang]}:** " + " · ".join(f"{q}: {t}" for q, t in langs[lang].items()))
+        L += ["- **NOVÝ:** ", ""]
 open(out, "w", encoding="utf-8").write("\n".join(L))
 print(len(S), "kľúčov,", len(groups), "sekcií")

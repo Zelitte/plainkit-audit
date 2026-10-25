@@ -262,9 +262,28 @@ fun buildFindings(
     trackers: List<Tracker>,
     s: S,
     codeReadable: Boolean = true,
-    sharedNet: String? = null
+    sharedNet: String? = null,
+    caps: Set<Cap> = emptySet(),
+    isWebApk: Boolean = false
 ): List<Finding> {
     val out = mutableListOf<Finding>()
+
+    // v1.7: stránka uložená na plochu cez Chrome. Samotný balík je prázdny obal
+    // bez INTERNET, stránka však beží v Chrome — zelené „nemôže sa pripojiť"
+    // by zavádzalo. Audit stránku posúdiť nevie, len to povie.
+    if (isWebApk) {
+        out.add(Finding(Level.INFO, s.webapkNote))
+        return out
+    }
+
+    // v1.7: služba dostupnosti a prístup k notifikáciám — najčastejšie cesty
+    // krádeže hesiel a SMS kódov. Klávesnica a správca zariadenia sa ukazujú
+    // len v detaile (klávesnicu má každý telefón, správcu napr. Nájsť zariadenie).
+    val strongCaps = buildList {
+        if (Cap.A11Y in caps) add(s.capA11yShort)
+        if (Cap.NOTIF in caps) add(s.capNotifShort)
+    }
+    if (strongCaps.isNotEmpty()) out.add(Finding(Level.WARN, s.capsWarn(strongCaps.joinToString(", "))))
 
     if ("android.permission.INTERNET" !in permissions) {
         if (sharedNet == null) {
