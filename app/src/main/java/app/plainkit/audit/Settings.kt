@@ -82,7 +82,7 @@ fun SettingsScreen(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         ) {
-            TextButton(onClick = onBack) { Text("← " + s.back, maxLines = 1) }
+            FxTextButton(onClick = onBack) { Text("← " + s.back, maxLines = 1) }
             Text(
                 s.settings,
                 style = MaterialTheme.typography.titleLarge,
@@ -106,12 +106,12 @@ fun SettingsScreen(
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(top = 24.dp, bottom = 6.dp)
         )
-        OutlinedButton(
+        FxOutlinedButton(
             onClick = onClearChanges,
             modifier = Modifier.fillMaxWidth()
         ) { Text(s.clearChanges) }
 
-        OutlinedButton(
+        FxOutlinedButton(
             onClick = onClearScans,
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
         ) { Text(s.clearScans) }
@@ -121,7 +121,7 @@ fun SettingsScreen(
             modifier = Modifier.padding(top = 4.dp)
         )
 
-        OutlinedButton(
+        FxOutlinedButton(
             onClick = onShowIntro,
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
         ) { Text(s.showIntro) }
@@ -161,12 +161,12 @@ fun SettingsScreen(
                 modifier = Modifier.padding(top = 4.dp)
             )
             Row {
-                TextButton(onClick = {
+                FxTextButton(onClick = {
                     runCatching {
                         context.startActivity(Intent(AndroidSettings.ACTION_WIRELESS_SETTINGS))
                     }
                 }) { Text(s.dnsOpen) }
-                TextButton(onClick = { recheck++ }) { Text(s.dnsRecheck) }
+                FxTextButton(onClick = { recheck++ }) { Text(s.dnsRecheck) }
             }
         }
 
@@ -239,7 +239,7 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 12.dp)
             )
-            TextButton(onClick = {
+            FxTextButton(onClick = {
                 packed = "…"
                 Thread { packed = debugPackedReport(AppCache.apps ?: emptyList()) }.start()
             }) { Text("debug: hľadať zašifrované appky", fontSize = 12.sp) }
@@ -266,11 +266,11 @@ fun SettingsScreen(
 @Composable
 private fun LangChip(label: String, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
     if (selected) {
-        Button(onClick = onClick, modifier = modifier) {
+        FxButton(onClick = onClick, modifier = modifier) {
             Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     } else {
-        OutlinedButton(onClick = onClick, modifier = modifier) {
+        FxOutlinedButton(onClick = onClick, modifier = modifier) {
             Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }

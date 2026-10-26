@@ -572,6 +572,74 @@ for row in T2:
     s("tperm_" + row[0], *row[1:])
 T += T2
 
+# ── v1.8: kontrola telefónu, kto čo smie, odinštalovať ──
+s("nav_check", "Kontrola telefónu", "Phone check", "Telefon-Check", "Vérifier le téléphone", "Revisar el teléfono", "Controllo telefono")
+s("nav_byperm", "Kto čo smie", "Who can do what", "Wer darf was", "Qui peut faire quoi", "Quién puede qué", "Chi può cosa")
+s("check_title", "KONTROLA TELEFÓNU", "PHONE CHECK", "TELEFON-CHECK", "VÉRIFICATION DU TÉLÉPHONE", "REVISIÓN DEL TELÉFONO", "CONTROLLO DEL TELEFONO")
+s("check_note",
+  "Kontrola ukazuje len to, čo Android dovolí zistiť. Nie je to antivírus.",
+  "The check shows only what Android lets an app find out. It is not an antivirus.",
+  "Der Check zeigt nur, was Android eine App herausfinden lässt. Er ist kein Virenscanner.",
+  "La vérification ne montre que ce qu'Android permet de savoir. Ce n'est pas un antivirus.",
+  "La revisión solo muestra lo que Android permite averiguar. No es un antivirus.",
+  "Il controllo mostra solo ciò che Android permette di scoprire. Non è un antivirus.")
+s("check_patch_ok", "Bezpečnostná aktualizácia: %1$s", "Security update: %1$s", "Sicherheitsupdate: %1$s", "Mise à jour de sécurité : %1$s", "Actualización de seguridad: %1$s", "Aggiornamento di sicurezza: %1$s")
+s("check_patch_old",
+  "Bezpečnostná aktualizácia: %1$s — staršia ako 3 mesiace. Skontroluj aktualizácie systému.",
+  "Security update: %1$s — older than 3 months. Check for system updates.",
+  "Sicherheitsupdate: %1$s — älter als 3 Monate. Prüfe auf Systemupdates.",
+  "Mise à jour de sécurité : %1$s — plus de 3 mois. Vérifie les mises à jour système.",
+  "Actualización de seguridad: %1$s — de hace más de 3 meses. Busca actualizaciones del sistema.",
+  "Aggiornamento di sicurezza: %1$s — più vecchio di 3 mesi. Controlla gli aggiornamenti di sistema.")
+s("check_patch_unknown", "Dátum bezpečnostnej aktualizácie sa nedá zistiť.", "The security update date can't be read.", "Das Datum des Sicherheitsupdates ist nicht lesbar.", "La date de mise à jour de sécurité est illisible.", "No se puede leer la fecha de la actualización de seguridad.", "Impossibile leggere la data dell'aggiornamento di sicurezza.")
+s("check_lock_ok", "Zámok obrazovky je nastavený.", "A screen lock is set.", "Eine Displaysperre ist eingerichtet.", "Un verrouillage d'écran est configuré.", "Hay un bloqueo de pantalla configurado.", "È impostato un blocco schermo.")
+s("check_lock_no",
+  "Telefón nemá zabezpečený zámok obrazovky — kto ho vezme do ruky, vidí všetko.",
+  "The phone has no secure screen lock — anyone who picks it up sees everything.",
+  "Das Telefon hat keine sichere Displaysperre — wer es in die Hand nimmt, sieht alles.",
+  "Le téléphone n'a pas de verrouillage sécurisé — qui le prend voit tout.",
+  "El teléfono no tiene bloqueo seguro: quien lo coja lo ve todo.",
+  "Il telefono non ha un blocco sicuro — chi lo prende vede tutto.")
+s("check_adb_on",
+  "Ladenie USB je zapnuté — cez kábel sa dá do telefónu dostať. Vypni ho, keď ho nepotrebuješ.",
+  "USB debugging is on — the phone can be accessed over a cable. Turn it off when you don't need it.",
+  "USB-Debugging ist an — über ein Kabel kommt man ins Telefon. Schalte es aus, wenn du es nicht brauchst.",
+  "Le débogage USB est activé — on peut accéder au téléphone par câble. Désactive-le si tu n'en as pas besoin.",
+  "La depuración USB está activada: se puede acceder al teléfono por cable. Desactívala si no la necesitas.",
+  "Il debug USB è attivo — si può accedere al telefono via cavo. Disattivalo se non ti serve.")
+s("check_dev_on", "Možnosti pre vývojárov sú zapnuté, ladenie USB vypnuté.", "Developer options are on, USB debugging is off.", "Entwickleroptionen sind an, USB-Debugging ist aus.", "Les options pour les développeurs sont activées, le débogage USB est désactivé.", "Las opciones de desarrollador están activadas, la depuración USB no.", "Le opzioni sviluppatore sono attive, il debug USB no.")
+s("check_dev_off", "Možnosti pre vývojárov sú vypnuté.", "Developer options are off.", "Entwickleroptionen sind aus.", "Les options pour les développeurs sont désactivées.", "Las opciones de desarrollador están desactivadas.", "Le opzioni sviluppatore sono disattivate.")
+s("check_install_none", "Žiadna nainštalovaná aplikácia nesmie inštalovať ďalšie aplikácie.", "No installed app may install other apps.", "Keine installierte App darf andere Apps installieren.", "Aucune app installée ne peut installer d'autres apps.", "Ninguna app instalada puede instalar otras apps.", "Nessuna app installata può installare altre app.")
+s("check_install_some", "Inštalovať ďalšie aplikácie smú: %1$s", "Allowed to install other apps: %1$s", "Dürfen andere Apps installieren: %1$s", "Peuvent installer d'autres apps : %1$s", "Pueden instalar otras apps: %1$s", "Possono installare altre app: %1$s")
+s("check_caps_none", "Žiadna aplikácia nemá zapnutú službu dostupnosti ani prístup k notifikáciám.", "No app has an accessibility service or notification access turned on.", "Keine App hat eine Bedienungshilfe oder Benachrichtigungszugriff aktiviert.", "Aucune app n'a de service d'accessibilité ni d'accès aux notifications.", "Ninguna app tiene activado un servicio de accesibilidad ni acceso a notificaciones.", "Nessuna app ha un servizio di accessibilità o l'accesso alle notifiche.")
+s("check_caps_some", "Službu dostupnosti alebo prístup k notifikáciám majú: %1$s", "Accessibility service or notification access: %1$s", "Bedienungshilfe oder Benachrichtigungszugriff: %1$s", "Service d'accessibilité ou accès aux notifications : %1$s", "Servicio de accesibilidad o acceso a notificaciones: %1$s", "Servizio di accessibilità o accesso alle notifiche: %1$s")
+s("check_root_none", "Známe znaky rootu sa nenašli.", "No known signs of root were found.", "Keine bekannten Root-Anzeichen gefunden.", "Aucun signe connu de root.", "No se encontraron señales conocidas de root.", "Nessun segno noto di root.")
+s("check_root_found",
+  "Našli sa znaky rootu: %1$s. Aplikácia s rootom môže obísť všetky povolenia.",
+  "Signs of root found: %1$s. An app with root can bypass all permissions.",
+  "Root-Anzeichen gefunden: %1$s. Eine App mit Root kann alle Berechtigungen umgehen.",
+  "Signes de root trouvés : %1$s. Une app avec root peut contourner toutes les autorisations.",
+  "Señales de root encontradas: %1$s. Una app con root puede saltarse todos los permisos.",
+  "Segni di root trovati: %1$s. Un'app con root può aggirare tutte le autorizzazioni.")
+s("check_open", "Otvoriť nastavenia", "Open settings", "Einstellungen öffnen", "Ouvrir les paramètres", "Abrir ajustes", "Apri impostazioni")
+s("byperm_title", "KTO ČO SMIE", "WHO CAN DO WHAT", "WER DARF WAS", "QUI PEUT FAIRE QUOI", "QUIÉN PUEDE QUÉ", "CHI PUÒ COSA")
+s("byperm_scope", "Rozsah podľa hlavnej obrazovky: %1$s. Ťukni na appku pre detail.", "Scope as on the main screen: %1$s. Tap an app for details.", "Bereich wie auf dem Hauptbildschirm: %1$s. Tippe auf eine App für Details.", "Portée comme sur l'écran principal : %1$s. Appuie sur une app pour le détail.", "Alcance como en la pantalla principal: %1$s. Toca una app para ver el detalle.", "Ambito come nella schermata principale: %1$s. Tocca un'app per i dettagli.")
+s("byperm_none", "nikto", "nobody", "niemand", "personne", "nadie", "nessuno")
+s("byperm_location", "poloha", "location", "Standort", "position", "ubicación", "posizione")
+s("byperm_contacts", "kontakty a účty", "contacts and accounts", "Kontakte und Konten", "contacts et comptes", "contactos y cuentas", "contatti e account")
+s("byperm_sms", "SMS", "SMS", "SMS", "SMS", "SMS", "SMS")
+s("byperm_calls", "zoznam hovorov", "call log", "Anrufliste", "journal d'appels", "registro de llamadas", "registro chiamate")
+s("byperm_calendar", "kalendár", "calendar", "Kalender", "agenda", "calendario", "calendario")
+s("byperm_media", "fotky, videá a hudba", "photos, videos and music", "Fotos, Videos und Musik", "photos, vidéos et musique", "fotos, vídeos y música", "foto, video e musica")
+s("byperm_phone", "údaje o telefóne", "phone identity", "Telefonidentität", "identité du téléphone", "identidad del teléfono", "identità del telefono")
+s("byperm_microphone", "mikrofón", "microphone", "Mikrofon", "micro", "micrófono", "microfono")
+s("byperm_camera", "kamera", "camera", "Kamera", "appareil photo", "cámara", "fotocamera")
+s("byperm_activity", "pohybová aktivita", "physical activity", "körperliche Aktivität", "activité physique", "actividad física", "attività fisica")
+s("byperm_files", "všetky súbory", "all files", "alle Dateien", "tous les fichiers", "todos los archivos", "tutti i file")
+s("cap_ime_short", "klávesnica", "keyboard", "Tastatur", "clavier", "teclado", "tastiera")
+s("cap_admin_short", "správca zariadenia", "device admin", "Geräteadministrator", "administrateur de l'appareil", "administrador del dispositivo", "amministratore del dispositivo")
+s("uninstall", "Odinštalovať", "Uninstall", "Deinstallieren", "Désinstaller", "Desinstalar", "Disinstalla")
+
 # ── v1.7: plurály ──
 # Android `plurals`: každý jazyk má vlastné tvary. Kľúče: one, few, many, other.
 PL = {}

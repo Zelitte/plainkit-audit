@@ -24,6 +24,8 @@ import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
@@ -91,6 +93,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -118,7 +121,7 @@ private val WarnAmber = Color(0xFFFFB020)
 /** Čo sa zobrazuje a skenuje: len nainštalované, len systémové, alebo všetko. */
 enum class ListScope { APPS, SYSTEM, ALL }
 
-private fun AppEntry.inScope(scope: ListScope): Boolean = when (scope) {
+internal fun AppEntry.inScope(scope: ListScope): Boolean = when (scope) {
     ListScope.APPS -> !isSystem
     ListScope.SYSTEM -> isSystem
     ListScope.ALL -> true
@@ -586,7 +589,7 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
         )
         setContent {
-            AuditTheme {
+            AuditTheme { BurstHost {
                 val ctx = LocalContext.current
                 var lang by remember { mutableStateOf(Prefs.lang(ctx)) }
                 val current = lang
@@ -615,7 +618,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
-            }
+            } }
         }
     }
 }
@@ -752,7 +755,7 @@ internal fun CommandLine(label: String, cmd: String, s: S, copiedKey: String?, o
         SelectionContainer(modifier = Modifier.weight(1f)) {
             Text(cmd, fontFamily = FontFamily.Monospace, fontSize = 11.sp, lineHeight = 15.sp)
         }
-        TextButton(onClick = {
+        FxTextButton(onClick = {
             runCatching {
                 context.getSystemService(ClipboardManager::class.java)
                     ?.setPrimaryClip(ClipData.newPlainText("adb", cmd))
@@ -871,7 +874,7 @@ private fun TechList(tech: List<String>, pm: PackageManager, s: S) {
 }
 
 @Composable
-private fun levelColor(level: Level?): Color = when (level) {
+internal fun levelColor(level: Level?): Color = when (level) {
     Level.ALERT -> MaterialTheme.colorScheme.error
     Level.WARN -> WarnAmber
     Level.INFO -> MaterialTheme.colorScheme.primary
@@ -918,6 +921,10 @@ fun AppListScreen(
     }
     var changes by remember { mutableStateOf<List<ChangeRecord>>(emptyList()) }
     var showSettings by rememberSaveable { mutableStateOf(false) }
+    // v1.8
+    var showCheck by rememberSaveable { mutableStateOf(false) }
+    var showByPerm by rememberSaveable { mutableStateOf(false) }
+    var pendingUninstall by rememberSaveable { mutableStateOf<String?>(null) }
     var justCleared by remember { mutableStateOf(false) }
     var failedPkg by remember { mutableStateOf<String?>(null) }
     val scanned = remember {
@@ -931,6 +938,23 @@ fun AppListScreen(
         // skene sa prepíše hodnota existujúceho záznamu a veľkosť mapy
         // zostane rovnaká, takže by sa závažnosť neprepočítala.
         scanRevision++
+    }
+
+    // v1.8: odinštalovanie — systémové okno, potvrdzuje používateľ. Po návrate
+    // overíme, či appka naozaj zmizla (mohol zrušiť).
+    val uninstallLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        val pkg = pendingUninstall ?: return@rememberLauncherForActivityResult
+        pendingUninstall = null
+        val gone = runCatching { pm.getPackageInfo(pkg, 0); false }.getOrDefault(true)
+        if (gone) {
+            apps = apps.filter { it.packageName != pkg }
+            AppCache.apps = apps
+            scanned.remove(pkg)
+            AppCache.scanned.remove(pkg)
+            if (expanded == pkg) expanded = null
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -977,6 +1001,37 @@ fun AppListScreen(
                 showSettings = false
                 justCleared = false
             },
+            modifier = modifier
+        )
+        return
+    }
+
+    if (showByPerm) {
+        ByPermScreen(
+            s = s,
+            apps = apps.filter { it.inScope(listScope) },
+            scopeName = when (listScope) {
+                ListScope.APPS -> appsLabel
+                ListScope.SYSTEM -> sysLabel
+                ListScope.ALL -> s.tileAll
+            },
+            onBack = { showByPerm = false },
+            onOpenApp = { app ->
+                showByPerm = false
+                showCheck = false
+                query = app.label
+                expanded = app.packageName
+            },
+            modifier = modifier
+        )
+        return
+    }
+    if (showCheck) {
+        CheckScreen(
+            s = s,
+            apps = apps,
+            onBack = { showCheck = false },
+            onByPerm = { showByPerm = true },
             modifier = modifier
         )
         return
@@ -1056,7 +1111,7 @@ fun AppListScreen(
                     .weight(1f)
             )
             // pri veľkom písme len ikonka; popis ostáva pre čítačku obrazovky
-            TextButton(onClick = { showSettings = true }) {
+            FxTextButton(onClick = { showSettings = true }) {
                 Icon(
                     imageVector = Icons.Default.Build,
                     contentDescription = if (isLargeFont()) s.settings else null,
@@ -1127,7 +1182,7 @@ fun AppListScreen(
         )
 
         // ── skenovanie ──
-        Button(
+        FxButton(
             onClick = {
                 progress = 0
                 scope.launch {
@@ -1176,6 +1231,20 @@ fun AppListScreen(
                     .height(4.dp)
                     .padding(top = 4.dp)
             )
+        }
+        // v1.8: kontrola telefónu a prehľad podľa povolení
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+        ) {
+            FxOutlinedButton(
+                onClick = { showCheck = true },
+                modifier = Modifier.weight(1f)
+            ) { Text(s.navCheck, fontSize = 13.sp, textAlign = TextAlign.Center) }
+            FxOutlinedButton(
+                onClick = { showByPerm = true },
+                modifier = Modifier.weight(1f)
+            ) { Text(s.navByPerm, fontSize = 13.sp, textAlign = TextAlign.Center) }
         }
         // v1.7: zoradenie — jeden nenápadný riadok, ťuknutím sa prepína
         Text(
@@ -1496,7 +1565,7 @@ fun AppListScreen(
                             }
 
                             if (tech.isNotEmpty()) {
-                                TextButton(
+                                FxTextButton(
                                     onClick = { showTech = !showTech },
                                     modifier = Modifier.padding(top = 4.dp)
                                 ) {
@@ -1563,7 +1632,7 @@ fun AppListScreen(
 
                             // ── čo s tým: nastavenia appky, pri systémových návod na odstránenie ──
                             Row(modifier = Modifier.padding(top = 8.dp)) {
-                                TextButton(onClick = {
+                                FxTextButton(onClick = {
                                     runCatching {
                                         context.startActivity(
                                             Intent(
@@ -1573,8 +1642,20 @@ fun AppListScreen(
                                         )
                                     }
                                 }) { Text(s.openSettings, fontSize = 13.sp) }
+                                // v1.8: bežné appky sa dajú odinštalovať priamo (potvrdzuje Android)
+                                if (!app.isSystem && app.packageName != context.packageName) {
+                                    FxTextButton(onClick = {
+                                        pendingUninstall = app.packageName
+                                        runCatching {
+                                            uninstallLauncher.launch(
+                                                Intent(Intent.ACTION_DELETE, Uri.fromParts("package", app.packageName, null))
+                                                    .putExtra(Intent.EXTRA_RETURN_RESULT, true)
+                                            )
+                                        }.onFailure { pendingUninstall = null }
+                                    }) { Text(s.uninstall, fontSize = 13.sp) }
+                                }
                                 if (app.isSystem && !isCritical(app.packageName, criticalRuntime)) {
-                                    TextButton(onClick = {
+                                    FxTextButton(onClick = {
                                         showRemove = if (showRemove == app.packageName) null else app.packageName
                                     }) { Text(s.howToRemove, fontSize = 13.sp) }
                                 }

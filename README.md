@@ -92,6 +92,9 @@ entire point of the app. The list never leaves the device.
 It does not let the app connect anywhere; the app still has no `INTERNET`
 permission.
 
+`REQUEST_DELETE_PACKAGES` — only for the Uninstall button. It opens Android's
+own uninstall dialog; nothing is removed unless you confirm it there.
+
 ## Privacy policy
 
 <https://plainkit.app/audit>

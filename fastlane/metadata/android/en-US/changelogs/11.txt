@@ -1,0 +1,4 @@
+* New: Phone check — security update age, screen lock, USB debugging, apps allowed to install other apps, accessibility and notification access, known signs of root
+* New: Who can do what — microphone, camera, location, all files and more, each with the list of apps
+* Uninstall button for regular apps (Android asks you to confirm)
+* New permission REQUEST_DELETE_PACKAGES, used only for that button

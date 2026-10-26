@@ -1,0 +1,4 @@
+* Nové: Kontrola telefónu — vek bezpečnostnej aktualizácie, zámok obrazovky, ladenie USB, appky, ktoré smú inštalovať iné appky, služba dostupnosti a prístup k notifikáciám, známe znaky rootu
+* Nové: Kto čo smie — mikrofón, kamera, poloha, všetky súbory a ďalšie, pri každom zoznam appiek
+* Tlačidlo Odinštalovať pri bežných appkách (potvrdzuješ v okne Androidu)
+* Nové povolenie REQUEST_DELETE_PACKAGES, slúži len na toto tlačidlo
