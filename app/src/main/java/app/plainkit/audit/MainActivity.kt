@@ -264,14 +264,35 @@ private fun codeOf(pkg: PackageInfo): Long =
     if (Build.VERSION.SDK_INT >= 28) pkg.longVersionCode
     else @Suppress("DEPRECATION") pkg.versionCode.toLong()
 
-private fun loadApps(ctx: Context): List<AppEntry> {
+private suspend fun loadApps(ctx: Context): List<AppEntry> = coroutineScope {
     val pm = ctx.packageManager
-    val uidCache = HashMap<Int, Pair<List<String>, String?>>()
+    // v1.8.1: záznamy sa skladajú paralelne → mapa musí zniesť viac vlákien
+    val uidCache = java.util.concurrent.ConcurrentHashMap<Int, Pair<List<String>, String?>>()
+    // meranie (debug), viď LoadTiming
+    LoadTiming.reset(); LoadTiming.on = true
+    val t0 = System.nanoTime()
+    LabelCache.load(ctx)
     val caps = loadCaps(ctx)
+    val t1 = System.nanoTime()
     AppCache.capsDebug = caps.debug
-    return pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
-        .map { toEntry(it, ctx, uidCache, caps) }
-        .sortedBy { it.label.lowercase() }
+    val pkgs = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+    val t2 = System.nanoTime()
+    // v1.8.1: 4 vlákna — každý záznam sú samostatné dotazy na systém (názov, AppOps,
+    // zdieľaná identita), navzájom nezávislé. Poradie sa zachová (chunked + awaitAll).
+    val threads = 4
+    val entries = pkgs.chunked(maxOf(1, (pkgs.size + threads - 1) / threads))
+        .map { chunk -> async(Dispatchers.IO) { chunk.map { toEntry(it, ctx, uidCache, caps) } } }
+        .awaitAll().flatten()
+    val t3 = System.nanoTime()
+    val sorted = entries.sortedBy { it.label.lowercase() }
+    val t4 = System.nanoTime()
+    LabelCache.save(ctx, pkgs.mapTo(HashSet()) { it.packageName })
+    LoadTiming.caps = t1 - t0; LoadTiming.packages = t2 - t1; LoadTiming.entries = t3 - t2
+    LoadTiming.sort = t4 - t3; LoadTiming.loadApps = t4 - t0; LoadTiming.count = sorted.size
+    LoadTiming.threads = threads
+    LoadTiming.labelHits = LabelCache.hits.get(); LoadTiming.labelMisses = LabelCache.misses.get()
+    LoadTiming.on = false
+    sorted
 }
 
 /**
@@ -352,6 +373,7 @@ private fun toEntry(
     // samotné povolenie (príznak GRANTED). Keď Android odpoveď odmietne (-1),
     // stav nevieme a ostane „povoľuje sa zvlášť".
     val uid = info?.uid ?: -1
+    val tOps = System.nanoTime()
     val modes = if (uid >= 0) specialModes(ctx, uid, pkg.packageName, perms) else emptyMap()
     val known = mutableSetOf<String>()
     val finalGranted = granted.toMutableSet()
@@ -377,11 +399,24 @@ private fun toEntry(
         }
     }
 
+    val tShared = System.nanoTime()
     val (group, netLabel) = if (uid >= 0) uidCache.getOrPut(uid) { sharedInfo(pm, uid) }
                             else Pair(emptyList(), null)
+    val tLabel = System.nanoTime()
+    // v1.8.1: názov z pamäte, ak sa appka odvtedy neaktualizovala (viď LabelCache)
+    val stamp = LabelCache.stamp(pkg.lastUpdateTime, codeOf(pkg))
+    val label = LabelCache.get(pkg.packageName, stamp)
+        ?: LabelCache.clean(info?.loadLabel(pm)?.toString() ?: pkg.packageName)
+            .also { LabelCache.put(pkg.packageName, stamp, it) }
+    if (LoadTiming.on) {
+        val tEnd = System.nanoTime()
+        LoadTiming.appOps.addAndGet(tShared - tOps)
+        LoadTiming.shared.addAndGet(tLabel - tShared)
+        LoadTiming.label.addAndGet(tEnd - tLabel)
+    }
 
     return AppEntry(
-        label = info?.loadLabel(pm)?.toString() ?: pkg.packageName,
+        label = label,
         packageName = pkg.packageName,
         isSystem = ((info?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0,
         permissions = perms,
@@ -603,6 +638,7 @@ private suspend fun scanAllApps(
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (LoadTiming.createAt < 0) LoadTiming.createAt = LoadTiming.sinceStart()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
@@ -980,18 +1016,34 @@ fun AppListScreen(
     }
 
     LaunchedEffect(Unit) {
-        if (AppCache.apps == null) {
+        val cold = AppCache.apps == null
+        // v1.8.1: skeny z Room sa čítajú SÚBEŽNE so zoznamom appiek (predtým až po ňom).
+        // Do UI sa vkladajú až po zozname, takže poradie zobrazenia sa nemení.
+        val scansAsync = if (AppCache.scanned.isEmpty()) async {
+            val tr = System.nanoTime()
+            db.dao().allScans().also { LoadTiming.room = System.nanoTime() - tr; LoadTiming.roomRows = it.size }
+        } else null
+        if (cold) {
+            LoadTiming.effectAt = LoadTiming.sinceStart()
             val loaded = withContext(Dispatchers.IO) { loadApps(context) }
             AppCache.apps = loaded
             apps = loaded
+            LoadTiming.listAt = LoadTiming.sinceStart()
         }
-        if (AppCache.scanned.isEmpty()) {
-            db.dao().allScans().forEach { rec ->
+        if (scansAsync != null) {
+            val tw = System.nanoTime()
+            val rows = scansAsync.await()
+            val ts = System.nanoTime()
+            rows.forEach { rec ->
                 val names = rec.trackers.split(",").filter { it.isNotBlank() }.toSet()
                 store(rec.packageName, TRACKERS.filter { it.name in names })
             }
+            LoadTiming.roomWait = ts - tw; LoadTiming.store = System.nanoTime() - ts
         }
+        if (cold) LoadTiming.scansAt = LoadTiming.sinceStart()
+        val tc = System.nanoTime()
         changes = db.dao().recentChanges()
+        LoadTiming.changes = System.nanoTime() - tc
     }
 
     if (showSettings) {
@@ -1072,6 +1124,7 @@ fun AppListScreen(
     // zoradení volalo ~2·N·log N krát. Počas skenu sa zoznam prekresľuje po
     // každej hotovej appke, takže z toho boli státisíce volaní na hlavnom vlákne.
     val levels = remember(apps, scanRevision, s, jsCode) {
+        val tl = System.nanoTime()
         apps.associate { app ->
             app.packageName to (scanned[app.packageName]
                 ?.let {
@@ -1080,7 +1133,7 @@ fun AppListScreen(
                         app.packageName in jsCode)).ordinal
                 }
                 ?: -1)
-        }
+        }.also { LoadTiming.levels += System.nanoTime() - tl; LoadTiming.levelsRuns++ }
     }
 
     val visible = remember(scanTarget, query, levels, sortMode, scanRevision) {

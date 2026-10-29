@@ -231,10 +231,12 @@ fun SettingsScreen(
 
         // v1.7, len debug build: počty z rozhraní mimoriadnych schopností (x = rozhranie odmietlo)
         // a jednorazový prieskum, koľko appiek je zabalených „packerom" (zašifrovaný kód).
-        if ((context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+        // v1.8.1: aj v r8test builde (optimalizovaný ako release) — meranie rýchlosti štartu
+        if ((context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0 ||
+            context.packageName.endsWith(".r8")) {
             var packed by remember { mutableStateOf("") }
             Text(
-                text = "caps: " + AppCache.capsDebug,
+                text = "caps: " + AppCache.capsDebug + "\n" + LoadTiming.report(),
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 12.dp)
