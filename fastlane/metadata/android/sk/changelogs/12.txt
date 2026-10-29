@@ -1,0 +1,3 @@
+* Rýchlejší štart: zoznam appiek sa zobrazí výrazne skôr (názvy appiek si audit pamätá v telefóne)
+* Appky s kódom v JavaScripte (React Native, Cordova, Capacitor): audit tento kód nečíta, preto namiesto zeleného „v poriadku" ukáže upozornenie. Platí po novom skene.
+* Žiadne nové povolenia

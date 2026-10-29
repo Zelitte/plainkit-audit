@@ -1,0 +1,3 @@
+* Faster start: the app list shows up much sooner (app names are remembered on the phone)
+* Apps with code in JavaScript (React Native, Cordova, Capacitor): the audit does not read that code, so instead of a green "OK" it shows a notice. Applies after a new scan.
+* No new permissions
