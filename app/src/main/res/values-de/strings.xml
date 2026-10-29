@@ -219,6 +219,7 @@
     <string name="dns_recheck">Erneut prüfen</string>
     <string name="mark_unused">auf diesem Android ohne Wirkung</string>
     <string name="no_code">Der Code dieser App ist nicht lesbar (außerhalb der APK gespeichert oder verschlüsselt) — wir können nicht sagen, ob er Tracking-Bibliotheken enthält.</string>
+    <string name="js_code">Ein Teil des Codes dieser App ist in JavaScript (React Native, Cordova oder Capacitor). Den liest der Audit nicht — darin geschriebenes Tracking wäre hier nicht sichtbar.</string>
     <string name="summary_no_code">Code nicht lesbar</string>
     <string name="shared_title">TEILT BERECHTIGUNGEN UND DATEN MIT</string>
     <string name="shared_net">Fordert selbst keinen Internetzugriff an, teilt aber Berechtigungen und Daten mit %1$s, die ihn hat.</string>

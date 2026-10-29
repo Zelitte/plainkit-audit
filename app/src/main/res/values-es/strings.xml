@@ -219,6 +219,7 @@
     <string name="dns_recheck">Comprobar de nuevo</string>
     <string name="mark_unused">sin efecto en este Android</string>
     <string name="no_code">El código de esta app no se puede leer (está fuera del APK o cifrado): no podemos saber si contiene bibliotecas de rastreo.</string>
+    <string name="js_code">Parte del código de esta app está en JavaScript (React Native, Cordova o Capacitor). La auditoría no lo lee: un rastreo escrito en él no aparecería aquí.</string>
     <string name="summary_no_code">código ilegible</string>
     <string name="shared_title">COMPARTE PERMISOS Y DATOS CON</string>
     <string name="shared_net">No solicita acceso a Internet, pero comparte permisos y datos con %1$s, que sí lo tiene.</string>

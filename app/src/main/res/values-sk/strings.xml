@@ -219,6 +219,7 @@
     <string name="dns_recheck">Skontrolovať znova</string>
     <string name="mark_unused">na tomto Androide sa nepoužíva</string>
     <string name="no_code">Kód tejto appky sa nedá prečítať (je mimo súboru APK alebo zašifrovaný) — nevieme povedať, či obsahuje sledovacie knižnice.</string>
+    <string name="js_code">Časť kódu tejto appky je v JavaScripte (React Native, Cordova či Capacitor). Audit ho nečíta — sledovanie napísané v ňom by tu nebolo vidieť.</string>
     <string name="summary_no_code">kód nečitateľný</string>
     <string name="shared_title">ZDIEĽA POVOLENIA A DÁTA S</string>
     <string name="shared_net">Sama nežiada prístup na internet, ale zdieľa povolenia a dáta s appkou %1$s, ktorá ho má.</string>

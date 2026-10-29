@@ -253,6 +253,8 @@ data class Finding(val level: Level, val text: String)
 /**
  * @param codeReadable false = v APK nebol žiadny kód (classes*.dex), takže
  *        „0 trackerov" neznamená „čistá", ale „nevieme".
+ * @param jsCode časť kódu je v JavaScripte (React Native, Cordova, Capacitor),
+ *        ktorý skener nečíta.
  * @param sharedNet meno appky, s ktorou táto zdieľa identitu (sharedUserId)
  *        a ktorá má INTERNET; null = nič také.
  */
@@ -264,7 +266,8 @@ fun buildFindings(
     codeReadable: Boolean = true,
     sharedNet: String? = null,
     caps: Set<Cap> = emptySet(),
-    isWebApk: Boolean = false
+    isWebApk: Boolean = false,
+    jsCode: Boolean = false
 ): List<Finding> {
     val out = mutableListOf<Finding>()
 
@@ -351,10 +354,17 @@ fun buildFindings(
     if (trackers.isEmpty() && !codeReadable) {
         out.add(Finding(Level.INFO, s.noCode))
     } else if (trackers.isEmpty()) {
+        // v1.9: pri kóde v JavaScripte „žiadne známe trackery" platí len pre
+        // časť, ktorú skener vidí — preto nie zelené OK.
         out.add(Finding(
-            if (grantedGroups.isEmpty()) Level.OK else Level.INFO,
+            if (grantedGroups.isEmpty() && !jsCode) Level.OK else Level.INFO,
             if (grantedGroups.isEmpty()) s.noTrackers else s.noTrackersButGranted(grantedText)
         ))
+    }
+
+    // v1.9: skener číta len dex; trackery napísané v JavaScripte nevidí.
+    if (jsCode && codeReadable) {
+        out.add(Finding(Level.INFO, s.jsCode))
     }
 
     if (pendingGroups.isNotEmpty()) {

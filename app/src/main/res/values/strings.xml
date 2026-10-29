@@ -220,6 +220,7 @@
     <string name="dns_recheck">Check again</string>
     <string name="mark_unused">not used on this Android</string>
     <string name="no_code">This app\'s code cannot be read (it is stored outside the APK or encrypted) — we can\'t tell whether it contains tracking libraries.</string>
+    <string name="js_code">Part of this app\'s code is in JavaScript (React Native, Cordova or Capacitor). The audit does not read it — tracking written in it would not show up here.</string>
     <string name="summary_no_code">code unreadable</string>
     <string name="shared_title">SHARES PERMISSIONS AND DATA WITH</string>
     <string name="shared_net">Does not request internet access itself, but shares permissions and data with %1$s, which has it.</string>

@@ -485,14 +485,34 @@ private fun collectDefinedPrefixes(dex: ByteArray, out: MutableSet<String>) {
  * Predtým sa chyba potichu zhltla a výsledok bol prázdny zoznam — a ten sa
  * uložil ako „appka nemá žiadne trackery" a do logu zapísal „ubudli trackery: …".
  */
-private fun scanApk(paths: List<String>, codeSeen: (Boolean) -> Unit = {}): List<Tracker>? {
+/**
+ * v1.9: appka s kódom v JavaScripte (React Native, Cordova, Capacitor).
+ * Spoznáva sa len podľa známych súborov v APK — skener JavaScript nečíta,
+ * takže sledovanie napísané v ňom by nevidel. Flutter sem zámerne nepatrí:
+ * jeho pluginy (Firebase…) majú Java časť v dex, a tú skener vidí.
+ */
+private fun isJsEntry(name: String): Boolean =
+    (name.startsWith("assets/") && name.endsWith(".android.bundle")) ||   // React Native
+    name == "assets/www/cordova.js" ||                                       // Cordova
+    name == "assets/capacitor.config.json"                                   // Capacitor
+
+/** Zapamätá výsledok skenu kódu (mimo Room, viď Prefs). */
+private fun rememberCode(ctx: Context, pkg: String, dex: Boolean, js: Boolean) {
+    Prefs.setNoCode(ctx, pkg, !dex)
+    Prefs.setJsCode(ctx, pkg, js)
+}
+
+private fun scanApk(paths: List<String>, codeSeen: (dex: Boolean, js: Boolean) -> Unit = { _, _ -> }): List<Tracker>? {
     if (paths.isEmpty()) return null
     val prefixes = HashSet<String>(8192)
     var dexCount = 0
+    var js = false
     for (path in paths) {
         try {
             ZipFile(path).use { zip ->
-                val dexEntries = zip.entries().toList().filter {
+                val all = zip.entries().toList()
+                if (!js) js = all.any { isJsEntry(it.name) }
+                val dexEntries = all.filter {
                     it.name.startsWith("classes") && it.name.endsWith(".dex")
                 }
                 dexCount += dexEntries.size
@@ -514,7 +534,7 @@ private fun scanApk(paths: List<String>, codeSeen: (Boolean) -> Unit = {}): List
     }
     // v1.6: žiadny classes*.dex = kód je mimo APK (predkompilovaný výrobcom)
     // alebo zašifrovaný. „0 trackerov" by tu znamenalo „nevieme", nie „čistá".
-    codeSeen(dexCount > 0)
+    codeSeen(dexCount > 0, js)
     return TRACKERS.filter { it.prefix in prefixes }
 }
 
@@ -570,7 +590,7 @@ private suspend fun scanAllApps(
     apps.chunked(chunkSize).map { chunk ->
         async(Dispatchers.IO) {
             for (app in chunk) {
-                val result = scanApk(app.apkPaths) { Prefs.setNoCode(ctx, app.packageName, !it) }
+                val result = scanApk(app.apkPaths) { dex, js -> rememberCode(ctx, app.packageName, dex, js) }
                 if (result != null) persist(ctx, db, app, result)
                 withContext(Dispatchers.Main) {
                     if (result != null) onResult(app.packageName, result)
@@ -916,6 +936,8 @@ fun AppListScreen(
     var scanRevision by remember { mutableIntStateOf(0) }
     // v1.6: appky bez čitateľného kódu (zapisuje sken do Prefs)
     val noCode = remember(scanRevision) { Prefs.noCode(context) }
+    // v1.9: appky s kódom v JavaScripte (skener ho nečíta)
+    val jsCode = remember(scanRevision) { Prefs.jsCode(context) }
     val debuggable = remember {
         (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
     }
@@ -989,6 +1011,7 @@ fun AppListScreen(
                     db.dao().clearScans()
                     db.dao().clearChanges()
                     Prefs.clearNoCode(context)
+                    Prefs.clearJsCode(context)
                     scanned.clear()
                     AppCache.scanned.clear()
                     scanRevision++
@@ -1048,12 +1071,13 @@ fun AppListScreen(
     // bolo a buildFindings() — ktoré načítava a formátuje texty — sa pri každom
     // zoradení volalo ~2·N·log N krát. Počas skenu sa zoznam prekresľuje po
     // každej hotovej appke, takže z toho boli státisíce volaní na hlavnom vlákne.
-    val levels = remember(apps, scanRevision, s) {
+    val levels = remember(apps, scanRevision, s, jsCode) {
         apps.associate { app ->
             app.packageName to (scanned[app.packageName]
                 ?.let {
                     worstLevel(buildFindings(app.permissions, app.granted, it, s,
-                        app.packageName !in noCode, app.sharedNet, app.caps, app.isWebApk)).ordinal
+                        app.packageName !in noCode, app.sharedNet, app.caps, app.isWebApk,
+                        app.packageName in jsCode)).ordinal
                 }
                 ?: -1)
         }
@@ -1338,7 +1362,8 @@ fun AppListScreen(
                 val trackers = scanned[app.packageName]
                 val findings = trackers?.let {
                     buildFindings(app.permissions, app.granted, it, s,
-                        app.packageName !in noCode, app.sharedNet, app.caps, app.isWebApk)
+                        app.packageName !in noCode, app.sharedNet, app.caps, app.isWebApk,
+                        app.packageName in jsCode)
                 }
                 val level = findings?.let { worstLevel(it) }
                 val stripe = levelColor(level)
@@ -1391,7 +1416,7 @@ fun AppListScreen(
                                     }
                                     val result = fresh?.let {
                                         withContext(Dispatchers.IO) {
-                                            scanApk(it.apkPaths) { has -> Prefs.setNoCode(context, it.packageName, !has) }
+                                            scanApk(it.apkPaths) { dex, js -> rememberCode(context, it.packageName, dex, js) }
                                         }
                                     }
                                     if (fresh != null && result != null) {

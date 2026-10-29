@@ -219,6 +219,7 @@
     <string name="dns_recheck">Controlla di nuovo</string>
     <string name="mark_unused">senza effetto su questo Android</string>
     <string name="no_code">Il codice di questa app non è leggibile (è fuori dall\'APK o cifrato) — non possiamo dire se contiene librerie di tracciamento.</string>
+    <string name="js_code">Parte del codice di questa app è in JavaScript (React Native, Cordova o Capacitor). L\'audit non lo legge — un tracciamento scritto lì non comparirebbe qui.</string>
     <string name="summary_no_code">codice illeggibile</string>
     <string name="shared_title">CONDIVIDE AUTORIZZAZIONI E DATI CON</string>
     <string name="shared_net">Non richiede l\'accesso a Internet, ma condivide autorizzazioni e dati con %1$s, che lo ha.</string>

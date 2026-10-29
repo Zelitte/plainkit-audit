@@ -307,15 +307,24 @@ private val PACKER_LIBS = listOf(
 internal fun debugPackedReport(apps: List<AppEntry>): String {
     val hits = mutableListOf<String>()
     var noDex = 0
+    // v1.9 prieskum: koľko appiek má kód mimo dex
+    var rn = 0; var cordova = 0; var capacitor = 0; var flutter = 0
+    // názvy appiek pre prieskum — z nich sa vyberú bundly na rozbor
+    val jsApps = mutableListOf<String>()
     for (app in apps) {
         var dex = 0
         val libs = mutableSetOf<String>()
+        var isRn = false; var isCordova = false; var isCap = false; var isFlutter = false
         for (path in app.apkPaths) {
             try {
                 java.util.zip.ZipFile(path).use { zip ->
                     for (e in zip.entries()) {
                         val n = e.name
                         if (n.startsWith("classes") && n.endsWith(".dex")) dex++
+                        if (n.startsWith("assets/") && n.endsWith(".android.bundle")) isRn = true
+                        if (n == "assets/www/cordova.js") isCordova = true
+                        if (n == "assets/capacitor.config.json") isCap = true
+                        if (n.endsWith("/libflutter.so")) isFlutter = true
                         if (n.startsWith("lib/") || n.startsWith("assets/")) {
                             val base = n.substringAfterLast('/')
                             PACKER_LIBS.firstOrNull { base.startsWith(it) }?.let { libs.add(base) }
@@ -325,7 +334,15 @@ internal fun debugPackedReport(apps: List<AppEntry>): String {
             } catch (e: Exception) { }
         }
         if (dex == 0) noDex++
+        if (isRn) rn++; if (isCordova) cordova++; if (isCap) capacitor++; if (isFlutter) flutter++
+        val kinds = listOfNotNull(
+            "RN".takeIf { isRn }, "Cordova".takeIf { isCordova },
+            "Capacitor".takeIf { isCap }, "Flutter".takeIf { isFlutter })
+        if (kinds.isNotEmpty()) jsApps.add("${kinds.joinToString("+")}: ${app.label} (${app.packageName})")
         if (libs.isNotEmpty()) hits.add("${app.label} (${app.packageName}): ${libs.joinToString()}")
     }
-    return "appky: ${apps.size}, bez dex: $noDex, packer: ${hits.size}\n" + hits.joinToString("\n")
+    return "appky: ${apps.size}, bez dex: $noDex, packer: ${hits.size}\n" +
+        "React Native: $rn, Cordova: $cordova, Capacitor: $capacitor, Flutter: $flutter\n" +
+        jsApps.sorted().joinToString("\n") + (if (jsApps.isNotEmpty()) "\n" else "") +
+        hits.joinToString("\n")
 }

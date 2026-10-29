@@ -478,6 +478,13 @@ s("no_code",
   "Le code de cette app est illisible (stocké hors de l'APK ou chiffré) — impossible de dire s'il contient des bibliothèques de pistage.",
   "El código de esta app no se puede leer (está fuera del APK o cifrado): no podemos saber si contiene bibliotecas de rastreo.",
   "Il codice di questa app non è leggibile (è fuori dall'APK o cifrato) — non possiamo dire se contiene librerie di tracciamento.")
+s("js_code",
+  "Časť kódu tejto appky je v JavaScripte (React Native, Cordova či Capacitor). Audit ho nečíta — sledovanie napísané v ňom by tu nebolo vidieť.",
+  "Part of this app's code is in JavaScript (React Native, Cordova or Capacitor). The audit does not read it — tracking written in it would not show up here.",
+  "Ein Teil des Codes dieser App ist in JavaScript (React Native, Cordova oder Capacitor). Den liest der Audit nicht — darin geschriebenes Tracking wäre hier nicht sichtbar.",
+  "Une partie du code de cette app est en JavaScript (React Native, Cordova ou Capacitor). L'audit ne le lit pas — un pistage écrit dedans n'apparaîtrait pas ici.",
+  "Parte del código de esta app está en JavaScript (React Native, Cordova o Capacitor). La auditoría no lo lee: un rastreo escrito en él no aparecería aquí.",
+  "Parte del codice di questa app è in JavaScript (React Native, Cordova o Capacitor). L'audit non lo legge — un tracciamento scritto lì non comparirebbe qui.")
 s("summary_no_code", "kód nečitateľný", "code unreadable", "Code nicht lesbar", "code illisible", "código ilegible", "codice illeggibile")
 s("shared_title", "ZDIEĽA POVOLENIA A DÁTA S", "SHARES PERMISSIONS AND DATA WITH", "TEILT BERECHTIGUNGEN UND DATEN MIT", "PARTAGE AUTORISATIONS ET DONNÉES AVEC", "COMPARTE PERMISOS Y DATOS CON", "CONDIVIDE AUTORIZZAZIONI E DATI CON")
 s("shared_net",

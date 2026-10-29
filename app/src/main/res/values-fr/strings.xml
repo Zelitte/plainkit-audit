@@ -219,6 +219,7 @@
     <string name="dns_recheck">Vérifier à nouveau</string>
     <string name="mark_unused">sans effet sur cet Android</string>
     <string name="no_code">Le code de cette app est illisible (stocké hors de l\'APK ou chiffré) — impossible de dire s\'il contient des bibliothèques de pistage.</string>
+    <string name="js_code">Une partie du code de cette app est en JavaScript (React Native, Cordova ou Capacitor). L\'audit ne le lit pas — un pistage écrit dedans n\'apparaîtrait pas ici.</string>
     <string name="summary_no_code">code illisible</string>
     <string name="shared_title">PARTAGE AUTORISATIONS ET DONNÉES AVEC</string>
     <string name="shared_net">Ne demande pas elle-même l\'accès à Internet, mais partage autorisations et données avec %1$s, qui l\'a.</string>

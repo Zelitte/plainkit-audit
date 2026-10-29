@@ -113,6 +113,25 @@ object Prefs {
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putString(KEY_SORT, mode.name).apply()
     }
 
+    // v1.9: appky s kódom v JavaScripte (React Native, Cordova, Capacitor)
+    private const val KEY_JS_CODE = "js_code"
+
+    fun jsCode(ctx: Context): Set<String> =
+        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+            .getStringSet(KEY_JS_CODE, emptySet())?.toSet() ?: emptySet()
+
+    @Synchronized
+    fun setJsCode(ctx: Context, pkg: String, js: Boolean) {
+        val p = ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+        val cur = p.getStringSet(KEY_JS_CODE, emptySet())?.toSet() ?: emptySet()
+        val next = if (js) cur + pkg else cur - pkg
+        if (next != cur) p.edit().putStringSet(KEY_JS_CODE, next).apply()
+    }
+
+    fun clearJsCode(ctx: Context) {
+        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().remove(KEY_JS_CODE).apply()
+    }
+
     fun clearNoCode(ctx: Context) {
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().remove(KEY_NO_CODE).apply()
     }
@@ -540,6 +559,7 @@ class S(context: Context, val lang: Lang) {
     // ── nálezy ──
     val noInternet = str(R.string.no_internet)
     val noCode = str(R.string.no_code)
+    val jsCode = str(R.string.js_code)
     fun sharedNet(label: String) = f(R.string.shared_net, label)
     val sharedTitle = str(R.string.shared_title)
     fun sharedMore(n: Int) = q(R.plurals.shared_more, n)
