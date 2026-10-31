@@ -1,0 +1,3 @@
+* New Sort and filter menu: besides sorting, show only apps with a warning, with an ad tracker or any tracker, with special access, with microphone, location, camera or all-files access granted, apps whose code the audit can't fully see, or apps from outside Google Play
+* If some apps haven't been scanned yet, the filter says so clearly
+* No new permissions

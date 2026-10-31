@@ -239,6 +239,21 @@
     <string name="sort_severity">Schweregrad</string>
     <string name="sort_name">Name</string>
     <string name="sort_findings">Anzahl Funde</string>
+    <string name="menu_sort">SORTIEREN</string>
+    <string name="menu_show">ANZEIGEN</string>
+    <string name="filter_label">Anzeigen:</string>
+    <string name="filter_all">alle</string>
+    <string name="filter_warning">mit Warnung</string>
+    <string name="filter_ads">mit Werbe-Tracker</string>
+    <string name="filter_trackers">mit beliebigem Tracker</string>
+    <string name="filter_caps">Sonderzugriffe</string>
+    <string name="filter_mic">Mikrofon — erteilt</string>
+    <string name="filter_location">Standort — erteilt</string>
+    <string name="filter_camera">Kamera — erteilt</string>
+    <string name="filter_files">alle Dateien — erteilt</string>
+    <string name="filter_partial">Audit sieht nicht den ganzen Code</string>
+    <string name="filter_nonplay">außerhalb von Google Play</string>
+    <string name="filter_none">Keine App entspricht dem Filter.</string>
     <string name="tperm_REORDER_TASKS">laufende Apps neu anordnen</string>
     <string name="tperm_GET_PACKAGE_SIZE">App-Größen sehen</string>
     <string name="tperm_FOREGROUND_SERVICE_SPECIAL_USE">im Vordergrund laufen (Sonderzweck)</string>
@@ -308,5 +323,9 @@
     <plurals name="shared_more">
         <item quantity="one">und %1$d weitere</item>
         <item quantity="other">und %1$d weitere</item>
+    </plurals>
+    <plurals name="filter_unscanned">
+        <item quantity="one">%1$d App noch nicht gescannt — das Ergebnis ist unvollständig</item>
+        <item quantity="other">%1$d Apps noch nicht gescannt — das Ergebnis ist unvollständig</item>
     </plurals>
 </resources>

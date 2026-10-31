@@ -239,6 +239,21 @@
     <string name="sort_severity">gravità</string>
     <string name="sort_name">nome</string>
     <string name="sort_findings">numero di rilevamenti</string>
+    <string name="menu_sort">ORDINA</string>
+    <string name="menu_show">MOSTRA</string>
+    <string name="filter_label">Mostra:</string>
+    <string name="filter_all">tutte</string>
+    <string name="filter_warning">con avviso</string>
+    <string name="filter_ads">con tracker pubblicitario</string>
+    <string name="filter_trackers">con qualsiasi tracker</string>
+    <string name="filter_caps">accessi speciali</string>
+    <string name="filter_mic">microfono — concesso</string>
+    <string name="filter_location">posizione — concessa</string>
+    <string name="filter_camera">fotocamera — concessa</string>
+    <string name="filter_files">tutti i file — concesso</string>
+    <string name="filter_partial">l\'audit non vede tutto il codice</string>
+    <string name="filter_nonplay">fuori da Google Play</string>
+    <string name="filter_none">Nessuna app corrisponde al filtro.</string>
     <string name="tperm_REORDER_TASKS">riordinare le app in esecuzione</string>
     <string name="tperm_GET_PACKAGE_SIZE">vedere la dimensione delle app</string>
     <string name="tperm_FOREGROUND_SERVICE_SPECIAL_USE">essere eseguita in primo piano (uso speciale)</string>
@@ -312,5 +327,10 @@
         <item quantity="one">e %1$d altra</item>
         <item quantity="many">e altre %1$d</item>
         <item quantity="other">e altre %1$d</item>
+    </plurals>
+    <plurals name="filter_unscanned">
+        <item quantity="one">%1$d app non ancora analizzata — risultato incompleto</item>
+        <item quantity="many">%1$d app non ancora analizzate — risultato incompleto</item>
+        <item quantity="other">%1$d app non ancora analizzate — risultato incompleto</item>
     </plurals>
 </resources>

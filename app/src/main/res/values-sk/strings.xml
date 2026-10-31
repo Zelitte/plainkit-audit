@@ -239,6 +239,21 @@
     <string name="sort_severity">závažnosť</string>
     <string name="sort_name">názov</string>
     <string name="sort_findings">počet nálezov</string>
+    <string name="menu_sort">ZORADIŤ</string>
+    <string name="menu_show">ZOBRAZIŤ</string>
+    <string name="filter_label">Zobraziť:</string>
+    <string name="filter_all">všetky</string>
+    <string name="filter_warning">s upozornením</string>
+    <string name="filter_ads">s reklamným trackerom</string>
+    <string name="filter_trackers">s akýmkoľvek trackerom</string>
+    <string name="filter_caps">mimoriadne schopnosti</string>
+    <string name="filter_mic">mikrofón — udelené</string>
+    <string name="filter_location">poloha — udelené</string>
+    <string name="filter_camera">kamera — udelené</string>
+    <string name="filter_files">všetky súbory — udelené</string>
+    <string name="filter_partial">audit nevidí celý kód</string>
+    <string name="filter_nonplay">mimo Google Play</string>
+    <string name="filter_none">Žiadna appka nezodpovedá filtru.</string>
     <string name="tperm_REORDER_TASKS">meniť poradie spustených appiek</string>
     <string name="tperm_GET_PACKAGE_SIZE">zistiť veľkosť appiek</string>
     <string name="tperm_FOREGROUND_SERVICE_SPECIAL_USE">bežať v popredí (špeciálny účel)</string>
@@ -316,5 +331,11 @@
         <item quantity="few">a ďalšie %1$d</item>
         <item quantity="many">a ďalších %1$d</item>
         <item quantity="other">a ďalších %1$d</item>
+    </plurals>
+    <plurals name="filter_unscanned">
+        <item quantity="one">%1$d appka ešte nie je oskenovaná — výsledok je neúplný</item>
+        <item quantity="few">%1$d appky ešte nie sú oskenované — výsledok je neúplný</item>
+        <item quantity="many">%1$d appiek ešte nie je oskenovaných — výsledok je neúplný</item>
+        <item quantity="other">%1$d appiek ešte nie je oskenovaných — výsledok je neúplný</item>
     </plurals>
 </resources>

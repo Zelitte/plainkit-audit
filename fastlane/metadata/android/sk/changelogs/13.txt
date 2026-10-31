@@ -1,0 +1,3 @@
+* Nové menu Zoradiť a filtrovať: okrem zoradenia môžeš zobraziť len appky s upozornením, s reklamným alebo akýmkoľvek trackerom, s mimoriadnymi schopnosťami, s udeleným mikrofónom, polohou, kamerou či prístupom ku všetkým súborom, appky, pri ktorých audit nevidí celý kód, alebo appky mimo Google Play
+* Ak ešte nie sú všetky appky oskenované, filter to výrazne povie
+* Žiadne nové povolenia

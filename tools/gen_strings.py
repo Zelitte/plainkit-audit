@@ -553,6 +553,22 @@ s("sort_label", "Zoradiť:", "Sort:", "Sortieren:", "Trier :", "Ordenar:", "Ordi
 s("sort_severity", "závažnosť", "severity", "Schweregrad", "gravité", "gravedad", "gravità")
 s("sort_name", "názov", "name", "Name", "nom", "nombre", "nome")
 s("sort_findings", "počet nálezov", "number of findings", "Anzahl Funde", "nombre de détections", "número de hallazgos", "numero di rilevamenti")
+# ── v1.9: menu „Zoradiť a filtrovať" — filter je jedna voľba, povolenia len udelené ──
+s("menu_sort", "ZORADIŤ", "SORT", "SORTIEREN", "TRIER", "ORDENAR", "ORDINA")
+s("menu_show", "ZOBRAZIŤ", "SHOW", "ANZEIGEN", "AFFICHER", "MOSTRAR", "MOSTRA")
+s("filter_label", "Zobraziť:", "Show:", "Anzeigen:", "Afficher :", "Mostrar:", "Mostra:")
+s("filter_all", "všetky", "all", "alle", "toutes", "todas", "tutte")
+s("filter_warning", "s upozornením", "with a warning", "mit Warnung", "avec un avertissement", "con aviso", "con avviso")
+s("filter_ads", "s reklamným trackerom", "with an ad tracker", "mit Werbe-Tracker", "avec un traceur publicitaire", "con rastreador publicitario", "con tracker pubblicitario")
+s("filter_trackers", "s akýmkoľvek trackerom", "with any tracker", "mit beliebigem Tracker", "avec un traceur quelconque", "con cualquier rastreador", "con qualsiasi tracker")
+s("filter_caps", "mimoriadne schopnosti", "special access", "Sonderzugriffe", "accès spéciaux", "accesos especiales", "accessi speciali")
+s("filter_mic", "mikrofón — udelené", "microphone — granted", "Mikrofon — erteilt", "micro — accordé", "micrófono — concedido", "microfono — concesso")
+s("filter_location", "poloha — udelené", "location — granted", "Standort — erteilt", "position — accordée", "ubicación — concedida", "posizione — concessa")
+s("filter_camera", "kamera — udelené", "camera — granted", "Kamera — erteilt", "appareil photo — accordé", "cámara — concedida", "fotocamera — concessa")
+s("filter_files", "všetky súbory — udelené", "all files — granted", "alle Dateien — erteilt", "tous les fichiers — accordé", "todos los archivos — concedido", "tutti i file — concesso")
+s("filter_partial", "audit nevidí celý kód", "audit can't see all the code", "Audit sieht nicht den ganzen Code", "l'audit ne voit pas tout le code", "la auditoría no ve todo el código", "l'audit non vede tutto il codice")
+s("filter_nonplay", "mimo Google Play", "outside Google Play", "außerhalb von Google Play", "hors Google Play", "fuera de Google Play", "fuori da Google Play")
+s("filter_none", "Žiadna appka nezodpovedá filtru.", "No app matches the filter.", "Keine App entspricht dem Filter.", "Aucune app ne correspond au filtre.", "Ninguna app coincide con el filtro.", "Nessuna app corrisponde al filtro.")
 
 # ── v1.7: ďalšie technické povolenia Androidu ──
 T2 = [
@@ -680,6 +696,13 @@ pl("shared_more",
    fr={"one": "et %1$d autre", "many": "et %1$d autres", "other": "et %1$d autres"},
    es={"one": "y %1$d más", "many": "y %1$d más", "other": "y %1$d más"},
    it={"one": "e %1$d altra", "many": "e altre %1$d", "other": "e altre %1$d"})
+pl("filter_unscanned",
+   sk={"one": "%1$d appka ešte nie je oskenovaná — výsledok je neúplný", "few": "%1$d appky ešte nie sú oskenované — výsledok je neúplný", "many": "%1$d appiek ešte nie je oskenovaných — výsledok je neúplný", "other": "%1$d appiek ešte nie je oskenovaných — výsledok je neúplný"},
+   en={"one": "%1$d app not scanned yet — the result is incomplete", "other": "%1$d apps not scanned yet — the result is incomplete"},
+   de={"one": "%1$d App noch nicht gescannt — das Ergebnis ist unvollständig", "other": "%1$d Apps noch nicht gescannt — das Ergebnis ist unvollständig"},
+   fr={"one": "%1$d app pas encore analysée — résultat incomplet", "many": "%1$d apps pas encore analysées — résultat incomplet", "other": "%1$d apps pas encore analysées — résultat incomplet"},
+   es={"one": "%1$d app aún sin analizar: el resultado está incompleto", "many": "%1$d apps aún sin analizar: el resultado está incompleto", "other": "%1$d apps aún sin analizar: el resultado está incompleto"},
+   it={"one": "%1$d app non ancora analizzata — risultato incompleto", "many": "%1$d app non ancora analizzate — risultato incompleto", "other": "%1$d app non ancora analizzate — risultato incompleto"})
 
 def esc(v):
     v = v.replace("\\", "\\\\").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")

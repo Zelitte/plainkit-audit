@@ -609,6 +609,25 @@ class S(context: Context, val lang: Lang) {
         SortMode.NAME -> str(R.string.sort_name)
         SortMode.FINDINGS -> str(R.string.sort_findings)
     }
+    // v1.9: menu Zoradiť a filtrovať
+    val menuSort = str(R.string.menu_sort)
+    val menuShow = str(R.string.menu_show)
+    val filterLabel = str(R.string.filter_label)
+    val filterNone = str(R.string.filter_none)
+    fun filterUnscanned(n: Int) = q(R.plurals.filter_unscanned, n)
+    fun filterName(f: ListFilter) = when (f) {
+        ListFilter.ALL -> str(R.string.filter_all)
+        ListFilter.WARNING -> str(R.string.filter_warning)
+        ListFilter.ADS -> str(R.string.filter_ads)
+        ListFilter.TRACKERS -> str(R.string.filter_trackers)
+        ListFilter.CAPS -> str(R.string.filter_caps)
+        ListFilter.MIC -> str(R.string.filter_mic)
+        ListFilter.LOCATION -> str(R.string.filter_location)
+        ListFilter.CAMERA -> str(R.string.filter_camera)
+        ListFilter.FILES -> str(R.string.filter_files)
+        ListFilter.PARTIAL_CODE -> str(R.string.filter_partial)
+        ListFilter.NON_PLAY -> str(R.string.filter_nonplay)
+    }
     fun marketingWithGranted(granted: String, names: String) = f(R.string.marketing_with_granted, granted, names)
     fun marketingOnly(names: String) = f(R.string.marketing_only, names)
     fun analyticsWithGranted(names: String, granted: String) = f(R.string.analytics_with_granted, names, granted)

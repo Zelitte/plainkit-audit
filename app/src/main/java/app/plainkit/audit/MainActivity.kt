@@ -58,6 +58,8 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -94,6 +96,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -961,6 +964,9 @@ fun AppListScreen(
     val expandedChanges = remember { mutableStateSetOf<Long>() }
     // v1.7
     var sortMode by remember { mutableStateOf(Prefs.sort(context)) }
+    // v1.9: filter — jedna voľba, NEpamätá sa medzi spusteniami (len otočenie obrazovky)
+    var listFilter by rememberSaveable { mutableStateOf(ListFilter.ALL) }
+    var sortMenuOpen by remember { mutableStateOf(false) }
     var allChanges by remember { mutableStateOf(false) }
     val criticalRuntime = remember { criticalRuntimePackages(context) }
     var query by rememberSaveable { mutableStateOf("") }
@@ -1136,12 +1142,27 @@ fun AppListScreen(
         }.also { LoadTiming.levels += System.nanoTime() - tl; LoadTiming.levelsRuns++ }
     }
 
-    val visible = remember(scanTarget, query, levels, sortMode, scanRevision) {
+    // v1.9: „mimo Google Play" = nesystémová appka so známym inštalátorom, ktorý nie je Play.
+    // Neznámy inštalátor (ADB, predinštalované výrobcom) sa NEpočíta — o tom nič netvrdíme.
+    val nonPlay = remember(apps, listFilter) {
+        if (listFilter != ListFilter.NON_PLAY) emptySet()
+        else apps.filter { !it.isSystem }.mapNotNullTo(HashSet()) { a ->
+            installerOfPkg(pm, a.packageName)
+                ?.takeIf { it != "com.android.vending" }
+                ?.let { a.packageName }
+        }
+    }
+
+    val visible = remember(scanTarget, query, levels, sortMode, scanRevision, listFilter, nonPlay, noCode, jsCode) {
         scanTarget
             .filter {
                 query.isBlank() ||
                         it.label.contains(query, ignoreCase = true) ||
                         it.packageName.contains(query, ignoreCase = true)
+            }
+            .filter {
+                matchesFilter(it, listFilter, levels[it.packageName] ?: -1,
+                    scanned[it.packageName], noCode, jsCode, nonPlay)
             }
             .sortedWith(
                 when (sortMode) {
@@ -1323,21 +1344,66 @@ fun AppListScreen(
                 modifier = Modifier.weight(1f)
             ) { Text(s.navByPerm, fontSize = 13.sp, textAlign = TextAlign.Center) }
         }
-        // v1.7: zoradenie — jeden nenápadný riadok, ťuknutím sa prepína
-        Text(
-            text = s.sortLabel + " " + s.sortName(sortMode) + " ▾",
-            fontFamily = FontFamily.Monospace,
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .align(Alignment.End)
-                .clickable {
-                    val next = SortMode.entries[(sortMode.ordinal + 1) % SortMode.entries.size]
-                    sortMode = next
-                    Prefs.setSort(context, next)
+        // v1.7 zoradenie, v1.9 menu „Zoradiť a filtrovať": dve skupiny, dajú sa kombinovať.
+        // Zoradenie sa pamätá (Prefs), filter nie.
+        Box(modifier = Modifier.align(Alignment.End)) {
+            Column(horizontalAlignment = Alignment.End,
+                modifier = Modifier.clickable { sortMenuOpen = true }.padding(top = 8.dp, bottom = 4.dp)) {
+                Text(
+                    text = s.sortLabel + " " + s.sortName(sortMode) + " ▾",
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                if (listFilter != ListFilter.ALL) {
+                    Text(
+                        text = s.filterLabel + " " + s.filterName(listFilter) + " (" + visible.size + ")",
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.End
+                    )
                 }
-                .padding(top = 8.dp, bottom = 4.dp)
-        )
+            }
+            DropdownMenu(expanded = sortMenuOpen, onDismissRequest = { sortMenuOpen = false }) {
+                MenuHeader(s.menuSort)
+                SortMode.entries.forEach { m ->
+                    DropdownMenuItem(
+                        text = { Text((if (m == sortMode) "● " else "○ ") + s.sortName(m)) },
+                        onClick = {
+                            sortMode = m
+                            Prefs.setSort(context, m)
+                            sortMenuOpen = false
+                        }
+                    )
+                }
+                MenuHeader(s.menuShow)
+                ListFilter.entries.forEach { f ->
+                    DropdownMenuItem(
+                        text = { Text((if (f == listFilter) "● " else "○ ") + s.filterName(f)) },
+                        onClick = {
+                            listFilter = f
+                            sortMenuOpen = false
+                        }
+                    )
+                }
+            }
+        }
+        // v1.9: filter závislý od skenu pri neoskenovaných appkách — výrazne, nie šedým textom,
+        // aby krátky/prázdny zoznam nepôsobil ako „čisté".
+        if (listFilter.needsScan) {
+            val unscanned = scanTarget.count { it.packageName !in scanned }
+            if (unscanned > 0) {
+                Text(
+                    text = "⚠ " + s.filterUnscanned(unscanned),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = levelColor(Level.WARN),
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                )
+            }
+        }
 
         // Zmeny, z ktorých po odfiltrovaní vlastných povolení aplikácie nič
         // nezostalo, sa nezobrazujú — inak by na obrazovke visel prázdny rámček.
@@ -1411,6 +1477,15 @@ fun AppListScreen(
                 }
             }
 
+            if (visible.isEmpty() && listFilter != ListFilter.ALL) {
+                item {
+                    Text(
+                        s.filterNone,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
+            }
             items(visible, key = { it.packageName }) { app ->
                 val trackers = scanned[app.packageName]
                 val findings = trackers?.let {
@@ -1766,3 +1841,11 @@ fun AppListScreen(
         }
     }
 }
+
+/** v1.9: nadpis skupiny v menu Zoradiť a filtrovať. */
+@Composable
+private fun MenuHeader(t: String) = Text(
+    t, fontSize = 11.sp, fontFamily = FontFamily.Monospace,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+)

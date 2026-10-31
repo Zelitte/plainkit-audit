@@ -240,6 +240,21 @@
     <string name="sort_severity">severity</string>
     <string name="sort_name">name</string>
     <string name="sort_findings">number of findings</string>
+    <string name="menu_sort">SORT</string>
+    <string name="menu_show">SHOW</string>
+    <string name="filter_label">Show:</string>
+    <string name="filter_all">all</string>
+    <string name="filter_warning">with a warning</string>
+    <string name="filter_ads">with an ad tracker</string>
+    <string name="filter_trackers">with any tracker</string>
+    <string name="filter_caps">special access</string>
+    <string name="filter_mic">microphone — granted</string>
+    <string name="filter_location">location — granted</string>
+    <string name="filter_camera">camera — granted</string>
+    <string name="filter_files">all files — granted</string>
+    <string name="filter_partial">audit can\'t see all the code</string>
+    <string name="filter_nonplay">outside Google Play</string>
+    <string name="filter_none">No app matches the filter.</string>
     <string name="tperm_REORDER_TASKS">reorder running apps</string>
     <string name="tperm_GET_PACKAGE_SIZE">see app sizes</string>
     <string name="tperm_FOREGROUND_SERVICE_SPECIAL_USE">run in the foreground (special use)</string>
@@ -309,5 +324,9 @@
     <plurals name="shared_more">
         <item quantity="one">and %1$d more</item>
         <item quantity="other">and %1$d more</item>
+    </plurals>
+    <plurals name="filter_unscanned">
+        <item quantity="one">%1$d app not scanned yet — the result is incomplete</item>
+        <item quantity="other">%1$d apps not scanned yet — the result is incomplete</item>
     </plurals>
 </resources>
