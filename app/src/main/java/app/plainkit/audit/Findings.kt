@@ -1,6 +1,7 @@
 package app.plainkit.audit
 
-enum class TrackerKind { ADS, ANALYTICS, CRASH, ATTRIBUTION, FRAUD }
+// v2.0: MARKETING = push a marketingové správy (predtým chybne ATTRIBUTION)
+enum class TrackerKind { ADS, ANALYTICS, CRASH, ATTRIBUTION, FRAUD, MARKETING }
 
 data class Tracker(val name: String, val prefix: String, val kind: TrackerKind)
 
@@ -49,24 +50,24 @@ val TRACKERS = listOf(
     Tracker("Singular", "Lcom/singular/sdk/", TrackerKind.ATTRIBUTION),
     Tracker("Tenjin", "Lcom/tenjin/", TrackerKind.ATTRIBUTION),
     Tracker("Airbridge", "Lco/ab180/airbridge/", TrackerKind.ATTRIBUTION),
-    Tracker("Braze", "Lcom/braze/", TrackerKind.ATTRIBUTION),
-    Tracker("Appboy", "Lcom/appboy/", TrackerKind.ATTRIBUTION),
-    Tracker("OneSignal", "Lcom/onesignal/", TrackerKind.ATTRIBUTION),
-    Tracker("Leanplum", "Lcom/leanplum/", TrackerKind.ATTRIBUTION),
-    Tracker("CleverTap", "Lcom/clevertap/android/sdk/", TrackerKind.ATTRIBUTION),
-    Tracker("Iterable", "Lcom/iterable/iterableapi/", TrackerKind.ATTRIBUTION),
-    Tracker("Airship", "Lcom/urbanairship/", TrackerKind.ATTRIBUTION),
-    Tracker("MoEngage", "Lcom/moengage/", TrackerKind.ATTRIBUTION),
-    Tracker("Batch", "Lcom/batch/android/", TrackerKind.ATTRIBUTION),
-    Tracker("Pushwoosh", "Lcom/pushwoosh/", TrackerKind.ATTRIBUTION),
-    Tracker("Insider", "Lcom/useinsider/insider/", TrackerKind.ATTRIBUTION),
-    Tracker("Emarsys", "Lcom/emarsys/", TrackerKind.ATTRIBUTION),
-    Tracker("Salesforce Marketing Cloud", "Lcom/salesforce/marketingcloud/", TrackerKind.ATTRIBUTION),
+    Tracker("Braze", "Lcom/braze/", TrackerKind.MARKETING),
+    Tracker("Braze", "Lcom/appboy/", TrackerKind.MARKETING),
+    Tracker("OneSignal", "Lcom/onesignal/", TrackerKind.MARKETING),
+    Tracker("Leanplum", "Lcom/leanplum/", TrackerKind.MARKETING),
+    Tracker("CleverTap", "Lcom/clevertap/android/sdk/", TrackerKind.MARKETING),
+    Tracker("Iterable", "Lcom/iterable/iterableapi/", TrackerKind.MARKETING),
+    Tracker("Airship", "Lcom/urbanairship/", TrackerKind.MARKETING),
+    Tracker("MoEngage", "Lcom/moengage/", TrackerKind.MARKETING),
+    Tracker("Batch", "Lcom/batch/android/", TrackerKind.MARKETING),
+    Tracker("Pushwoosh", "Lcom/pushwoosh/", TrackerKind.MARKETING),
+    Tracker("Insider", "Lcom/useinsider/insider/", TrackerKind.MARKETING),
+    Tracker("Emarsys", "Lcom/emarsys/", TrackerKind.MARKETING),
+    Tracker("Salesforce Marketing Cloud", "Lcom/salesforce/marketingcloud/", TrackerKind.MARKETING),
     Tracker("Localytics", "Lcom/localytics/", TrackerKind.ATTRIBUTION),
     Tracker("Swrve", "Lcom/swrve/sdk/", TrackerKind.ATTRIBUTION),
-    Tracker("Netmera", "Lcom/netmera/", TrackerKind.ATTRIBUTION),
-    Tracker("Exponea / Bloomreach", "Lcom/exponea/sdk/", TrackerKind.ATTRIBUTION),
-    Tracker("Dynamic Yield", "Lcom/dynamicyield/", TrackerKind.ATTRIBUTION),
+    Tracker("Netmera", "Lcom/netmera/", TrackerKind.MARKETING),
+    Tracker("Exponea / Bloomreach", "Lcom/exponea/sdk/", TrackerKind.MARKETING),
+    Tracker("Dynamic Yield", "Lcom/dynamicyield/", TrackerKind.ANALYTICS),
     Tracker("Optimove", "Lcom/optimove/sdk/", TrackerKind.ATTRIBUTION),
 
     // ── Analytika správania ───────────────────────────────────────────
@@ -79,13 +80,13 @@ val TRACKERS = listOf(
     Tracker("Mixpanel", "Lcom/mixpanel/", TrackerKind.ANALYTICS),
     Tracker("Segment", "Lcom/segment/analytics/", TrackerKind.ANALYTICS),
     Tracker("Flurry", "Lcom/flurry/", TrackerKind.ANALYTICS),
-    Tracker("Yandex Metrica", "Lcom/yandex/metrica/", TrackerKind.ANALYTICS),
+    Tracker("AppMetrica", "Lcom/yandex/metrica/", TrackerKind.ANALYTICS),
     Tracker("AppMetrica", "Lio/appmetrica/", TrackerKind.ANALYTICS),
     Tracker("Huawei Analytics", "Lcom/huawei/hms/analytics/", TrackerKind.ANALYTICS),
     Tracker("Umeng", "Lcom/umeng/", TrackerKind.ANALYTICS),
     Tracker("Tencent Stats", "Lcom/tencent/stat/", TrackerKind.ANALYTICS),
     Tracker("Matomo", "Lorg/matomo/", TrackerKind.ANALYTICS),
-    Tracker("Piwik", "Lorg/piwik/sdk/", TrackerKind.ANALYTICS),
+    Tracker("Matomo", "Lorg/piwik/sdk/", TrackerKind.ANALYTICS),
     Tracker("New Relic", "Lcom/newrelic/", TrackerKind.ANALYTICS),
     Tracker("Countly", "Lly/count/android/", TrackerKind.ANALYTICS),
     Tracker("Adobe Experience Platform", "Lcom/adobe/marketing/mobile/", TrackerKind.ANALYTICS),
@@ -105,7 +106,7 @@ val TRACKERS = listOf(
     Tracker("comScore", "Lcom/comscore/", TrackerKind.ANALYTICS),
     Tracker("Nielsen", "Lcom/nielsen/app/sdk/", TrackerKind.ANALYTICS),
     Tracker("Mapbox Telemetry", "Lcom/mapbox/android/telemetry/", TrackerKind.ANALYTICS),
-    Tracker("Taboola", "Lcom/taboola/android/", TrackerKind.ANALYTICS),
+    Tracker("Taboola", "Lcom/taboola/android/", TrackerKind.ADS),
     Tracker("Pendo", "Lsdk/pendo/io/", TrackerKind.ANALYTICS),
     Tracker("Apptimize", "Lcom/apptimize/", TrackerKind.ANALYTICS),
 
@@ -149,10 +150,10 @@ val TRACKERS = listOf(
     Tracker("AdTiming", "Lcom/adtiming/", TrackerKind.ADS),
 
     // ── Marketingová automatizácia ────────────────────────────────────
-    Tracker("Klaviyo", "Lcom/klaviyo/", TrackerKind.ATTRIBUTION),
-    Tracker("VWO", "Lcom/vwo/", TrackerKind.ATTRIBUTION),
-    Tracker("Blueshift", "Lcom/blueshift/", TrackerKind.ATTRIBUTION),
-    Tracker("Taplytics", "Lcom/taplytics/", TrackerKind.ATTRIBUTION),
+    Tracker("Klaviyo", "Lcom/klaviyo/", TrackerKind.MARKETING),
+    Tracker("VWO", "Lcom/vwo/", TrackerKind.ANALYTICS),
+    Tracker("Blueshift", "Lcom/blueshift/", TrackerKind.MARKETING),
+    Tracker("Taplytics", "Lcom/taplytics/", TrackerKind.ANALYTICS),
 
     // ── Analytika a meranie výkonu ────────────────────────────────────
     Tracker("Tealium", "Lcom/tealium/", TrackerKind.ANALYTICS),
@@ -173,7 +174,7 @@ val TRACKERS = listOf(
     // ── Identifikácia zariadenia a detekcia podvodov ──────────────────
     Tracker("ThreatMetrix", "Lcom/threatmetrix/", TrackerKind.FRAUD),
     Tracker("DataDome", "Lco/datadome/", TrackerKind.FRAUD),
-    Tracker("PerimeterX", "Lcom/perimeterx/", TrackerKind.FRAUD),
+    Tracker("HUMAN Security", "Lcom/perimeterx/", TrackerKind.FRAUD),
     Tracker("HUMAN Security", "Lcom/humansecurity/", TrackerKind.FRAUD),
 
     // ── Hlásenie pádov ────────────────────────────────────────────────
@@ -199,8 +200,9 @@ val TRACKERS = listOf(
  * 3 = v1.3.1 (počítajú sa len triedy, ktoré APK naozaj obsahuje; mená bez zátvoriek)
  * 4 = v1.3.2 (gms/ads/identifier/ a hms/ads/identifier/ sa už nepovažujú za AdMob / Huawei Ads)
  * 5 = v1.4 (firebase/analytics/connector/ sa už nepovažuje za Firebase Analytics)
+ * 6 = v2.0 (zlúčené duplicity: Yandex Metrica→AppMetrica, Appboy→Braze, Piwik→Matomo, PerimeterX→HUMAN Security)
  */
-const val TRACKER_DB_VERSION = 5
+const val TRACKER_DB_VERSION = 6
 
 /** `res` = id textu v strings.xml. SK je v 3. páde, pretože veta znie „prístup k …". */
 data class PermGroup(val res: Int, val permissions: Set<String>) {
@@ -308,7 +310,7 @@ fun buildFindings(
     val pendingText = pendingGroups.joinToString(", ") { it.label(s) }
 
     val marketing = trackers.filter {
-        it.kind == TrackerKind.ADS || it.kind == TrackerKind.ATTRIBUTION
+        it.kind == TrackerKind.ADS || it.kind == TrackerKind.ATTRIBUTION || it.kind == TrackerKind.MARKETING
     }
     val analytics = trackers.filter { it.kind == TrackerKind.ANALYTICS }
     val crash = trackers.filter { it.kind == TrackerKind.CRASH }
@@ -348,7 +350,7 @@ fun buildFindings(
     }
 
     if (marketing.size + analytics.size >= 6) {
-        out.add(Finding(Level.WARN, s.tooMany(marketing.size + analytics.size)))
+        out.add(Finding(Level.WARN, s.tooMany(marketing.size + analytics.size, trackers.size)))
     }
 
     if (trackers.isEmpty() && !codeReadable) {

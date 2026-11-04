@@ -245,6 +245,13 @@ fun SettingsScreen(
                 packed = "…"
                 Thread { packed = debugPackedReport(AppCache.apps ?: emptyList()) }.start()
             }) { Text("debug: hľadať zašifrované appky", fontSize = 12.sp) }
+            // v2.0 prieskum: cieľový Android, dlho neaktualizované, najčastejšie trackery
+            FxTextButton(onClick = {
+                packed = "…"
+                Thread {
+                    packed = debugSurveyReport(AppCache.apps ?: emptyList(), HashMap(AppCache.scanned))
+                }.start()
+            }) { Text("debug: prieskum v2.0", fontSize = 12.sp) }
             if (packed.isNotEmpty()) {
                 androidx.compose.foundation.text.selection.SelectionContainer {
                     Text(packed, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -347,4 +354,51 @@ internal fun debugPackedReport(apps: List<AppEntry>): String {
         "React Native: $rn, Cordova: $cordova, Capacitor: $capacitor, Flutter: $flutter\n" +
         jsApps.sorted().joinToString("\n") + (if (jsApps.isNotEmpty()) "\n" else "") +
         hits.joinToString("\n")
+}
+
+/**
+ * v2.0, len debug: podklady pre tri nové funkcie — overiť na reálnych telefónoch skôr,
+ * než vznikne tvrdenie v appke. (1) rozdelenie targetSdk, (2) appky neaktualizované
+ * dlhšie ako 2 roky s udeleným citlivým prístupom, (3) najčastejšie trackery zo skenov.
+ */
+internal fun debugSurveyReport(apps: List<AppEntry>, scanned: Map<String, List<Tracker>>): String {
+    val sb = StringBuilder()
+    fun sensitiveGranted(a: AppEntry): List<String> {
+        val out = mutableListOf<String>()
+        for (g in SENSITIVE) {
+            if (g.permissions.any { it in a.granted && !isUnusedHere(it, a.targetSdk) })
+                out += g.permissions.first().substringAfterLast('.')
+        }
+        val files = "android.permission.MANAGE_EXTERNAL_STORAGE"
+        if (files in a.granted && files in a.specialKnown) out += "ALL_FILES"
+        if (a.caps.isNotEmpty()) out += a.caps.joinToString("+")
+        return out
+    }
+    for ((title, list) in listOf("BEŽNÉ" to apps.filter { !it.isSystem }, "SYSTÉMOVÉ" to apps.filter { it.isSystem })) {
+        val hist = list.groupingBy { it.targetSdk }.eachCount().toSortedMap()
+        sb.append("targetSdk $title (${list.size}): ")
+            .append(hist.entries.joinToString(" ") { "${it.key}:${it.value}" }).append("\n")
+    }
+    val old = apps.filter { !it.isSystem && it.targetSdk in 1..28 }.sortedBy { it.targetSdk }
+    sb.append("bežné s targetSdk < 29: ${old.size}\n")
+    old.forEach { sb.append("  ${it.targetSdk} ${it.label} (${it.packageName}) ${sensitiveGranted(it).joinToString(",")}\n") }
+
+    val now = System.currentTimeMillis()
+    val twoYears = 2L * 365 * 24 * 3600 * 1000
+    fun years(a: AppEntry) = "%.1f".format((now - a.lastUpdate) / (365.0 * 24 * 3600 * 1000))
+    val stale = apps.filter { it.lastUpdate > 0 && now - it.lastUpdate > twoYears }
+    val staleUser = stale.filter { !it.isSystem }
+    sb.append("neaktualizované > 2 roky: bežné ${staleUser.size}, systémové ${stale.size - staleUser.size}\n")
+    staleUser.sortedBy { it.lastUpdate }.forEach {
+        sb.append("  ${years(it)} r. ${it.label} (${it.packageName}) ${sensitiveGranted(it).joinToString(",")}\n")
+    }
+    val staleSysSens = stale.filter { it.isSystem && sensitiveGranted(it).isNotEmpty() }
+    sb.append("  systémové > 2 roky s citlivým prístupom: ${staleSysSens.size}\n")
+    staleSysSens.take(10).forEach { sb.append("    ${years(it)} r. ${it.label} (${it.packageName})\n") }
+
+    val freq = HashMap<String, Int>()
+    scanned.values.forEach { l -> l.map { it.name }.toSet().forEach { freq[it] = (freq[it] ?: 0) + 1 } }
+    sb.append("trackery (oskenované appky: ${scanned.size}, rôznych trackerov: ${freq.size}):\n")
+    freq.entries.sortedByDescending { it.value }.forEach { sb.append("  ${it.value}× ${it.key}\n") }
+    return sb.toString()
 }

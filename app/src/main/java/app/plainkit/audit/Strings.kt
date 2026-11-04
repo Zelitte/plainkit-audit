@@ -566,6 +566,7 @@ class S(context: Context, val lang: Lang) {
 
     // ── v1.7 ──
     val capsTitle = str(R.string.caps_title)
+    val libsTitle = str(R.string.libs_title)
     val capA11y = str(R.string.cap_a11y)
     val capNotif = str(R.string.cap_notif)
     val capIme = str(R.string.cap_ime)
@@ -634,7 +635,8 @@ class S(context: Context, val lang: Lang) {
     fun analyticsOnly(names: String) = f(R.string.analytics_only, names)
     fun fraud(names: String) = f(R.string.fraud, names)
     fun crashOnly(names: String) = f(R.string.crash_only, names)
-    fun tooMany(n: Int) = f(R.string.too_many, n)
+    fun tooMany(n: Int, total: Int) =
+        if (total > n) f(R.string.too_many_of, n, total) else f(R.string.too_many, n)
     val noTrackers = str(R.string.no_trackers)
     fun noTrackersButGranted(granted: String) = f(R.string.no_trackers_but_granted, granted)
     fun pending(text: String) = f(R.string.pending, text)

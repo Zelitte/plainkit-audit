@@ -221,7 +221,10 @@ data class AppEntry(
     /** Zapnuté mimoriadne schopnosti (služba dostupnosti, notifikácie, klávesnica, správca). */
     val caps: Set<Cap> = emptySet(),
     /** Webová stránka uložená na plochu cez Chrome (WebAPK) — beží v prehliadači. */
-    val isWebApk: Boolean = false
+    val isWebApk: Boolean = false,
+    // ── v2.0 ──
+    /** Čas poslednej inštalácie/aktualizácie (PackageInfo.lastUpdateTime), ms. */
+    val lastUpdate: Long = 0L
 )
 
 /** v1.7: mimoriadne schopnosti — nie sú to bežné povolenia, zapína ich používateľ (alebo výrobca) v nastaveniach. */
@@ -432,7 +435,8 @@ private fun toEntry(
         sharedWith = group.filter { it != pkg.packageName },
         sharedNet = netLabel,
         caps = caps.byPkg[pkg.packageName] ?: emptySet(),
-        isWebApk = pkg.packageName.startsWith("org.chromium.webapk.")
+        isWebApk = pkg.packageName.startsWith("org.chromium.webapk."),
+        lastUpdate = pkg.lastUpdateTime
     )
 }
 
@@ -573,7 +577,8 @@ private fun scanApk(paths: List<String>, codeSeen: (dex: Boolean, js: Boolean) -
     // v1.6: žiadny classes*.dex = kód je mimo APK (predkompilovaný výrobcom)
     // alebo zašifrovaný. „0 trackerov" by tu znamenalo „nevieme", nie „čistá".
     codeSeen(dexCount > 0, js)
-    return TRACKERS.filter { it.prefix in prefixes }
+    // v2.0: duplicity (dve signatúry toho istého SDK) majú rovnaké meno → počítať raz
+    return TRACKERS.filter { it.prefix in prefixes }.distinctBy { it.name }
 }
 
 private suspend fun persist(ctx: Context, db: AuditDb, app: AppEntry, trackers: List<Tracker>) {
@@ -1041,8 +1046,9 @@ fun AppListScreen(
             val rows = scansAsync.await()
             val ts = System.nanoTime()
             rows.forEach { rec ->
-                val names = rec.trackers.split(",").filter { it.isNotBlank() }.toSet()
-                store(rec.packageName, TRACKERS.filter { it.name in names })
+                val names = rec.trackers.split(",").filter { it.isNotBlank() }
+                    .map { TRACKER_ALIASES[it] ?: it }.toSet()
+                store(rec.packageName, TRACKERS.filter { it.name in names }.distinctBy { it.name })
             }
             LoadTiming.roomWait = ts - tw; LoadTiming.store = System.nanoTime() - ts
         }
@@ -1642,6 +1648,33 @@ fun AppListScreen(
                                         else MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.padding(top = 8.dp)
                                     )
+                                }
+                            }
+
+                            // ── v2.0: kto nájdenú knižnicu vlastní a na čo slúži ──
+                            if (!trackers.isNullOrEmpty()) {
+                                Text(
+                                    text = s.libsTitle,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(top = 14.dp, bottom = 2.dp)
+                                )
+                                trackers.forEach { t ->
+                                    Text(
+                                        text = "• " + t.name,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
+                                    TRACKER_INFO[t.name]?.let { res ->
+                                        Text(
+                                            text = s.str(res),
+                                            fontSize = 13.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.padding(start = 10.dp)
+                                        )
+                                    }
                                 }
                             }
 

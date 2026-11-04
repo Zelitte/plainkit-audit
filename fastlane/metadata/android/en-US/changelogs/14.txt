@@ -1,0 +1,4 @@
+* New: for each tracker found, see who owns it, which country it's from and what it does (43 most common)
+* More accurate categories: push and marketing libraries have their own category, Taboola is correctly listed as advertising
+* The same tracker under two names (e.g. AppMetrica / Yandex Metrica) is counted only once
+* No new permissions

@@ -1,0 +1,4 @@
+* Nové: pri nájdenom trackeri vidíš, kto ho vlastní, z akej krajiny je a na čo slúži (43 najčastejších)
+* Presnejšie kategórie: push a marketingové knižnice majú vlastnú kategóriu, Taboola je správne medzi reklamou
+* Ten istý tracker pod dvoma menami (napr. AppMetrica / Yandex Metrica) sa počíta len raz
+* Žiadne nové povolenia
