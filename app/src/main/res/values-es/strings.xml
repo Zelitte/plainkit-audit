@@ -451,6 +451,16 @@
     <string name="trk_human_security">HUMAN Security (EE. UU.) — comprueba que el tráfico de la app procede de personas reales y ayuda a bloquear bots y ataques automatizados.</string>
     <string name="trk_rollbar">Rollbar (EE. UU.) — envía al desarrollador informes sobre errores, fallos y bloqueos (ANR) de la app.</string>
     <string name="trk_backtrace">Sauce Labs (EE. UU.) — envía al desarrollador informes de fallos y errores; se usa a menudo en juegos.</string>
+    <string name="share_btn">Compartir resultado</string>
+    <string name="share_head">plainkit. audit — resultado de una app</string>
+    <string name="share_version">versión %1$s</string>
+    <string name="share_level">Nivel: %1$s</string>
+    <string name="share_findings">RESULTADOS</string>
+    <string name="share_perms">PERMISOS CONCEDIDOS</string>
+    <string name="share_perms_none">ninguno</string>
+    <string name="share_shared">Comparte permisos y datos con otra app.</string>
+    <string name="share_note">Que haya una biblioteca en el código no significa por sí solo que la app envíe datos — audit lee el código en el teléfono, no vigila el tráfico de red.</string>
+    <string name="share_source">Detectado con plainkit. audit — plainkit.app/audit</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d permiso</item>
         <item quantity="many">%1$d permisos</item>

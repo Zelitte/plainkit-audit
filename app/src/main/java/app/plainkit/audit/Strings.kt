@@ -604,6 +604,17 @@ class S(context: Context, val lang: Lang) {
     val capImeShort = str(R.string.cap_ime_short)
     val capAdminShort = str(R.string.cap_admin_short)
     val uninstall = str(R.string.uninstall)
+    // v2.1: zdieľanie nálezu
+    val shareBtn = str(R.string.share_btn)
+    val shareHead = str(R.string.share_head)
+    fun shareVersion(v: String) = f(R.string.share_version, v)
+    fun shareLevel(l: String) = f(R.string.share_level, l)
+    val shareFindings = str(R.string.share_findings)
+    val sharePerms = str(R.string.share_perms)
+    val sharePermsNone = str(R.string.share_perms_none)
+    val shareShared = str(R.string.share_shared)
+    val shareNote = str(R.string.share_note)
+    val shareSource = str(R.string.share_source)
     val sortLabel = str(R.string.sort_label)
     fun sortName(m: SortMode) = when (m) {
         SortMode.SEVERITY -> str(R.string.sort_severity)
@@ -629,17 +640,20 @@ class S(context: Context, val lang: Lang) {
         ListFilter.PARTIAL_CODE -> str(R.string.filter_partial)
         ListFilter.NON_PLAY -> str(R.string.filter_nonplay)
     }
-    fun marketingWithGranted(granted: String, names: String) = f(R.string.marketing_with_granted, granted, names)
+    fun marketingWithGranted(granted: String, names: String) = f(R.string.marketing_with_granted, kTo(granted), names)
     fun marketingOnly(names: String) = f(R.string.marketing_only, names)
-    fun analyticsWithGranted(names: String, granted: String) = f(R.string.analytics_with_granted, names, granted)
+    fun analyticsWithGranted(names: String, granted: String) = f(R.string.analytics_with_granted, names, kTo(granted))
     fun analyticsOnly(names: String) = f(R.string.analytics_only, names)
     fun fraud(names: String) = f(R.string.fraud, names)
     fun crashOnly(names: String) = f(R.string.crash_only, names)
     fun tooMany(n: Int, total: Int) =
         if (total > n) f(R.string.too_many_of, n, total) else f(R.string.too_many, n)
     val noTrackers = str(R.string.no_trackers)
-    fun noTrackersButGranted(granted: String) = f(R.string.no_trackers_but_granted, granted)
-    fun pending(text: String) = f(R.string.pending, text)
+    fun noTrackersButGranted(granted: String) = f(R.string.no_trackers_but_granted, kTo(granted))
+    fun pending(text: String) = f(R.string.pending, kTo(text))
+    /** v2.1: v slovenčine predložka podľa nasledujúceho slova — „ku kamere", „k polohe". Ostatné jazyky bez zmeny. */
+    private fun kTo(x: String): String =
+        if (lang != Lang.SK) x else (if (x.firstOrNull()?.lowercaseChar() in setOf('k', 'g')) "ku " else "k ") + x
     val rtbNote = str(R.string.rtb_note)
 
     // ── log zmien ──

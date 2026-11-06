@@ -90,7 +90,7 @@ s("no_internet",
   "Non richiede l'accesso a Internet: non può connettersi da sola.")
 # %1$s = skupiny povolení, %2$s = názvy SDK
 s("marketing_with_granted",
-  "Má udelený prístup k %1$s a zároveň obsahuje reklamné/marketingové SDK (%2$s). Práve tu môžu citlivé údaje skončiť v reklamnej sieti.",
+  "Má udelený prístup %1$s a zároveň obsahuje reklamné/marketingové SDK (%2$s). Práve tu môžu citlivé údaje skončiť v reklamnej sieti.",
   "Has been granted access to %1$s and also contains advertising/marketing SDKs (%2$s). This is where sensitive data can end up in an ad network.",
   "Hat Zugriff auf %1$s und enthält zugleich Werbe-/Marketing-SDKs (%2$s). Genau hier können sensible Daten in einem Werbenetzwerk landen.",
   "A accès à %1$s et contient aussi des SDK publicitaires/marketing (%2$s). C'est ici que des données sensibles peuvent finir dans un réseau publicitaire.",
@@ -105,7 +105,7 @@ s("marketing_only",
   "Contiene SDK pubblicitari/di marketing (%1$s). Il tuo comportamento nell'app viene collegato a un profilo pubblicitario.")
 # %1$s = názvy SDK, %2$s = skupiny povolení
 s("analytics_with_granted",
-  "Obsahuje analytické SDK (%1$s) a má udelený prístup k %2$s. Analytika tieto údaje sama neodosiela, ale appka ich má k dispozícii — kombinácia stojí za pozornosť.",
+  "Obsahuje analytické SDK (%1$s) a má udelený prístup %2$s. Analytika tieto údaje sama neodosiela, ale appka ich má k dispozícii — kombinácia stojí za pozornosť.",
   "Contains analytics SDKs (%1$s) and has been granted access to %2$s. Analytics does not send this data by itself, but the app has it available — the combination is worth noticing.",
   "Enthält Analyse-SDKs (%1$s) und hat Zugriff auf %2$s. Die Analyse sendet diese Daten nicht von selbst, aber die App hat sie zur Verfügung — die Kombination verdient Aufmerksamkeit.",
   "Contient des SDK d'analyse (%1$s) et a accès à %2$s. L'analyse n'envoie pas ces données d'elle-même, mais l'app les a à disposition — la combinaison mérite attention.",
@@ -150,14 +150,14 @@ s("too_many_of",
   "Su %2$d librerie, %1$d sono pubblicitarie o di analisi, di aziende diverse — più della media.")
 s("no_trackers", "Žiadne známe trackery.", "No known trackers.", "Keine bekannten Tracker.", "Aucun traceur connu.", "Ningún rastreador conocido.", "Nessun tracker noto.")
 s("no_trackers_but_granted",
-  "Má udelený prístup k %1$s, ale neobsahuje žiadny známy tracker.",
+  "Má udelený prístup %1$s, ale neobsahuje žiadny známy tracker.",
   "Has been granted access to %1$s, but contains no known tracker.",
   "Hat Zugriff auf %1$s, enthält aber keinen bekannten Tracker.",
   "A accès à %1$s, mais ne contient aucun traceur connu.",
   "Tiene acceso a %1$s, pero no contiene ningún rastreador conocido.",
   "Ha accesso a %1$s, ma non contiene tracker noti.")
 s("pending",
-  "Žiada aj prístup k %1$s, ten však zatiaľ udelený nemá. Ak mu ho povolíš, posúdenie sa zmení.",
+  "Žiada aj prístup %1$s, ten však zatiaľ udelený nemá. Ak mu ho povolíš, posúdenie sa zmení.",
   "It also requests access to %1$s, but has not been granted it. If you allow it, this assessment will change.",
   "Fordert auch Zugriff auf %1$s, hat ihn aber noch nicht erhalten. Wenn du ihn erlaubst, ändert sich die Bewertung.",
   "Demande aussi l'accès à %1$s, mais ne l'a pas encore obtenu. Si tu l'autorises, l'évaluation changera.",
@@ -816,6 +816,18 @@ s('trk_threatmetrix', 'LexisNexis Risk Solutions (USA; súčasť RELX, Veľká B
 s('trk_human_security', 'HUMAN Security (USA) — overuje, že prevádzka z appky pochádza od ľudí, a pomáha blokovať boty a automatizované útoky.', "HUMAN Security (USA) — checks that the app's traffic comes from real people and helps block bots and automated attacks.", 'HUMAN Security (USA) — prüft, ob der Datenverkehr der App von echten Menschen stammt, und hilft, Bots und automatisierte Angriffe zu blockieren.', "HUMAN Security (États-Unis) — vérifie que le trafic de l'app provient de vraies personnes et aide à bloquer les bots et les attaques automatisées.", 'HUMAN Security (EE. UU.) — comprueba que el tráfico de la app procede de personas reales y ayuda a bloquear bots y ataques automatizados.', "HUMAN Security (USA) — verifica che il traffico dell'app provenga da persone reali e aiuta a bloccare bot e attacchi automatizzati.")
 s('trk_rollbar', 'Rollbar (USA) — posiela vývojárovi hlásenia o chybách, pádoch a zamrznutiach (ANR) appky.', 'Rollbar (USA) — sends the developer reports about app errors, crashes and freezes (ANRs).', 'Rollbar (USA) — sendet dem Entwickler Berichte über Fehler, Abstürze und Hänger (ANRs) der App.', "Rollbar (États-Unis) — envoie au développeur des rapports sur les erreurs, les plantages et les blocages (ANR) de l'app.", 'Rollbar (EE. UU.) — envía al desarrollador informes sobre errores, fallos y bloqueos (ANR) de la app.', "Rollbar (USA) — invia allo sviluppatore segnalazioni su errori, crash e blocchi dell'app (ANR).")
 s('trk_backtrace', 'Sauce Labs (USA) — posiela vývojárovi hlásenia o pádoch a chybách, často v hrách.', 'Sauce Labs (USA) — sends the developer crash and error reports, often used in games.', 'Sauce Labs (USA) — sendet dem Entwickler Absturz- und Fehlerberichte, oft in Spielen eingesetzt.', "Sauce Labs (États-Unis) — envoie au développeur des rapports de plantages et d'erreurs, souvent utilisé dans les jeux.", 'Sauce Labs (EE. UU.) — envía al desarrollador informes de fallos y errores; se usa a menudo en juegos.', 'Sauce Labs (USA) — invia allo sviluppatore segnalazioni di crash ed errori, spesso usato nei giochi.')
+
+# ── v2.1: zdieľanie nálezu jednej appky (Zdenko, 5. 11. 2026) ──
+s("share_btn", "Zdieľať nález", "Share finding", "Befund teilen", "Partager le résultat", "Compartir resultado", "Condividi il risultato")
+s("share_head", "plainkit. audit — nález o appke", "plainkit. audit — finding for an app", "plainkit. audit — Befund zu einer App", "plainkit. audit — résultat pour une app", "plainkit. audit — resultado de una app", "plainkit. audit — risultato per un'app")
+s("share_version", "verzia %1$s", "version %1$s", "Version %1$s", "version %1$s", "versión %1$s", "versione %1$s")
+s("share_level", "Úroveň: %1$s", "Level: %1$s", "Stufe: %1$s", "Niveau : %1$s", "Nivel: %1$s", "Livello: %1$s")
+s("share_findings", "NÁLEZY", "FINDINGS", "BEFUNDE", "RÉSULTATS", "RESULTADOS", "RISULTATI")
+s("share_perms", "UDELENÉ POVOLENIA", "GRANTED PERMISSIONS", "ERTEILTE BERECHTIGUNGEN", "AUTORISATIONS ACCORDÉES", "PERMISOS CONCEDIDOS", "AUTORIZZAZIONI CONCESSE")
+s("share_perms_none", "žiadne", "none", "keine", "aucune", "ninguno", "nessuna")
+s("share_shared", "Zdieľa povolenia a dáta s inou appkou.", "Shares permissions and data with another app.", "Teilt Berechtigungen und Daten mit einer anderen App.", "Partage autorisations et données avec une autre app.", "Comparte permisos y datos con otra app.", "Condivide autorizzazioni e dati con un'altra app.")
+s("share_note", "Knižnica nájdená v kóde ešte neznamená, že appka údaje naozaj odosiela — audit číta kód v telefóne, nesleduje sieť.", "A library found in the code does not by itself mean the app actually sends data — audit reads the code on the phone, it does not watch network traffic.", "Eine im Code gefundene Bibliothek bedeutet nicht automatisch, dass die App tatsächlich Daten sendet — audit liest den Code auf dem Telefon, es überwacht nicht den Netzwerkverkehr.", "Une bibliothèque trouvée dans le code ne signifie pas à elle seule que l'app envoie réellement des données — audit lit le code sur le téléphone, il ne surveille pas le trafic réseau.", "Que haya una biblioteca en el código no significa por sí solo que la app envíe datos — audit lee el código en el teléfono, no vigila el tráfico de red.", "Una libreria trovata nel codice non significa di per sé che l'app invii davvero dati — audit legge il codice sul telefono, non controlla il traffico di rete.")
+s("share_source", "Zistené appkou plainkit. audit — plainkit.app/audit", "Found with plainkit. audit — plainkit.app/audit", "Ermittelt mit plainkit. audit — plainkit.app/audit", "Trouvé avec plainkit. audit — plainkit.app/audit", "Detectado con plainkit. audit — plainkit.app/audit", "Rilevato con plainkit. audit — plainkit.app/audit")
 
 # ── v1.7: plurály ──
 # Android `plurals`: každý jazyk má vlastné tvary. Kľúče: one, few, many, other.

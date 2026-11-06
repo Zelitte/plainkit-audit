@@ -1846,6 +1846,17 @@ fun AppListScreen(
                                     }) { Text(s.howToRemove, fontSize = 13.sp) }
                                 }
                             }
+                            // v2.1: zdieľanie nálezu JEDNEJ appky — až po skene (bez nálezov nie je čo zdieľať)
+                            if (findings != null) {
+                                FxTextButton(onClick = {
+                                    shareFinding(
+                                        context,
+                                        subject = s.shareHead + ": " + app.label,
+                                        text = shareText(pm, app, s, level, findings, trackers.orEmpty(), namedSorted),
+                                        chooserTitle = s.shareBtn
+                                    )
+                                }) { Text(s.shareBtn, fontSize = 13.sp) }
+                            }
                             if (showRemove == app.packageName) {
                                 Text(
                                     s.removeIntro,
