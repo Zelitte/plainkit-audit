@@ -1,0 +1,3 @@
+* Who owns a tracker and what it does: descriptions for 141 trackers (previously 43), some older descriptions corrected (owner, HQ, discontinued services)
+* New: "Share finding" button in app details — sends a text about one app, with no data about your phone or other apps
+* No new permissions

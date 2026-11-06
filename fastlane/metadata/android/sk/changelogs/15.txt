@@ -1,0 +1,4 @@
+* Kto tracker vlastní a na čo slúži: popisy pre 141 trackerov (predtým 43), opravené niektoré staršie popisy (vlastník, sídlo, ukončené služby)
+* Nové: tlačidlo „Zdieľať nález" v detaile appky — pošle text o jednej appke, bez údajov o telefóne a iných appkách
+* Oprava: „prístup ku kamere"
+* Žiadne nové povolenia
