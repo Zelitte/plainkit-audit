@@ -10,10 +10,11 @@ Celá analýza prebieha vo vašom telefóne. Nič sa neodosiela. Bez reklám, be
 
 * Vypíše povolenia zrozumiteľne — „presná poloha“ namiesto ACCESS_FINE_LOCATION
 * Rozlišuje udelené / neudelené / automaticky pri inštalácii — väčšina aplikácií dostane kopu povolení bez toho, aby sa vás niekto pýtal
-* Hľadá 148 známych sledovacích knižníc a rozlišuje ich účel
+* Hľadá 144 známych sledovacích knižníc a rozlišuje ich účel; pri každej nájdenej povie, kto ju vlastní, z akej krajiny je a na čo slúži
 * Nález vysvetlí jednou vetou a zoradí aplikácie podľa závažnosti
 * Pamätá si výsledky a po aktualizácii aplikácie ukáže, čo sa zmenilo
-* Šesť jazykov: slovenčina, angličtina, nemčina, francúzština, španielčina, taliančina
+* Nález o jednej aplikácii môžete zdieľať (bez údajov o telefóne a iných aplikáciách)
+* Sedem jazykov: slovenčina, angličtina, nemčina, francúzština, španielčina, taliančina a zjednodušená čínština (čínsky preklad neskontroloval rodený hovoriaci)
 
 Čo aplikácia nerobí:
 

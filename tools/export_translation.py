@@ -2,8 +2,8 @@ import sys, re, runpy, datetime
 src, out = sys.argv[1], sys.argv[2]
 ns = runpy.run_path(src, run_name="lib")
 S, LANGS = ns["S"], ns["LANGS"]
-order = ["en", "sk", "de", "fr", "es", "it"]
-NAMES = {"en":"EN","sk":"SK","de":"DE","fr":"FR","es":"ES","it":"IT"}
+order = ["en", "sk", "de", "fr", "es", "it", "zh"]
+NAMES = {"en":"EN","sk":"SK","de":"DE","fr":"FR","es":"ES","it":"IT","zh":"ZH"}
 sec, cur = {}, "Ostatné"
 for ln in open(src, encoding="utf-8"):
     m = re.match(r"# ── (.+?) ──", ln)
@@ -20,7 +20,7 @@ groups = {}
 for k in S: groups.setdefault(group(k), []).append(k)
 L = ["# plainkit. audit — texty na preklad", "",
  f"Vygenerované {datetime.date.today():%d. %m. %Y} z `tools/gen_strings.py` (verzia appky {sys.argv[3]}). "
- f"**{len(S)} textov**, jazyky v appke: EN, SK, DE, FR, ES, IT. Tento súbor sa pri každej zmene textov v appke pregeneruje.", "",
+ f"**{len(S)} textov**, jazyky v appke: EN, SK, DE, FR, ES, IT, ZH (zjednodušená čínština, bez kontroly rodeným hovoriacim). Tento súbor sa pri každej zmene textov v appke pregeneruje.", "",
  "## Pokyny pre prekladateľa", "",
  "- Za riadok **NOVÝ:** napíš preklad. Ak opravuješ existujúci jazyk, prepíš priamo jeho riadok.",
  "- **Zástupné znaky nechaj presne tak:** `%1$s`, `%1$d`, `%2$d` (appka za ne dosadí meno alebo číslo). Môžu sa presunúť v rámci vety.",

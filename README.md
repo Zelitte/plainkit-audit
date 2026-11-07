@@ -48,11 +48,14 @@ over the existing app.
   location", not `ACCESS_FINE_LOCATION`)
 * Distinguishes **granted / not granted / automatic at install** — most apps get
   a pile of permissions without ever asking you
-* Scans APKs for 148 known tracking SDKs, grouped by purpose (ads, attribution,
-  analytics, fraud detection, crash reporting)
+* Scans APKs for 144 known tracking SDKs (148 signatures), grouped by purpose (ads, marketing,
+  attribution, analytics, fraud detection, crash reporting); for each one found, shows who owns
+  it, which country it is from and what it does
 * Explains findings in one sentence, sorted by severity
 * Remembers results and reports what changed after an app update
-* Slovak and English
+* Lets you share the finding for a single app as text (no phone model, Android version or other apps)
+* Seven languages: Slovak, English, German, French, Spanish, Italian and Simplified Chinese
+  (the Chinese translation has not been reviewed by a native speaker — corrections welcome as issues)
 
 ## What it does not do
 

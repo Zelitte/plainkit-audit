@@ -116,10 +116,10 @@
     <string name="perm_DETECT_SCREEN_CAPTURE">detect screenshots</string>
     <string name="perm_DOWNLOAD_WITHOUT_NOTIFICATION">downloads without notification</string>
     <string name="perm_AD_ID">advertising ID</string>
-    <string name="perm_FOREGROUND_SERVICE_MICROPHONE">background service: microphone</string>
-    <string name="perm_FOREGROUND_SERVICE_CAMERA">background service: camera</string>
-    <string name="perm_FOREGROUND_SERVICE_LOCATION">background service: location</string>
-    <string name="perm_FOREGROUND_SERVICE_MEDIA_PROJECTION">background service: screen capture</string>
+    <string name="perm_FOREGROUND_SERVICE_MICROPHONE">service with a notification: microphone</string>
+    <string name="perm_FOREGROUND_SERVICE_CAMERA">service with a notification: camera</string>
+    <string name="perm_FOREGROUND_SERVICE_LOCATION">service with a notification: location</string>
+    <string name="perm_FOREGROUND_SERVICE_MEDIA_PROJECTION">service with a notification: screen capture</string>
     <string name="perm_DETECT_SCREEN_RECORDING">detect screen recording</string>
     <string name="perm_MANAGE_OWN_CALLS">calls through its own app</string>
     <string name="perm_BIND_GET_INSTALL_REFERRER_SERVICE">where you installed the app from</string>
@@ -462,6 +462,7 @@
     <string name="share_shared">Shares permissions and data with another app.</string>
     <string name="share_note">A library found in the code does not by itself mean the app actually sends data — audit reads the code on the phone, it does not watch network traffic.</string>
     <string name="share_source">Found with plainkit. audit — plainkit.app/audit</string>
+    <string name="zh_note">The Chinese translation has not been reviewed by a native speaker.</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d permission</item>
         <item quantity="other">%1$d permissions</item>

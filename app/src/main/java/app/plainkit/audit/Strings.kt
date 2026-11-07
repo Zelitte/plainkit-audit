@@ -18,7 +18,8 @@ enum class Lang(val tag: String, val nativeName: String) {
     DE("de", "Deutsch"),
     FR("fr", "Français"),
     ES("es", "Español"),
-    IT("it", "Italiano")
+    IT("it", "Italiano"),
+    ZH("zh-CN", "简体中文")
 }
 
 object Prefs {
@@ -667,6 +668,7 @@ class S(context: Context, val lang: Lang) {
     val settings = str(R.string.settings)
     val back = str(R.string.back)
     val languageTitle = str(R.string.language_title)
+    val zhNote = str(R.string.zh_note)
     val dataTitle = str(R.string.data_title)
     val clearChanges = str(R.string.clear_changes)
     val clearScans = str(R.string.clear_scans)

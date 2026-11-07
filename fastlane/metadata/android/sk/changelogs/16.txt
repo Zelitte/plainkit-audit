@@ -1,0 +1,3 @@
+* Nový jazyk: čínština (zjednodušená) — 简体中文 (preklad neskontroloval rodený hovoriaci)
+* Presnejší názov povolení „služba s notifikáciou: mikrofón / kamera / poloha / snímanie obrazovky" (predtým nepresne „na pozadí")
+* Žiadne nové povolenia

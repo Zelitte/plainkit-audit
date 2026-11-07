@@ -100,6 +100,14 @@ fun SettingsScreen(
         LangGrid(selected = s.lang, modifier = Modifier.fillMaxWidth()) { lang, selected, mod ->
             LangChip(lang.nativeName, selected, mod) { onLangChange(lang) }
         }
+        // v2.2: čestne — čínštinu neskontroloval rodený hovoriaci
+        if (s.lang == Lang.ZH) {
+            Text(
+                s.zhNote,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 6.dp)
+            )
+        }
 
         Text(
             s.dataTitle,

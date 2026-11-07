@@ -115,10 +115,10 @@
     <string name="perm_DETECT_SCREEN_CAPTURE">detectar capturas de pantalla</string>
     <string name="perm_DOWNLOAD_WITHOUT_NOTIFICATION">descargas sin notificación</string>
     <string name="perm_AD_ID">ID de publicidad</string>
-    <string name="perm_FOREGROUND_SERVICE_MICROPHONE">servicio en segundo plano: micrófono</string>
-    <string name="perm_FOREGROUND_SERVICE_CAMERA">servicio en segundo plano: cámara</string>
-    <string name="perm_FOREGROUND_SERVICE_LOCATION">servicio en segundo plano: ubicación</string>
-    <string name="perm_FOREGROUND_SERVICE_MEDIA_PROJECTION">servicio en segundo plano: captura de pantalla</string>
+    <string name="perm_FOREGROUND_SERVICE_MICROPHONE">servicio con notificación: micrófono</string>
+    <string name="perm_FOREGROUND_SERVICE_CAMERA">servicio con notificación: cámara</string>
+    <string name="perm_FOREGROUND_SERVICE_LOCATION">servicio con notificación: ubicación</string>
+    <string name="perm_FOREGROUND_SERVICE_MEDIA_PROJECTION">servicio con notificación: captura de pantalla</string>
     <string name="perm_DETECT_SCREEN_RECORDING">detectar grabación de pantalla</string>
     <string name="perm_MANAGE_OWN_CALLS">llamadas a través de su propia app</string>
     <string name="perm_BIND_GET_INSTALL_REFERRER_SERVICE">desde dónde instalaste la app</string>
@@ -461,6 +461,7 @@
     <string name="share_shared">Comparte permisos y datos con otra app.</string>
     <string name="share_note">Que haya una biblioteca en el código no significa por sí solo que la app envíe datos — audit lee el código en el teléfono, no vigila el tráfico de red.</string>
     <string name="share_source">Detectado con plainkit. audit — plainkit.app/audit</string>
+    <string name="zh_note">La traducción al chino no ha sido revisada por un hablante nativo.</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d permiso</item>
         <item quantity="many">%1$d permisos</item>

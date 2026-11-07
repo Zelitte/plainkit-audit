@@ -115,10 +115,10 @@
     <string name="perm_DETECT_SCREEN_CAPTURE">zisťovanie snímok obrazovky</string>
     <string name="perm_DOWNLOAD_WITHOUT_NOTIFICATION">sťahovanie bez upozornenia</string>
     <string name="perm_AD_ID">reklamný identifikátor</string>
-    <string name="perm_FOREGROUND_SERVICE_MICROPHONE">služba na pozadí: mikrofón</string>
-    <string name="perm_FOREGROUND_SERVICE_CAMERA">služba na pozadí: kamera</string>
-    <string name="perm_FOREGROUND_SERVICE_LOCATION">služba na pozadí: poloha</string>
-    <string name="perm_FOREGROUND_SERVICE_MEDIA_PROJECTION">služba na pozadí: snímanie obrazovky</string>
+    <string name="perm_FOREGROUND_SERVICE_MICROPHONE">služba s notifikáciou: mikrofón</string>
+    <string name="perm_FOREGROUND_SERVICE_CAMERA">služba s notifikáciou: kamera</string>
+    <string name="perm_FOREGROUND_SERVICE_LOCATION">služba s notifikáciou: poloha</string>
+    <string name="perm_FOREGROUND_SERVICE_MEDIA_PROJECTION">služba s notifikáciou: snímanie obrazovky</string>
     <string name="perm_DETECT_SCREEN_RECORDING">zisťovanie nahrávania obrazovky</string>
     <string name="perm_MANAGE_OWN_CALLS">hovory cez vlastnú aplikáciu</string>
     <string name="perm_BIND_GET_INSTALL_REFERRER_SERVICE">zisťovanie, odkiaľ si appku nainštaloval</string>
@@ -461,6 +461,7 @@
     <string name="share_shared">Zdieľa povolenia a dáta s inou appkou.</string>
     <string name="share_note">Knižnica nájdená v kóde ešte neznamená, že appka údaje naozaj odosiela — audit číta kód v telefóne, nesleduje sieť.</string>
     <string name="share_source">Zistené appkou plainkit. audit — plainkit.app/audit</string>
+    <string name="zh_note">Preklad do čínštiny neskontroloval rodený hovoriaci.</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d povolenie</item>
         <item quantity="few">%1$d povolenia</item>

@@ -14,8 +14,8 @@ android {
         applicationId = "app.plainkit.audit"
         minSdk = 26
         targetSdk = 37
-        versionCode = 15
-        versionName = "2.1"
+        versionCode = 16
+        versionName = "2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

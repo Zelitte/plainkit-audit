@@ -1,5 +1,5 @@
 # Generuje res/values*/strings.xml pre plainkit. audit.
-# Poradie jazykov v každom riadku: sk, en, de, fr, es, it
+# Poradie jazykov v každom riadku: sk, en, de, fr, es, it (čínština zvlášť v strings_zh.py)
 import os, sys
 
 LANGS = ["sk", "en", "de", "fr", "es", "it"]
@@ -271,14 +271,14 @@ P = [
  ("DOWNLOAD_WITHOUT_NOTIFICATION", "sťahovanie bez upozornenia", "downloads without notification", "Downloads ohne Benachrichtigung", "téléchargements sans notification", "descargas sin notificación", "download senza notifica"),
  ("AD_ID", "reklamný identifikátor", "advertising ID", "Werbe-ID", "identifiant publicitaire", "ID de publicidad", "ID pubblicità"),
 
- # ── služby na pozadí ──
+ # ── služby s notifikáciou (Android: „foreground service") ──
  # Samotné povolenie neudeľuje prístup k mikrofónu/kamere/polohe; znamená, že
  # appka smie takú službu držať spustenú, aj keď ju nemáš otvorenú. Preto je
- # text opisný („služba na pozadí: …"), nie „mikrofón na pozadí".
- ("FOREGROUND_SERVICE_MICROPHONE", "služba na pozadí: mikrofón", "background service: microphone", "Hintergrunddienst: Mikrofon", "service en arrière-plan : micro", "servicio en segundo plano: micrófono", "servizio in background: microfono"),
- ("FOREGROUND_SERVICE_CAMERA", "služba na pozadí: kamera", "background service: camera", "Hintergrunddienst: Kamera", "service en arrière-plan : appareil photo", "servicio en segundo plano: cámara", "servizio in background: fotocamera"),
- ("FOREGROUND_SERVICE_LOCATION", "služba na pozadí: poloha", "background service: location", "Hintergrunddienst: Standort", "service en arrière-plan : position", "servicio en segundo plano: ubicación", "servizio in background: posizione"),
- ("FOREGROUND_SERVICE_MEDIA_PROJECTION", "služba na pozadí: snímanie obrazovky", "background service: screen capture", "Hintergrunddienst: Bildschirmaufnahme", "service en arrière-plan : capture d'écran", "servicio en segundo plano: captura de pantalla", "servizio in background: acquisizione schermo"),
+ # text opisný („služba s notifikáciou: …", Zdenko 6. 11. 2026; predtým nepresne „na pozadí").
+ ("FOREGROUND_SERVICE_MICROPHONE", "služba s notifikáciou: mikrofón", "service with a notification: microphone", "Dienst mit Benachrichtigung: Mikrofon", "service avec notification : micro", "servicio con notificación: micrófono", "servizio con notifica: microfono"),
+ ("FOREGROUND_SERVICE_CAMERA", "služba s notifikáciou: kamera", "service with a notification: camera", "Dienst mit Benachrichtigung: Kamera", "service avec notification : appareil photo", "servicio con notificación: cámara", "servizio con notifica: fotocamera"),
+ ("FOREGROUND_SERVICE_LOCATION", "služba s notifikáciou: poloha", "service with a notification: location", "Dienst mit Benachrichtigung: Standort", "service avec notification : position", "servicio con notificación: ubicación", "servizio con notifica: posizione"),
+ ("FOREGROUND_SERVICE_MEDIA_PROJECTION", "služba s notifikáciou: snímanie obrazovky", "service with a notification: screen capture", "Dienst mit Benachrichtigung: Bildschirmaufnahme", "service avec notification : capture d'écran", "servicio con notificación: captura de pantalla", "servizio con notifica: acquisizione schermo"),
 
  # ── obrazovka a hovory ──
  ("DETECT_SCREEN_RECORDING", "zisťovanie nahrávania obrazovky", "detect screen recording", "Bildschirmaufnahme erkennen", "détection de l'enregistrement de l'écran", "detectar grabación de pantalla", "rilevamento della registrazione dello schermo"),
@@ -869,6 +869,28 @@ pl("filter_unscanned",
    fr={"one": "%1$d app pas encore analysée — résultat incomplet", "many": "%1$d apps pas encore analysées — résultat incomplet", "other": "%1$d apps pas encore analysées — résultat incomplet"},
    es={"one": "%1$d app aún sin analizar: el resultado está incompleto", "many": "%1$d apps aún sin analizar: el resultado está incompleto", "other": "%1$d apps aún sin analizar: el resultado está incompleto"},
    it={"one": "%1$d app non ancora analizzata — risultato incompleto", "many": "%1$d app non ancora analizzate — risultato incompleto", "other": "%1$d app non ancora analizzate — risultato incompleto"})
+
+# ── v2.2: zjednodušená čínština (zh-CN) — preklady v tools/strings_zh.py ──
+# Každý kľúč musí mať aj čínsky text (inak build textov zlyhá — nový text bez prekladu neprejde).
+s("zh_note",
+  "Preklad do čínštiny neskontroloval rodený hovoriaci.",
+  "The Chinese translation has not been reviewed by a native speaker.",
+  "Die chinesische Übersetzung wurde nicht von Muttersprachlern geprüft.",
+  "La traduction chinoise n'a pas été relue par un locuteur natif.",
+  "La traducción al chino no ha sido revisada por un hablante nativo.",
+  "La traduzione cinese non è stata rivista da un madrelingua.")
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from strings_zh import ZH, ZH_PL
+_miss = [k for k in S if k not in ZH]
+_extra = [k for k in ZH if k not in S]
+assert not _miss and not _extra, ("chýba čínsky text", _miss[:10], "navyše", _extra[:10])
+for _k in S:
+    S[_k] = S[_k] + (ZH[_k],)
+for _k in PL:
+    PL[_k]["zh"] = ZH_PL[_k]
+LANGS.append("zh")
+FOLDER["zh"] = "values-zh-rCN"
 
 def esc(v):
     v = v.replace("\\", "\\\\").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
