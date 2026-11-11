@@ -269,7 +269,8 @@ fun buildFindings(
     sharedNet: String? = null,
     caps: Set<Cap> = emptySet(),
     isWebApk: Boolean = false,
-    jsCode: Boolean = false
+    jsCode: Boolean = false,
+    unwiredAds: Set<String> = emptySet()
 ): List<Finding> {
     val out = mutableListOf<Finding>()
 
@@ -318,18 +319,25 @@ fun buildFindings(
 
     fun names(list: List<Tracker>) = list.joinToString(", ") { it.name }
 
-    if (marketing.isNotEmpty()) {
+    // v2.3: overené reklamné knižnice bez stopy v manifeste sa hodnotia mierne (INFO),
+    // ostatné ako doteraz. Chýbajúca stopa nie je dôkaz — preto „je možné".
+    val unwired = marketing.filter { it.name in unwiredAds }
+    val active = marketing.filter { it.name !in unwiredAds }
+    if (active.isNotEmpty()) {
         if (grantedGroups.isNotEmpty()) {
-            out.add(Finding(Level.ALERT, s.marketingWithGranted(grantedText, names(marketing))))
+            out.add(Finding(Level.ALERT, s.marketingWithGranted(grantedText, names(active))))
         } else {
-            out.add(Finding(Level.WARN, s.marketingOnly(names(marketing))))
+            out.add(Finding(Level.WARN, s.marketingOnly(names(active))))
         }
+    }
+    if (unwired.isNotEmpty()) {
+        out.add(Finding(Level.INFO, s.adsUnwired(names(unwired))))
     }
 
     // v1.5: reklamné siete predávajú miesto v aukcii v reálnom čase (RTB).
     // Týmto kanálom bol v 2026 doručovaný spyware bez kliknutia (Citizen Lab,
     // „AdFection"). Appka útok zistiť nevie — len upozorní na kanál.
-    if (trackers.any { it.kind == TrackerKind.ADS }) {
+    if (trackers.any { it.kind == TrackerKind.ADS && it.name !in unwiredAds }) {
         out.add(Finding(Level.INFO, s.rtbNote))
     }
 

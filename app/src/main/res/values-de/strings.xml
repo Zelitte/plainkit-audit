@@ -462,6 +462,16 @@
     <string name="share_note">Eine im Code gefundene Bibliothek bedeutet nicht automatisch, dass die App tatsächlich Daten sendet — audit liest den Code auf dem Telefon, es überwacht nicht den Netzwerkverkehr.</string>
     <string name="share_source">Ermittelt mit plainkit. audit — plainkit.app/audit</string>
     <string name="zh_note">Die chinesische Übersetzung wurde nicht von Muttersprachlern geprüft.</string>
+    <string name="ads_unwired">Werbebibliotheken (%1$s) sind im Code, aber ihre üblichen Komponenten fehlen im Manifest — möglicherweise werden sie nicht verwendet.</string>
+    <string name="lib_unwired">keine Spur im Manifest — wird evtl. nicht verwendet</string>
+    <string name="holiday_xmas">Frohe Weihnachten</string>
+    <string name="holiday_newyear">Frohes neues Jahr</string>
+    <string name="spy_title">Kann mich jemand überwachen?</string>
+    <string name="spy_note">Diese Apps haben Befugnisse, die sich zum Überwachen missbrauchen lassen. Die meisten haben einen legitimen Grund — Smartwatch, Passwortmanager, Automatisierung, Tastatur. Wenn du eine nicht kennst oder sie nicht selbst installiert hast, deinstalliere sie nicht sofort — falls dich jemand überwacht, könnte er es bemerken. Sprich zuerst mit jemandem, dem du vertraust. Audit kann nicht bestätigen, dass nichts dergleichen auf dem Telefon ist; es zeigt nur, was Android über Apps verrät.</string>
+    <string name="spy_none">Keine App hat diese Befugnisse.</string>
+    <string name="spy_no_icon">kein Symbol auf dem Startbildschirm</string>
+    <string name="spy_system">System-Apps, die mit dem Telefon kamen: %1$d</string>
+    <string name="spy_non_play">nicht aus Google Play</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d Berechtigung</item>
         <item quantity="other">%1$d Berechtigungen</item>

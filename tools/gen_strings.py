@@ -880,6 +880,35 @@ s("zh_note",
   "La traducción al chino no ha sido revisada por un hablante nativo.",
   "La traduzione cinese non è stata rivista da un madrelingua.")
 
+# ── v2.3: reklamná knižnica v kóde bez stopy v manifeste ──
+s("ads_unwired",
+  "Reklamné knižnice (%1$s) sú v kóde, ale v manifeste chýbajú ich bežné súčasti — je možné, že sa nepoužívajú.",
+  "Ad libraries (%1$s) are in the code, but their usual components are missing from the manifest — they may not be in use.",
+  "Werbebibliotheken (%1$s) sind im Code, aber ihre üblichen Komponenten fehlen im Manifest — möglicherweise werden sie nicht verwendet.",
+  "Des bibliothèques publicitaires (%1$s) sont dans le code, mais leurs composants habituels manquent dans le manifeste — elles ne sont peut-être pas utilisées.",
+  "Hay bibliotecas de anuncios (%1$s) en el código, pero faltan sus componentes habituales en el manifiesto; puede que no se usen.",
+  "Le librerie pubblicitarie (%1$s) sono nel codice, ma nel manifest mancano i loro componenti abituali — forse non vengono usate.")
+
+s("lib_unwired", "v manifeste bez stopy — možno sa nepoužíva", "no trace in the manifest — may not be in use", "keine Spur im Manifest — wird evtl. nicht verwendet", "aucune trace dans le manifeste — peut-être inutilisée", "sin rastro en el manifiesto; puede que no se use", "nessuna traccia nel manifest — forse non usata")
+
+# ── v2.3: sviatočný pozdrav ──
+s("holiday_xmas", "Veselé Vianoce", "Merry Christmas", "Frohe Weihnachten", "Joyeux Noël", "Feliz Navidad", "Buon Natale")
+s("holiday_newyear", "Šťastný nový rok", "Happy New Year", "Frohes neues Jahr", "Bonne année", "Feliz Año Nuevo", "Felice anno nuovo")
+
+# ── v2.3: Môže ma niekto sledovať? (Kontrola telefónu) ──
+s("spy_title", "Môže ma niekto sledovať?", "Could someone be spying on me?", "Kann mich jemand überwachen?", "Quelqu'un peut-il m'espionner ?", "¿Alguien podría espiarme?", "Qualcuno potrebbe spiarmi?")
+s("spy_note",
+  "Tieto appky majú právomoci, ktoré sa dajú zneužiť na sledovanie. Väčšina z nich má legitímny dôvod — hodinky, správca hesiel, automatizácia, klávesnica. Ak niektorú nepoznáš alebo si ju sám neinštaloval, neodinštalovávaj ju hneď — ak ťa niekto sleduje, môže si to všimnúť. Najprv sa poraď s niekým, komu dôveruješ. Audit nevie potvrdiť, že v telefóne nič také nie je; ukazuje len to, čo Android o appkách prezradí.",
+  "These apps have powers that can be abused for spying. Most of them have a legitimate reason — a watch, a password manager, automation, a keyboard. If you don't recognise one or didn't install it yourself, don't uninstall it right away — if someone is watching you, they may notice. First talk to someone you trust. Audit can't confirm that there is nothing like this on the phone; it only shows what Android reveals about apps.",
+  "Diese Apps haben Befugnisse, die sich zum Überwachen missbrauchen lassen. Die meisten haben einen legitimen Grund — Smartwatch, Passwortmanager, Automatisierung, Tastatur. Wenn du eine nicht kennst oder sie nicht selbst installiert hast, deinstalliere sie nicht sofort — falls dich jemand überwacht, könnte er es bemerken. Sprich zuerst mit jemandem, dem du vertraust. Audit kann nicht bestätigen, dass nichts dergleichen auf dem Telefon ist; es zeigt nur, was Android über Apps verrät.",
+  "Ces apps ont des accès qui peuvent servir à espionner. La plupart ont une raison légitime — montre connectée, gestionnaire de mots de passe, automatisation, clavier. Si tu ne reconnais pas l'une d'elles ou si tu ne l'as pas installée toi-même, ne la désinstalle pas tout de suite — si quelqu'un te surveille, il pourrait le remarquer. Parles-en d'abord à une personne de confiance. Audit ne peut pas confirmer qu'il n'y a rien de tel sur le téléphone ; il montre seulement ce qu'Android révèle sur les apps.",
+  "Estas apps tienen permisos que se pueden usar para espiar. La mayoría tiene un motivo legítimo: reloj, gestor de contraseñas, automatización, teclado. Si no reconoces alguna o no la instalaste tú, no la desinstales enseguida: si alguien te vigila, podría notarlo. Primero habla con alguien de confianza. Audit no puede confirmar que no haya nada así en el teléfono; solo muestra lo que Android revela sobre las apps.",
+  "Queste app hanno accessi che si possono sfruttare per spiare. La maggior parte ha un motivo legittimo: smartwatch, gestore di password, automazione, tastiera. Se non ne riconosci una o non l'hai installata tu, non disinstallarla subito: se qualcuno ti sorveglia, potrebbe accorgersene. Parlane prima con una persona di cui ti fidi. Audit non può confermare che sul telefono non ci sia nulla del genere; mostra solo ciò che Android rivela sulle app.")
+s("spy_none", "Žiadna appka nemá tieto právomoci.", "No app has these powers.", "Keine App hat diese Befugnisse.", "Aucune app n'a ces accès.", "Ninguna app tiene estos permisos.", "Nessuna app ha questi accessi.")
+s("spy_no_icon", "bez ikony na ploche", "no icon on the home screen", "kein Symbol auf dem Startbildschirm", "pas d'icône sur l'écran d'accueil", "sin icono en la pantalla de inicio", "nessuna icona nella schermata Home")
+s("spy_system", "systémové appky, ktoré prišli s telefónom: %1$d", "system apps that came with the phone: %1$d", "System-Apps, die mit dem Telefon kamen: %1$d", "apps système fournies avec le téléphone : %1$d", "apps del sistema que venían con el teléfono: %1$d", "app di sistema arrivate con il telefono: %1$d")
+s("spy_non_play", "mimo Google Play", "not from Google Play", "nicht aus Google Play", "hors Google Play", "fuera de Google Play", "non da Google Play")
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from strings_zh import ZH, ZH_PL
 _miss = [k for k in S if k not in ZH]

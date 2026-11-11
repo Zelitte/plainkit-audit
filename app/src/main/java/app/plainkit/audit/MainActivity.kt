@@ -634,6 +634,7 @@ private suspend fun scanAllApps(
         async(Dispatchers.IO) {
             for (app in chunk) {
                 val result = scanApk(app.apkPaths) { dex, js -> rememberCode(ctx, app.packageName, dex, js) }
+                if (result != null) Prefs.setUnwiredAds(ctx, app.packageName, unwiredAds(ctx, app.packageName, result))
                 if (result != null) persist(ctx, db, app, result)
                 withContext(Dispatchers.Main) {
                     if (result != null) onResult(app.packageName, result)
@@ -665,21 +666,25 @@ class MainActivity : ComponentActivity() {
                         lang = chosen
                     }
 
-                    else -> Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        AppListScreen(
-                            s = s,
-                            onLangChange = { chosen ->
-                                Prefs.setLang(ctx, chosen)
-                                lang = chosen
-                            },
-                            onShowIntro = {
-                                Prefs.clearLang(ctx)
-                                AppCache.apps = null
-                                AppCache.scanned.clear()
-                                lang = null
-                            },
-                            modifier = Modifier.padding(innerPadding)
-                        )
+                    else -> androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxSize()) {
+                        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                            AppListScreen(
+                                s = s,
+                                onLangChange = { chosen ->
+                                    Prefs.setLang(ctx, chosen)
+                                    lang = chosen
+                                },
+                                onShowIntro = {
+                                    Prefs.clearLang(ctx)
+                                    AppCache.apps = null
+                                    AppCache.scanned.clear()
+                                    lang = null
+                                },
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
+                        // v2.3: Vianoce / Silvester — nad celou appkou, raz za deň
+                        HolidayOverlay(s)
                     }
                 }
             } }
@@ -985,6 +990,7 @@ fun AppListScreen(
     val noCode = remember(scanRevision) { Prefs.noCode(context) }
     // v1.9: appky s kódom v JavaScripte (skener ho nečíta)
     val jsCode = remember(scanRevision) { Prefs.jsCode(context) }
+    val unwired = remember(scanRevision) { Prefs.unwiredAds(context) }
     val debuggable = remember {
         (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
     }
@@ -1076,6 +1082,7 @@ fun AppListScreen(
                     db.dao().clearChanges()
                     Prefs.clearNoCode(context)
                     Prefs.clearJsCode(context)
+                    Prefs.clearUnwiredAds(context)
                     scanned.clear()
                     AppCache.scanned.clear()
                     scanRevision++
@@ -1119,6 +1126,14 @@ fun AppListScreen(
             apps = apps,
             onBack = { showCheck = false },
             onByPerm = { showByPerm = true },
+            onOpenApp = { app ->
+                // systémová appka by v rozsahu „Aplikácie" nebola vidno
+                if (!app.inScope(listScope)) listScope = ListScope.ALL
+                listFilter = ListFilter.ALL
+                showCheck = false
+                query = app.label
+                expanded = app.packageName
+            },
             modifier = modifier
         )
         return
@@ -1135,14 +1150,14 @@ fun AppListScreen(
     // bolo a buildFindings() — ktoré načítava a formátuje texty — sa pri každom
     // zoradení volalo ~2·N·log N krát. Počas skenu sa zoznam prekresľuje po
     // každej hotovej appke, takže z toho boli státisíce volaní na hlavnom vlákne.
-    val levels = remember(apps, scanRevision, s, jsCode) {
+    val levels = remember(apps, scanRevision, s, jsCode, unwired) {
         val tl = System.nanoTime()
         apps.associate { app ->
             app.packageName to (scanned[app.packageName]
                 ?.let {
                     worstLevel(buildFindings(app.permissions, app.granted, it, s,
                         app.packageName !in noCode, app.sharedNet, app.caps, app.isWebApk,
-                        app.packageName in jsCode)).ordinal
+                        app.packageName in jsCode, unwired[app.packageName].orEmpty())).ordinal
                 }
                 ?: -1)
         }.also { LoadTiming.levels += System.nanoTime() - tl; LoadTiming.levelsRuns++ }
@@ -1497,7 +1512,7 @@ fun AppListScreen(
                 val findings = trackers?.let {
                     buildFindings(app.permissions, app.granted, it, s,
                         app.packageName !in noCode, app.sharedNet, app.caps, app.isWebApk,
-                        app.packageName in jsCode)
+                        app.packageName in jsCode, unwired[app.packageName].orEmpty())
                 }
                 val level = findings?.let { worstLevel(it) }
                 val stripe = levelColor(level)
@@ -1551,6 +1566,7 @@ fun AppListScreen(
                                     val result = fresh?.let {
                                         withContext(Dispatchers.IO) {
                                             scanApk(it.apkPaths) { dex, js -> rememberCode(context, it.packageName, dex, js) }
+                                                ?.also { r -> Prefs.setUnwiredAds(context, it.packageName, unwiredAds(context, it.packageName, r)) }
                                         }
                                     }
                                     if (fresh != null && result != null) {
@@ -1660,9 +1676,18 @@ fun AppListScreen(
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.padding(top = 14.dp, bottom = 2.dp)
                                 )
+                                val unwiredHere = unwired[app.packageName].orEmpty()
                                 trackers.forEach { t ->
                                     Text(
-                                        text = "• " + t.name,
+                                        text = buildAnnotatedString {
+                                            append("• " + t.name)
+                                            // v2.3: overená reklamná knižnica bez stopy v manifeste
+                                            if (t.name in unwiredHere) {
+                                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)) {
+                                                    append(" — " + s.libUnwired)
+                                                }
+                                            }
+                                        },
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.padding(top = 4.dp)

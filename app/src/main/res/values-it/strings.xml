@@ -462,6 +462,16 @@
     <string name="share_note">Una libreria trovata nel codice non significa di per sé che l\'app invii davvero dati — audit legge il codice sul telefono, non controlla il traffico di rete.</string>
     <string name="share_source">Rilevato con plainkit. audit — plainkit.app/audit</string>
     <string name="zh_note">La traduzione cinese non è stata rivista da un madrelingua.</string>
+    <string name="ads_unwired">Le librerie pubblicitarie (%1$s) sono nel codice, ma nel manifest mancano i loro componenti abituali — forse non vengono usate.</string>
+    <string name="lib_unwired">nessuna traccia nel manifest — forse non usata</string>
+    <string name="holiday_xmas">Buon Natale</string>
+    <string name="holiday_newyear">Felice anno nuovo</string>
+    <string name="spy_title">Qualcuno potrebbe spiarmi?</string>
+    <string name="spy_note">Queste app hanno accessi che si possono sfruttare per spiare. La maggior parte ha un motivo legittimo: smartwatch, gestore di password, automazione, tastiera. Se non ne riconosci una o non l\'hai installata tu, non disinstallarla subito: se qualcuno ti sorveglia, potrebbe accorgersene. Parlane prima con una persona di cui ti fidi. Audit non può confermare che sul telefono non ci sia nulla del genere; mostra solo ciò che Android rivela sulle app.</string>
+    <string name="spy_none">Nessuna app ha questi accessi.</string>
+    <string name="spy_no_icon">nessuna icona nella schermata Home</string>
+    <string name="spy_system">app di sistema arrivate con il telefono: %1$d</string>
+    <string name="spy_non_play">non da Google Play</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d autorizzazione</item>
         <item quantity="many">%1$d autorizzazioni</item>

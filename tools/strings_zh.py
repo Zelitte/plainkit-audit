@@ -2,6 +2,16 @@
 NEKONTROLOVAL rodený hovoriaci. Každý nový kľúč v gen_strings.py musí byť aj tu."""
 
 ZH = {
+    'spy_system': '手机自带的系统应用：%1$d',
+    'spy_title': '有人可能在监视我吗？',
+    'spy_note': '这些应用拥有可能被滥用于监视的权限。大多数都有正当理由——手表、密码管理器、自动化工具、键盘。如果你不认识其中某个应用，或者它不是你自己安装的，先不要马上卸载——如果有人在监视你，对方可能会察觉。先和你信任的人商量。Audit 无法确认手机里没有这类东西；它只显示 Android 透露的应用信息。',
+    'spy_none': '没有应用拥有这些权限。',
+    'spy_no_icon': '桌面上没有图标',
+    'spy_non_play': '非来自 Google Play',
+    'holiday_xmas': '圣诞快乐',
+    'holiday_newyear': '新年快乐',
+    'lib_unwired': '清单中无痕迹——可能未被使用',
+    'ads_unwired': '代码中包含广告库（%1$s），但清单（manifest）中缺少它们通常的组件——它们可能并未被使用。',
     'search_label': '搜索应用',
     'clear': '清除',
     'scan_all': '全部扫描',

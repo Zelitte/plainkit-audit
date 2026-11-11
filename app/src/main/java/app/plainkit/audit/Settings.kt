@@ -260,6 +260,8 @@ fun SettingsScreen(
                     packed = debugSurveyReport(AppCache.apps ?: emptyList(), HashMap(AppCache.scanned))
                 }.start()
             }) { Text("debug: prieskum v2.0", fontSize = 12.sp) }
+            FxTextButton(onClick = { HolidayPreview.request = Holiday.TREE }) { Text("debug: stromček", fontSize = 12.sp) }
+            FxTextButton(onClick = { HolidayPreview.request = Holiday.FIREWORKS }) { Text("debug: ohňostroj", fontSize = 12.sp) }
             if (packed.isNotEmpty()) {
                 androidx.compose.foundation.text.selection.SelectionContainer {
                     Text(packed, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)

@@ -462,6 +462,16 @@
     <string name="share_note">Knižnica nájdená v kóde ešte neznamená, že appka údaje naozaj odosiela — audit číta kód v telefóne, nesleduje sieť.</string>
     <string name="share_source">Zistené appkou plainkit. audit — plainkit.app/audit</string>
     <string name="zh_note">Preklad do čínštiny neskontroloval rodený hovoriaci.</string>
+    <string name="ads_unwired">Reklamné knižnice (%1$s) sú v kóde, ale v manifeste chýbajú ich bežné súčasti — je možné, že sa nepoužívajú.</string>
+    <string name="lib_unwired">v manifeste bez stopy — možno sa nepoužíva</string>
+    <string name="holiday_xmas">Veselé Vianoce</string>
+    <string name="holiday_newyear">Šťastný nový rok</string>
+    <string name="spy_title">Môže ma niekto sledovať?</string>
+    <string name="spy_note">Tieto appky majú právomoci, ktoré sa dajú zneužiť na sledovanie. Väčšina z nich má legitímny dôvod — hodinky, správca hesiel, automatizácia, klávesnica. Ak niektorú nepoznáš alebo si ju sám neinštaloval, neodinštalovávaj ju hneď — ak ťa niekto sleduje, môže si to všimnúť. Najprv sa poraď s niekým, komu dôveruješ. Audit nevie potvrdiť, že v telefóne nič také nie je; ukazuje len to, čo Android o appkách prezradí.</string>
+    <string name="spy_none">Žiadna appka nemá tieto právomoci.</string>
+    <string name="spy_no_icon">bez ikony na ploche</string>
+    <string name="spy_system">systémové appky, ktoré prišli s telefónom: %1$d</string>
+    <string name="spy_non_play">mimo Google Play</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d povolenie</item>
         <item quantity="few">%1$d povolenia</item>

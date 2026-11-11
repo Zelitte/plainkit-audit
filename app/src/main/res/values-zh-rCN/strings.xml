@@ -462,6 +462,16 @@
     <string name="share_note">在代码中发现某个库，本身并不意味着该应用真的在发送数据——audit 读取的是手机上的代码，并不监视网络流量。</string>
     <string name="share_source">由 plainkit. audit 发现——plainkit.app/audit</string>
     <string name="zh_note">中文译文未经母语者校对。如发现错误，欢迎在 GitHub 上反馈。</string>
+    <string name="ads_unwired">代码中包含广告库（%1$s），但清单（manifest）中缺少它们通常的组件——它们可能并未被使用。</string>
+    <string name="lib_unwired">清单中无痕迹——可能未被使用</string>
+    <string name="holiday_xmas">圣诞快乐</string>
+    <string name="holiday_newyear">新年快乐</string>
+    <string name="spy_title">有人可能在监视我吗？</string>
+    <string name="spy_note">这些应用拥有可能被滥用于监视的权限。大多数都有正当理由——手表、密码管理器、自动化工具、键盘。如果你不认识其中某个应用，或者它不是你自己安装的，先不要马上卸载——如果有人在监视你，对方可能会察觉。先和你信任的人商量。Audit 无法确认手机里没有这类东西；它只显示 Android 透露的应用信息。</string>
+    <string name="spy_none">没有应用拥有这些权限。</string>
+    <string name="spy_no_icon">桌面上没有图标</string>
+    <string name="spy_system">手机自带的系统应用：%1$d</string>
+    <string name="spy_non_play">非来自 Google Play</string>
     <plurals name="summary_perms">
         <item quantity="other">%1$d 项权限</item>
     </plurals>

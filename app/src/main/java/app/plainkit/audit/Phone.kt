@@ -21,6 +21,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -124,21 +125,49 @@ fun phoneChecks(ctx: Context, apps: List<AppEntry>, s: S, onByPerm: () -> Unit):
         action = { ctx.openFirst(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES) }
     )
 
-    // 5. služba dostupnosti / prístup k notifikáciám
-    val strong = apps.filter { Cap.A11Y in it.caps || Cap.NOTIF in it.caps }
-    out += if (strong.isEmpty()) CheckItem(Level.OK, s.checkCapsNone)
-    else CheckItem(
-        if (strong.any { !it.isSystem }) Level.WARN else Level.INFO,
-        s.checkCapsSome(names(strong, s)),
-        byPerm = true,
-        action = onByPerm
-    )
+    // 5. služba dostupnosti / notifikácie — od v2.3 v časti „Môže ma niekto sledovať?"
 
     // 6. root — len známe znaky
     val root = rootSigns(apps)
     out += if (root.isEmpty()) CheckItem(Level.OK, s.checkRootNone)
            else CheckItem(Level.WARN, s.checkRootFound(root.joinToString(", ")))
     return out
+}
+
+/**
+ * v2.3: „Môže ma niekto sledovať?" (rozhodnuté 11. 11. 2026). Appky s právomocami, ktoré
+ * zneužíva stalkerware. Navrch a zvýraznené len NESYSTÉMOVÉ appky „bez ikony na ploche"
+ * alebo „mimo Google Play" — prieskum v2.3: všetky appky bez ikony s právomocou boli
+ * systémové (Redmi 10, vivo 29). Neznámy inštalátor (ADB, výrobca) sa za „mimo Play" nepočíta.
+ * Žiadny menný zoznam stalkerware, žiadne tlačidlo Odinštalovať.
+ */
+internal class SpyRow(val app: AppEntry, val powers: List<String>, val noIcon: Boolean, val nonPlay: Boolean) {
+    val flagged get() = noIcon || nonPlay
+}
+
+internal fun spyRows(ctx: Context, apps: List<AppEntry>, s: S): List<SpyRow> {
+    val pm = ctx.packageManager
+    return apps.mapNotNull { a ->
+        val powers = buildList {
+            if (Cap.A11Y in a.caps) add(s.capA11yShort)
+            if (Cap.NOTIF in a.caps) add(s.capNotifShort)
+            if (Cap.ADMIN in a.caps) add(s.capAdminShort)
+            if (Cap.IME in a.caps) add(s.capImeShort)
+            if (INSTALL_PERM in a.granted && INSTALL_PERM in a.specialKnown) add(permLabel(INSTALL_PERM, s) ?: INSTALL_PERM)
+        }
+        if (powers.isEmpty()) return@mapNotNull null
+        val noIcon = !a.isSystem && !a.isWebApk && runCatching {
+            pm.getLaunchIntentForPackage(a.packageName) == null &&
+                pm.getLeanbackLaunchIntentForPackage(a.packageName) == null
+        }.getOrDefault(false)
+        val nonPlay = !a.isSystem && !a.isWebApk &&
+            installerOfPkg(pm, a.packageName)?.let { it != "com.android.vending" } == true
+        SpyRow(a, powers, noIcon, nonPlay)
+    }.sortedWith(
+        compareByDescending<SpyRow> { (if (it.noIcon) 1 else 0) + (if (it.nonPlay) 1 else 0) }
+            .thenBy { it.app.isSystem }
+            .thenBy { it.app.label.lowercase() }
+    )
 }
 
 @Composable
@@ -167,11 +196,15 @@ fun CheckScreen(
     apps: List<AppEntry>,
     onBack: () -> Unit,
     onByPerm: () -> Unit,
+    onOpenApp: (AppEntry) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     var tick by remember { mutableIntStateOf(0) }
     val items = remember(tick, apps, s) { phoneChecks(context, apps, s, onByPerm) }
+    val spy = remember(tick, apps, s) { spyRows(context, apps, s) }
+    var spyAll by remember { mutableStateOf(false) }
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(
         modifier = modifier
@@ -202,6 +235,59 @@ fun CheckScreen(
                         )
                     }
                 }
+            }
+        }
+        // v2.3: Môže ma niekto sledovať? — zobrazené vždy
+        Text(
+            s.spyTitle.uppercase(),
+            fontFamily = FontFamily.Monospace,
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(top = 20.dp, bottom = 4.dp)
+        )
+        Text(
+            s.spyNote,
+            style = MaterialTheme.typography.bodySmall,
+            color = muted,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        if (spy.isEmpty()) {
+            Text(s.spyNone, style = MaterialTheme.typography.bodyMedium)
+        } else {
+            // nesystémové vždy, systémové (prišli s telefónom) zbalené pod jeden riadok
+            val sys = spy.filter { it.app.isSystem }
+            val shown = spy.filter { !it.app.isSystem } + (if (spyAll) sys else emptyList())
+            for (r in shown) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onOpenApp(r.app) }
+                        .padding(vertical = 5.dp)
+                ) {
+                    Row {
+                        if (r.flagged) Text("●  ", color = levelColor(Level.WARN), fontSize = 14.sp)
+                        Text(r.app.label, style = MaterialTheme.typography.bodyMedium)
+                    }
+                    Text(r.powers.joinToString(" · "), fontSize = 12.sp, color = muted)
+                    if (r.flagged) {
+                        Text(
+                            listOfNotNull(
+                                s.spyNoIcon.takeIf { r.noIcon },
+                                s.spyNonPlay.takeIf { r.nonPlay }
+                            ).joinToString(" · "),
+                            fontSize = 12.sp,
+                            color = levelColor(Level.WARN)
+                        )
+                    }
+                }
+            }
+            if (sys.isNotEmpty()) {
+                Text(
+                    if (spyAll) s.changesLess else "+ " + s.spySystem(sys.size) + " ▸",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable { spyAll = !spyAll }.padding(vertical = 4.dp)
+                )
             }
         }
         FxTextButton(

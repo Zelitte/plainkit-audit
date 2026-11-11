@@ -133,6 +133,28 @@ object Prefs {
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().remove(KEY_JS_CODE).apply()
     }
 
+    // v2.3: reklamné knižnice v kóde bez stopy v manifeste — záznamy „balík\tmeno"
+    private const val KEY_UNWIRED = "unwired_ads"
+
+    fun unwiredAds(ctx: Context): Map<String, Set<String>> =
+        (ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+            .getStringSet(KEY_UNWIRED, emptySet()) ?: emptySet())
+            .mapNotNull { e -> e.split('\t', limit = 2).takeIf { it.size == 2 } }
+            .groupBy({ it[0] }, { it[1] })
+            .mapValues { it.value.toSet() }
+
+    @Synchronized
+    fun setUnwiredAds(ctx: Context, pkg: String, names: Set<String>) {
+        val p = ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+        val cur = p.getStringSet(KEY_UNWIRED, emptySet())?.toSet() ?: emptySet()
+        val next = cur.filterNot { it.startsWith(pkg + "\t") }.toSet() + names.map { pkg + "\t" + it }
+        if (next != cur) p.edit().putStringSet(KEY_UNWIRED, next).apply()
+    }
+
+    fun clearUnwiredAds(ctx: Context) {
+        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().remove(KEY_UNWIRED).apply()
+    }
+
     fun clearNoCode(ctx: Context) {
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().remove(KEY_NO_CODE).apply()
     }
@@ -652,6 +674,16 @@ class S(context: Context, val lang: Lang) {
     val noTrackers = str(R.string.no_trackers)
     fun noTrackersButGranted(granted: String) = f(R.string.no_trackers_but_granted, kTo(granted))
     fun pending(text: String) = f(R.string.pending, kTo(text))
+    fun adsUnwired(names: String) = f(R.string.ads_unwired, names)
+    val libUnwired = str(R.string.lib_unwired)
+    val holidayXmas = str(R.string.holiday_xmas)
+    val holidayNewYear = str(R.string.holiday_newyear)
+    val spyTitle = str(R.string.spy_title)
+    val spyNote = str(R.string.spy_note)
+    val spyNone = str(R.string.spy_none)
+    val spyNoIcon = str(R.string.spy_no_icon)
+    val spyNonPlay = str(R.string.spy_non_play)
+    fun spySystem(n: Int) = f(R.string.spy_system, n)
     /** v2.1: v slovenčine predložka podľa nasledujúceho slova — „ku kamere", „k polohe". Ostatné jazyky bez zmeny. */
     private fun kTo(x: String): String =
         if (lang != Lang.SK) x else (if (x.firstOrNull()?.lowercaseChar() in setOf('k', 'g')) "ku " else "k ") + x

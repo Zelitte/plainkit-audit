@@ -462,6 +462,16 @@
     <string name="share_note">Une bibliothèque trouvée dans le code ne signifie pas à elle seule que l\'app envoie réellement des données — audit lit le code sur le téléphone, il ne surveille pas le trafic réseau.</string>
     <string name="share_source">Trouvé avec plainkit. audit — plainkit.app/audit</string>
     <string name="zh_note">La traduction chinoise n\'a pas été relue par un locuteur natif.</string>
+    <string name="ads_unwired">Des bibliothèques publicitaires (%1$s) sont dans le code, mais leurs composants habituels manquent dans le manifeste — elles ne sont peut-être pas utilisées.</string>
+    <string name="lib_unwired">aucune trace dans le manifeste — peut-être inutilisée</string>
+    <string name="holiday_xmas">Joyeux Noël</string>
+    <string name="holiday_newyear">Bonne année</string>
+    <string name="spy_title">Quelqu\'un peut-il m\'espionner ?</string>
+    <string name="spy_note">Ces apps ont des accès qui peuvent servir à espionner. La plupart ont une raison légitime — montre connectée, gestionnaire de mots de passe, automatisation, clavier. Si tu ne reconnais pas l\'une d\'elles ou si tu ne l\'as pas installée toi-même, ne la désinstalle pas tout de suite — si quelqu\'un te surveille, il pourrait le remarquer. Parles-en d\'abord à une personne de confiance. Audit ne peut pas confirmer qu\'il n\'y a rien de tel sur le téléphone ; il montre seulement ce qu\'Android révèle sur les apps.</string>
+    <string name="spy_none">Aucune app n\'a ces accès.</string>
+    <string name="spy_no_icon">pas d\'icône sur l\'écran d\'accueil</string>
+    <string name="spy_system">apps système fournies avec le téléphone : %1$d</string>
+    <string name="spy_non_play">hors Google Play</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d autorisation</item>
         <item quantity="many">%1$d autorisations</item>
