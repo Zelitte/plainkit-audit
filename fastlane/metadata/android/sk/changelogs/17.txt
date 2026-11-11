@@ -1,0 +1,4 @@
+* Kontrola telefónu: nová časť „Môže ma niekto sledovať?" — aplikácie s právomocami, ktoré sa dajú zneužiť na sledovanie; navrchu tie, ktoré si doinštaloval
+* Reklamná knižnica, ktorá je v kóde, ale v manifeste po nej niet stopy, sa hodnotí miernejšie — je možné, že sa nepoužíva
+* Na Vianoce a Silvestra malé prekvapenie
+* Žiadne nové povolenia

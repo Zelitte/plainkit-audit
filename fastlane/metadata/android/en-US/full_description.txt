@@ -14,6 +14,7 @@ What it does:
 * Explains each finding in one sentence and sorts apps by severity
 * Remembers results and reports what changed after an app update
 * Lets you share the finding for a single app (with no data about your phone or other apps)
+* Phone check: security patch, screen lock, USB debugging, known signs of root — and a section "Could someone be spying on me?" listing apps with powers that can be abused for spying (accessibility service, notification access, device admin, keyboard, installing apps)
 * Seven languages: Slovak, English, German, French, Spanish, Italian and Simplified Chinese (the Chinese translation has not been reviewed by a native speaker)
 
 What it does not do:
