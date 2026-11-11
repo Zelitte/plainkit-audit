@@ -6,6 +6,13 @@ plugins {
 
 android {
     namespace = "app.plainkit.audit"
+    // v2.3.1: jazyk sa volí v appke — Play nesmie z AAB dodať len jazyky telefónu
+    // (inak výber DE/FR/IT/ES/ZH na slovenskom telefóne ukáže angličtinu)
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
     compileSdk {
         version = release(37)
     }
@@ -14,8 +21,8 @@ android {
         applicationId = "app.plainkit.audit"
         minSdk = 26
         targetSdk = 37
-        versionCode = 17
-        versionName = "2.3"
+        versionCode = 18
+        versionName = "2.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

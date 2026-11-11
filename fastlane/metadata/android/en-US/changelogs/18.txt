@@ -1,0 +1,5 @@
+* Phone check: new section "Could someone be spying on me?" — apps with powers that can be abused for spying; the ones you installed yourself come first
+* An ad library that is in the code but leaves no trace in the manifest is rated more mildly — it may not be in use
+* A small surprise for Christmas and New Year's Eve
+* No new permissions
+* Fix: choosing a language in Settings now works for all 7 languages when installed from Google Play
