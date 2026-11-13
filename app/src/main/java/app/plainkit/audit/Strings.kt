@@ -684,6 +684,16 @@ class S(context: Context, val lang: Lang) {
     val spyNoIcon = str(R.string.spy_no_icon)
     val spyNonPlay = str(R.string.spy_non_play)
     fun spySystem(n: Int) = f(R.string.spy_system, n)
+    // v2.4: vysvetlivka k štítku
+    fun whyTitle(level: String) = f(R.string.why_title, level)
+    fun whyAdsGranted(groups: String) = f(R.string.why_ads_granted, kTo(groups))
+    val whyAds = str(R.string.why_ads)
+    fun whyAnalyticsGranted(groups: String) = f(R.string.why_analytics_granted, kTo(groups))
+    val whyCaps = str(R.string.why_caps)
+    val whyTooMany = str(R.string.why_too_many)
+    val whyInfo = str(R.string.why_info)
+    val whyOk = str(R.string.why_ok)
+    fun whyScale(a: String, w: String, i: String, o: String) = f(R.string.why_scale, a, w, i, o)
     /** v2.1: v slovenčine predložka podľa nasledujúceho slova — „ku kamere", „k polohe". Ostatné jazyky bez zmeny. */
     private fun kTo(x: String): String =
         if (lang != Lang.SK) x else (if (x.firstOrNull()?.lowercaseChar() in setOf('k', 'g')) "ku " else "k ") + x

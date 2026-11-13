@@ -472,6 +472,15 @@
     <string name="spy_no_icon">kein Symbol auf dem Startbildschirm</string>
     <string name="spy_system">System-Apps, die mit dem Telefon kamen: %1$d</string>
     <string name="spy_non_play">nicht aus Google Play</string>
+    <string name="why_title">Warum %1$s:</string>
+    <string name="why_ads_granted">eine Werbe- oder Marketingbibliothek und zugleich erteilter Zugriff auf: %1$s</string>
+    <string name="why_ads">eine Werbe- oder Marketingbibliothek (keine sensiblen Berechtigungen erteilt)</string>
+    <string name="why_analytics_granted">eine Analysebibliothek und zugleich erteilter Zugriff auf: %1$s</string>
+    <string name="why_caps">Bedienungshilfe oder Benachrichtigungszugriff ist aktiviert</string>
+    <string name="why_too_many">6 oder mehr Werbe- und Analysebibliotheken</string>
+    <string name="why_info">Nichts Ernstes — nur Informationen (z. B. Absturzberichte, Analyse ohne sensible Berechtigungen, nicht erteilte Berechtigungen).</string>
+    <string name="why_ok">Keine bekannten Tracker und kein erteilter Zugriff auf sensible Daten, oder die App hat keinen Internetzugang.</string>
+    <string name="why_scale">Reihenfolge: %1$s › %2$s › %3$s › %4$s. Der ernsteste Befund entscheidet.</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d Berechtigung</item>
         <item quantity="other">%1$d Berechtigungen</item>

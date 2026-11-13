@@ -1,5 +1,6 @@
 package app.plainkit.audit
 
+import androidx.compose.animation.core.animateFloat
 import android.app.AppOpsManager
 import androidx.core.app.NotificationManagerCompat
 import android.view.inputmethod.InputMethodManager
@@ -981,6 +982,9 @@ fun AppListScreen(
     val criticalRuntime = remember { criticalRuntimePackages(context) }
     var query by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf<String?>(null) }
+    // v2.4: otvorená vysvetlivka k štítku (balík) a pulzovanie POZOR (nie pri vypnutých animáciách)
+    var whyOpen by remember { mutableStateOf<String?>(null) }
+    val animOff = remember { animationsOff(context) }
     var scanning by remember { mutableStateOf<String?>(null) }
     var progress by remember { mutableStateOf<Int?>(null) }
     // Menovateľ ukazovateľa priebehu, zafixovaný pri štarte skenu.
@@ -1605,11 +1609,26 @@ fun AppListScreen(
                                 if (level != null || showTag) {
                                     Row {
                                         if (level != null) {
+                                            val pulse = if (level == Level.ALERT && !animOff) {
+                                                androidx.compose.animation.core.rememberInfiniteTransition(label = "pulse")
+                                                    .animateFloat(
+                                                        initialValue = 1f,
+                                                        targetValue = 0.4f,
+                                                        animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+                                                            androidx.compose.animation.core.tween(1000),
+                                                            androidx.compose.animation.core.RepeatMode.Reverse
+                                                        ),
+                                                        label = "pulseAlpha"
+                                                    ).value
+                                            } else 1f
                                             Text(
-                                                text = s.level(level),
+                                                text = s.level(level) + " ⓘ",
                                                 fontFamily = FontFamily.Monospace,
                                                 fontSize = 10.sp,
-                                                color = stripe
+                                                color = stripe.copy(alpha = stripe.alpha * pulse),
+                                                modifier = Modifier.clickable {
+                                                    whyOpen = if (whyOpen == app.packageName) null else app.packageName
+                                                }
                                             )
                                         }
                                         if (showTag) {
@@ -1641,6 +1660,18 @@ fun AppListScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
+                        }
+
+                        // v2.4: vysvetlivka k štítku — konkrétny dôvod pre túto appku
+                        if (whyOpen == app.packageName && findings != null) {
+                            Text(
+                                text = whyText(findings, s),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(top = 8.dp)
+                                    .clickable { whyOpen = null }
+                            )
                         }
 
                         if (expanded == app.packageName) {

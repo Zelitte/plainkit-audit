@@ -472,6 +472,15 @@
     <string name="spy_no_icon">bez ikony na ploche</string>
     <string name="spy_system">systémové appky, ktoré prišli s telefónom: %1$d</string>
     <string name="spy_non_play">mimo Google Play</string>
+    <string name="why_title">Prečo %1$s:</string>
+    <string name="why_ads_granted">reklamná alebo marketingová knižnica a zároveň udelený prístup %1$s</string>
+    <string name="why_ads">reklamná alebo marketingová knižnica (bez udelených citlivých povolení)</string>
+    <string name="why_analytics_granted">analytická knižnica a zároveň udelený prístup %1$s</string>
+    <string name="why_caps">zapnutá služba dostupnosti alebo prístup k notifikáciám</string>
+    <string name="why_too_many">6 a viac reklamných a analytických knižníc</string>
+    <string name="why_info">Nič vážne — len informácie (napr. hlásenie pádov, analytika bez citlivých povolení, neudelené povolenia).</string>
+    <string name="why_ok">Bez známych trackerov a bez udeleného prístupu k citlivým údajom, alebo appka nemá prístup na internet.</string>
+    <string name="why_scale">Poradie: %1$s › %2$s › %3$s › %4$s. Rozhoduje najvážnejší nález.</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d povolenie</item>
         <item quantity="few">%1$d povolenia</item>

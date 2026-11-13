@@ -473,6 +473,15 @@
     <string name="spy_no_icon">no icon on the home screen</string>
     <string name="spy_system">system apps that came with the phone: %1$d</string>
     <string name="spy_non_play">not from Google Play</string>
+    <string name="why_title">Why %1$s:</string>
+    <string name="why_ads_granted">an ad or marketing library plus granted access to: %1$s</string>
+    <string name="why_ads">an ad or marketing library (no sensitive permissions granted)</string>
+    <string name="why_analytics_granted">an analytics library plus granted access to: %1$s</string>
+    <string name="why_caps">accessibility service or notification access is turned on</string>
+    <string name="why_too_many">6 or more ad and analytics libraries</string>
+    <string name="why_info">Nothing serious — information only (e.g. crash reporting, analytics without sensitive permissions, permissions not granted).</string>
+    <string name="why_ok">No known trackers and no granted access to sensitive data, or the app has no internet access.</string>
+    <string name="why_scale">Order: %1$s › %2$s › %3$s › %4$s. The most serious finding decides.</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d permission</item>
         <item quantity="other">%1$d permissions</item>

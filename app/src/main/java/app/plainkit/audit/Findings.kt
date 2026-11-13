@@ -250,7 +250,10 @@ fun isSensitive(permission: String): Boolean =
 
 enum class Level { OK, INFO, WARN, ALERT }
 
-data class Finding(val level: Level, val text: String)
+/** v2.4: pravidlo, ktoré zvýšilo úroveň (pre vysvetlivku pri štítku); arg = udelené skupiny. */
+enum class Rule { ADS_GRANTED, ADS, ANALYTICS_GRANTED, CAPS, TOO_MANY }
+
+data class Finding(val level: Level, val text: String, val rule: Rule? = null, val arg: String = "")
 
 /**
  * @param codeReadable false = v APK nebol žiadny kód (classes*.dex), takže
@@ -289,7 +292,7 @@ fun buildFindings(
         if (Cap.A11Y in caps) add(s.capA11yShort)
         if (Cap.NOTIF in caps) add(s.capNotifShort)
     }
-    if (strongCaps.isNotEmpty()) out.add(Finding(Level.WARN, s.capsWarn(strongCaps.joinToString(", "))))
+    if (strongCaps.isNotEmpty()) out.add(Finding(Level.WARN, s.capsWarn(strongCaps.joinToString(", ")), Rule.CAPS))
 
     if ("android.permission.INTERNET" !in permissions) {
         if (sharedNet == null) {
@@ -325,9 +328,9 @@ fun buildFindings(
     val active = marketing.filter { it.name !in unwiredAds }
     if (active.isNotEmpty()) {
         if (grantedGroups.isNotEmpty()) {
-            out.add(Finding(Level.ALERT, s.marketingWithGranted(grantedText, names(active))))
+            out.add(Finding(Level.ALERT, s.marketingWithGranted(grantedText, names(active)), Rule.ADS_GRANTED, grantedText))
         } else {
-            out.add(Finding(Level.WARN, s.marketingOnly(names(active))))
+            out.add(Finding(Level.WARN, s.marketingOnly(names(active)), Rule.ADS))
         }
     }
     if (unwired.isNotEmpty()) {
@@ -343,7 +346,7 @@ fun buildFindings(
 
     if (analytics.isNotEmpty()) {
         if (grantedGroups.isNotEmpty()) {
-            out.add(Finding(Level.WARN, s.analyticsWithGranted(names(analytics), grantedText)))
+            out.add(Finding(Level.WARN, s.analyticsWithGranted(names(analytics), grantedText), Rule.ANALYTICS_GRANTED, grantedText))
         } else {
             out.add(Finding(Level.INFO, s.analyticsOnly(names(analytics))))
         }
@@ -358,7 +361,7 @@ fun buildFindings(
     }
 
     if (marketing.size + analytics.size >= 6) {
-        out.add(Finding(Level.WARN, s.tooMany(marketing.size + analytics.size, trackers.size)))
+        out.add(Finding(Level.WARN, s.tooMany(marketing.size + analytics.size, trackers.size), Rule.TOO_MANY))
     }
 
     if (trackers.isEmpty() && !codeReadable) {
@@ -382,6 +385,28 @@ fun buildFindings(
     }
 
     return out
+}
+
+/** v2.4: vysvetlivka k štítku — prečo má appka práve túto úroveň. */
+fun whyText(findings: List<Finding>, s: S): String {
+    val worst = worstLevel(findings)
+    val head = s.whyTitle(s.level(worst))
+    val body = when (worst) {
+        Level.ALERT, Level.WARN -> findings.filter { it.level == worst && it.rule != null }
+            .map { f ->
+                when (f.rule!!) {
+                    Rule.ADS_GRANTED -> s.whyAdsGranted(f.arg)
+                    Rule.ADS -> s.whyAds
+                    Rule.ANALYTICS_GRANTED -> s.whyAnalyticsGranted(f.arg)
+                    Rule.CAPS -> s.whyCaps
+                    Rule.TOO_MANY -> s.whyTooMany
+                }
+            }.distinct().joinToString("\n") { "• $it" }
+        Level.INFO -> s.whyInfo
+        Level.OK -> s.whyOk
+    }
+    val scale = s.whyScale(s.level(Level.ALERT), s.level(Level.WARN), s.level(Level.INFO), s.level(Level.OK))
+    return "$head\n$body\n\n$scale"
 }
 
 fun worstLevel(findings: List<Finding>): Level =

@@ -472,6 +472,15 @@
     <string name="spy_no_icon">桌面上没有图标</string>
     <string name="spy_system">手机自带的系统应用：%1$d</string>
     <string name="spy_non_play">非来自 Google Play</string>
+    <string name="why_title">为什么是%1$s：</string>
+    <string name="why_ads_granted">包含广告或营销库，同时已授予以下访问权限：%1$s</string>
+    <string name="why_ads">包含广告或营销库（未授予敏感权限）</string>
+    <string name="why_analytics_granted">包含分析库，同时已授予以下访问权限：%1$s</string>
+    <string name="why_caps">已开启无障碍服务或通知访问权限</string>
+    <string name="why_too_many">广告和分析库合计 6 个或以上</string>
+    <string name="why_info">没有严重问题——仅供参考（例如崩溃报告、无敏感权限的分析、未授予的权限）。</string>
+    <string name="why_ok">没有已知跟踪器，也未授予敏感数据访问权限；或者该应用没有联网权限。</string>
+    <string name="why_scale">顺序：%1$s › %2$s › %3$s › %4$s。以最严重的结果为准。</string>
     <plurals name="summary_perms">
         <item quantity="other">%1$d 项权限</item>
     </plurals>

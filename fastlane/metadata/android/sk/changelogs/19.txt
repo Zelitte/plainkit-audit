@@ -1,0 +1,3 @@
+* Ťuknutím na štítok pri aplikácii (POZOR, VŠIMNI SI, INFO, OK) zistíš, prečo ho dostala
+* Štítok POZOR jemne pulzuje (pri vypnutých animáciách v systéme nie)
+* Žiadne nové povolenia

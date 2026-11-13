@@ -65,7 +65,7 @@ internal fun holidayToday(cal: Calendar = Calendar.getInstance()): Holiday? {
     }
 }
 
-private fun animationsOff(ctx: Context): Boolean =
+internal fun animationsOff(ctx: Context): Boolean =
     runCatching { Settings.Global.getFloat(ctx.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f }
         .getOrDefault(false)
 

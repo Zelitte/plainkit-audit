@@ -472,6 +472,15 @@
     <string name="spy_no_icon">sin icono en la pantalla de inicio</string>
     <string name="spy_system">apps del sistema que venían con el teléfono: %1$d</string>
     <string name="spy_non_play">fuera de Google Play</string>
+    <string name="why_title">Por qué %1$s:</string>
+    <string name="why_ads_granted">una biblioteca de anuncios o marketing y, a la vez, acceso concedido a: %1$s</string>
+    <string name="why_ads">una biblioteca de anuncios o marketing (sin permisos sensibles concedidos)</string>
+    <string name="why_analytics_granted">una biblioteca de analítica y, a la vez, acceso concedido a: %1$s</string>
+    <string name="why_caps">servicio de accesibilidad o acceso a notificaciones activado</string>
+    <string name="why_too_many">6 o más bibliotecas de anuncios y analítica</string>
+    <string name="why_info">Nada grave: solo información (p. ej., informes de fallos, analítica sin permisos sensibles, permisos no concedidos).</string>
+    <string name="why_ok">Sin rastreadores conocidos ni acceso concedido a datos sensibles, o la app no tiene acceso a internet.</string>
+    <string name="why_scale">Orden: %1$s › %2$s › %3$s › %4$s. Decide el hallazgo más grave.</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d permiso</item>
         <item quantity="many">%1$d permisos</item>

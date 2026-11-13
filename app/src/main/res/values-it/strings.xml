@@ -472,6 +472,15 @@
     <string name="spy_no_icon">nessuna icona nella schermata Home</string>
     <string name="spy_system">app di sistema arrivate con il telefono: %1$d</string>
     <string name="spy_non_play">non da Google Play</string>
+    <string name="why_title">Perché %1$s:</string>
+    <string name="why_ads_granted">una libreria pubblicitaria o di marketing e, insieme, accesso concesso a: %1$s</string>
+    <string name="why_ads">una libreria pubblicitaria o di marketing (nessun permesso sensibile concesso)</string>
+    <string name="why_analytics_granted">una libreria di analisi e, insieme, accesso concesso a: %1$s</string>
+    <string name="why_caps">servizio di accessibilità o accesso alle notifiche attivo</string>
+    <string name="why_too_many">6 o più librerie pubblicitarie e di analisi</string>
+    <string name="why_info">Niente di grave: solo informazioni (ad es. segnalazione dei crash, analisi senza permessi sensibili, permessi non concessi).</string>
+    <string name="why_ok">Nessun tracker noto e nessun accesso concesso a dati sensibili, oppure l\'app non ha accesso a internet.</string>
+    <string name="why_scale">Ordine: %1$s › %2$s › %3$s › %4$s. Decide il risultato più grave.</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d autorizzazione</item>
         <item quantity="many">%1$d autorizzazioni</item>

@@ -472,6 +472,15 @@
     <string name="spy_no_icon">pas d\'icône sur l\'écran d\'accueil</string>
     <string name="spy_system">apps système fournies avec le téléphone : %1$d</string>
     <string name="spy_non_play">hors Google Play</string>
+    <string name="why_title">Pourquoi %1$s :</string>
+    <string name="why_ads_granted">une bibliothèque publicitaire ou marketing, et en même temps un accès accordé à : %1$s</string>
+    <string name="why_ads">une bibliothèque publicitaire ou marketing (aucune autorisation sensible accordée)</string>
+    <string name="why_analytics_granted">une bibliothèque d\'analyse, et en même temps un accès accordé à : %1$s</string>
+    <string name="why_caps">un service d\'accessibilité ou l\'accès aux notifications est activé</string>
+    <string name="why_too_many">6 bibliothèques publicitaires et d\'analyse ou plus</string>
+    <string name="why_info">Rien de grave — simples informations (p. ex. rapports de plantage, analyse sans autorisation sensible, autorisations non accordées).</string>
+    <string name="why_ok">Aucun traceur connu et aucun accès accordé aux données sensibles, ou l\'app n\'a pas accès à Internet.</string>
+    <string name="why_scale">Ordre : %1$s › %2$s › %3$s › %4$s. C\'est la constatation la plus grave qui compte.</string>
     <plurals name="summary_perms">
         <item quantity="one">%1$d autorisation</item>
         <item quantity="many">%1$d autorisations</item>

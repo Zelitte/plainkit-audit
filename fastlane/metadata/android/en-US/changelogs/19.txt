@@ -1,0 +1,3 @@
+* Tap the label next to an app (WARNING, NOTICE, INFO, OK) to see why it got it
+* The WARNING label gently pulses (not when system animations are off)
+* No new permissions

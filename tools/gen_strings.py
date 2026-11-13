@@ -909,6 +909,65 @@ s("spy_no_icon", "bez ikony na ploche", "no icon on the home screen", "kein Symb
 s("spy_system", "systémové appky, ktoré prišli s telefónom: %1$d", "system apps that came with the phone: %1$d", "System-Apps, die mit dem Telefon kamen: %1$d", "apps système fournies avec le téléphone : %1$d", "apps del sistema que venían con el teléfono: %1$d", "app di sistema arrivate con il telefono: %1$d")
 s("spy_non_play", "mimo Google Play", "not from Google Play", "nicht aus Google Play", "hors Google Play", "fuera de Google Play", "non da Google Play")
 
+# ── v2.4: vysvetlivka k štítku (ťuknutie na POZOR / VŠIMNI SI / INFO / OK) ──
+s("why_title", "Prečo %1$s:", "Why %1$s:", "Warum %1$s:", "Pourquoi %1$s :", "Por qué %1$s:", "Perché %1$s:")
+s("why_ads_granted",
+  "reklamná alebo marketingová knižnica a zároveň udelený prístup %1$s",
+  "an ad or marketing library plus granted access to: %1$s",
+  "eine Werbe- oder Marketingbibliothek und zugleich erteilter Zugriff auf: %1$s",
+  "une bibliothèque publicitaire ou marketing, et en même temps un accès accordé à : %1$s",
+  "una biblioteca de anuncios o marketing y, a la vez, acceso concedido a: %1$s",
+  "una libreria pubblicitaria o di marketing e, insieme, accesso concesso a: %1$s")
+s("why_ads",
+  "reklamná alebo marketingová knižnica (bez udelených citlivých povolení)",
+  "an ad or marketing library (no sensitive permissions granted)",
+  "eine Werbe- oder Marketingbibliothek (keine sensiblen Berechtigungen erteilt)",
+  "une bibliothèque publicitaire ou marketing (aucune autorisation sensible accordée)",
+  "una biblioteca de anuncios o marketing (sin permisos sensibles concedidos)",
+  "una libreria pubblicitaria o di marketing (nessun permesso sensibile concesso)")
+s("why_analytics_granted",
+  "analytická knižnica a zároveň udelený prístup %1$s",
+  "an analytics library plus granted access to: %1$s",
+  "eine Analysebibliothek und zugleich erteilter Zugriff auf: %1$s",
+  "une bibliothèque d'analyse, et en même temps un accès accordé à : %1$s",
+  "una biblioteca de analítica y, a la vez, acceso concedido a: %1$s",
+  "una libreria di analisi e, insieme, accesso concesso a: %1$s")
+s("why_caps",
+  "zapnutá služba dostupnosti alebo prístup k notifikáciám",
+  "accessibility service or notification access is turned on",
+  "Bedienungshilfe oder Benachrichtigungszugriff ist aktiviert",
+  "un service d'accessibilité ou l'accès aux notifications est activé",
+  "servicio de accesibilidad o acceso a notificaciones activado",
+  "servizio di accessibilità o accesso alle notifiche attivo")
+s("why_too_many",
+  "6 a viac reklamných a analytických knižníc",
+  "6 or more ad and analytics libraries",
+  "6 oder mehr Werbe- und Analysebibliotheken",
+  "6 bibliothèques publicitaires et d'analyse ou plus",
+  "6 o más bibliotecas de anuncios y analítica",
+  "6 o più librerie pubblicitarie e di analisi")
+s("why_info",
+  "Nič vážne — len informácie (napr. hlásenie pádov, analytika bez citlivých povolení, neudelené povolenia).",
+  "Nothing serious — information only (e.g. crash reporting, analytics without sensitive permissions, permissions not granted).",
+  "Nichts Ernstes — nur Informationen (z. B. Absturzberichte, Analyse ohne sensible Berechtigungen, nicht erteilte Berechtigungen).",
+  "Rien de grave — simples informations (p. ex. rapports de plantage, analyse sans autorisation sensible, autorisations non accordées).",
+  "Nada grave: solo información (p. ej., informes de fallos, analítica sin permisos sensibles, permisos no concedidos).",
+  "Niente di grave: solo informazioni (ad es. segnalazione dei crash, analisi senza permessi sensibili, permessi non concessi).")
+s("why_ok",
+  "Bez známych trackerov a bez udeleného prístupu k citlivým údajom, alebo appka nemá prístup na internet.",
+  "No known trackers and no granted access to sensitive data, or the app has no internet access.",
+  "Keine bekannten Tracker und kein erteilter Zugriff auf sensible Daten, oder die App hat keinen Internetzugang.",
+  "Aucun traceur connu et aucun accès accordé aux données sensibles, ou l'app n'a pas accès à Internet.",
+  "Sin rastreadores conocidos ni acceso concedido a datos sensibles, o la app no tiene acceso a internet.",
+  "Nessun tracker noto e nessun accesso concesso a dati sensibili, oppure l'app non ha accesso a internet.")
+s("why_scale",
+  "Poradie: %1$s › %2$s › %3$s › %4$s. Rozhoduje najvážnejší nález.",
+  "Order: %1$s › %2$s › %3$s › %4$s. The most serious finding decides.",
+  "Reihenfolge: %1$s › %2$s › %3$s › %4$s. Der ernsteste Befund entscheidet.",
+  "Ordre : %1$s › %2$s › %3$s › %4$s. C'est la constatation la plus grave qui compte.",
+  "Orden: %1$s › %2$s › %3$s › %4$s. Decide el hallazgo más grave.",
+  "Ordine: %1$s › %2$s › %3$s › %4$s. Decide il risultato più grave.")
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from strings_zh import ZH, ZH_PL
 _miss = [k for k in S if k not in ZH]
