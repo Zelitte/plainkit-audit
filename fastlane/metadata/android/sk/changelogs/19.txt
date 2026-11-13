@@ -1,3 +1,3 @@
-* Ťuknutím na štítok pri aplikácii (POZOR, VŠIMNI SI, INFO, OK) zistíš, prečo ho dostala
-* Štítok POZOR jemne pulzuje (pri vypnutých animáciách v systéme nie)
-* Žiadne nové povolenia
+* Prečo POZOR? Ťukni na štítok pri aplikácii a dozvieš sa presný dôvod — napríklad reklamná knižnica plus prístup k polohe
+* POZOR teraz jemne dýcha, aby ti neunikol (pri vypnutých animáciách nie)
+* Žiadne nové povolenia, stále bez prístupu na internet
