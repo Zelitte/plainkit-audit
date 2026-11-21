@@ -1,0 +1,28 @@
+La plupart des gens ne découvrent jamais qu'une app lampe torche a accès au micro, ou qu'un jeu installé l'an dernier voit toujours leurs contacts.
+
+Audit liste chaque app installée sur ton téléphone et te dit, en une phrase simple, à quoi elle a accès et ce qu'elle contient.
+
+Il examine aussi le fichier d'installation de chaque app à la recherche de bibliothèques de suivi connues — publicité, marketing, analyse, détection de fraude, rapports de plantage — et les croise avec les autorisations pour te dire quelque chose d'utile, plutôt qu'un chiffre effrayant.
+
+Tout se passe sur ton téléphone. Rien n'est envoyé. Pas de pub, pas de compte, pas de pistage.
+
+Ce que fait l'app :
+
+* Affiche les autorisations en langage clair (« position précise », pas ACCESS_FINE_LOCATION)
+* Distingue accordées / non accordées / automatiques à l'installation — la plupart des apps reçoivent un tas d'autorisations sans jamais te demander
+* Recherche 144 SDK de suivi connus, classés par usage ; pour chacun, indique à qui il appartient, de quel pays il vient et à quoi il sert
+* Explique chaque constat en une phrase et trie les apps par gravité ; touche l'étiquette (ATTENTION, À NOTER…) pour voir pourquoi une app l'a reçue
+* Garde les résultats en mémoire et signale ce qui a changé après une mise à jour d'app
+* Tu peux partager le constat d'une seule app (sans données sur ton téléphone ni sur d'autres apps)
+* Vérification du téléphone : correctif de sécurité, verrouillage de l'écran, débogage USB, signes connus de root — et une section « Quelqu'un peut-il m'espionner ? » listant les apps dotées d'accès qui peuvent servir à espionner (service d'accessibilité, accès aux notifications, administrateur de l'appareil, clavier, installation d'apps)
+* Sept langues : slovaque, anglais, allemand, français, espagnol, italien et chinois simplifié (la traduction chinoise n'a pas été relue par un locuteur natif)
+
+Ce que l'app ne fait pas :
+
+* Elle indique ce qui est présent dans le code d'une app, pas ce qui se passe en ce moment. Une bibliothèque d'analyse intégrée ne signifie pas que des données sont envoyées à cet instant.
+* La liste de signatures n'est pas complète : elle sous-estime plutôt qu'elle n'exagère.
+* C'est une information pour t'aider à décider — pas une accusation.
+
+Comment ça marche : un fichier d'installation est une archive ZIP, et les noms de classes qu'il contient sont du texte lisible. Audit les parcourt une fois et cherche des préfixes de paquets connus. Pas de décompilateur, pas d'accès réseau.
+
+L'app a besoin de l'autorisation QUERY_ALL_PACKAGES pour voir la liste des apps installées — c'est tout son intérêt. Cette liste ne quitte jamais l'appareil.

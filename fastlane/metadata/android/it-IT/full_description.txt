@@ -1,0 +1,28 @@
+Quasi nessuno scopre che un'app torcia ha accesso al microfono, o che un gioco installato un anno fa vede ancora i suoi contatti.
+
+Audit elenca ogni app installata sul tuo telefono e ti dice, con una frase normale, a cosa può accedere e cosa si porta dentro.
+
+Inoltre guarda dentro il file di installazione di ogni app alla ricerca di librerie di tracciamento note — pubblicità, marketing, analisi, rilevamento frodi, segnalazione dei crash — e le incrocia con i permessi per dirti qualcosa di utile, invece di un numero che spaventa.
+
+Tutto avviene sul tuo telefono. Non viene caricato nulla. Niente pubblicità, niente account, niente tracciamento.
+
+Cosa fa:
+
+* Mostra i permessi in linguaggio semplice («posizione precisa», non ACCESS_FINE_LOCATION)
+* Distingue concessi / non concessi / automatici all'installazione — la maggior parte delle app riceve un sacco di permessi senza mai chiedertelo
+* Cerca 144 SDK di tracciamento noti, raggruppati per scopo; per ognuno dice di chi è, da quale paese viene e a cosa serve
+* Spiega ogni risultato in una frase e ordina le app per gravità; tocca l'etichetta (ATTENZIONE, NOTA…) per vedere perché un'app l'ha ricevuta
+* Ricorda i risultati e segnala cosa è cambiato dopo un aggiornamento dell'app
+* Puoi condividere il risultato di una singola app (senza dati sul tuo telefono o su altre app)
+* Controllo del telefono: patch di sicurezza, blocco schermo, debug USB, segni noti di root — e una sezione «Qualcuno potrebbe spiarmi?» con le app che hanno accessi sfruttabili per spiare (servizio di accessibilità, accesso alle notifiche, amministratore del dispositivo, tastiera, installazione di app)
+* Sette lingue: slovacco, inglese, tedesco, francese, spagnolo, italiano e cinese semplificato (la traduzione cinese non è stata rivista da un madrelingua)
+
+Cosa non fa:
+
+* Indica ciò che è presente nel codice di un'app, non ciò che sta succedendo adesso. Una libreria di analisi inclusa non significa che in questo momento vengano inviati dati.
+* L'elenco delle firme non è completo, quindi tende a sottostimare piuttosto che a esagerare.
+* È un'informazione per aiutarti a decidere, non un'accusa.
+
+Come funziona: un file di installazione è un archivio ZIP e i nomi delle classi al suo interno sono testo leggibile. Audit li scorre una volta e cerca prefissi di pacchetti noti. Nessun decompilatore, nessun accesso alla rete.
+
+L'app ha bisogno del permesso QUERY_ALL_PACKAGES per vedere l'elenco delle app installate: è proprio il suo scopo. Quell'elenco non lascia mai il dispositivo.
